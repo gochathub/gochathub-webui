@@ -1,0 +1,10 @@
+node_modules/
+package-lock.json
+.prettierrc
+.vscode
+dist/
+.DS_Store
+notes/
+.env*
+.playwright-mcp/
+CLAUDE.md
