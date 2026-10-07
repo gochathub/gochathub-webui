@@ -223,6 +223,40 @@ export const useRoomsStore = defineStore("rooms", () => {
     return msg;
   }
 
+  // (event) a room left its lists for good (creator deleted, member left):
+  // forget it and close it if it is open.
+  function dropConversation(roomId: string) {
+    chat.conversations = chat.conversations.filter((c) => c.id !== roomId);
+    chat.archivedConversations = chat.archivedConversations.filter(
+      (c) => c.id !== roomId,
+    );
+    if (chat.conversationOpen === roomId) {
+      ws.unsubscribeAll();
+      chat.conversationOpen = undefined;
+    }
+  }
+
+  // (event) delete a group (room admin — the creator): server soft-deletes
+  // via archived_at and broadcasts room.archived.
+  async function deleteRoom(roomId: string) {
+    await unwrap(
+      await client.DELETE("/rooms/{roomId}", {
+        params: { path: { roomId } },
+      }),
+    );
+    dropConversation(roomId);
+  }
+
+  // (event) leave a group (self-remove).
+  async function leaveRoom(roomId: string) {
+    await unwrap(
+      await client.DELETE("/rooms/{roomId}/members/{userId}", {
+        params: { path: { roomId, userId: auth.me!.id } },
+      }),
+    );
+    dropConversation(roomId);
+  }
+
   // --- WS ----------------------------------------------------------------
 
   async function handleEvent(raw: WSEnvelope) {
@@ -337,9 +371,23 @@ export const useRoomsStore = defineStore("rooms", () => {
         // receipts refresh covers display; no local bookkeeping needed
         break;
 
+      case "room.archived": {
+        // group (soft-)deleted by its creator: it vanishes for everyone
+        dropConversation(roomId);
+        break;
+      }
+
       case "room.member_added":
-      case "room.member_removed":
         await resyncMembers(roomId);
+        break;
+
+      case "room.member_removed":
+        if (data.user_id === auth.me?.id) {
+          // we left — same handling as the delete
+          dropConversation(roomId);
+        } else {
+          await resyncMembers(roomId);
+        }
         break;
 
       case "typing.started":
@@ -434,6 +482,8 @@ export const useRoomsStore = defineStore("rooms", () => {
     sendMessage,
     openRoom,
     createRoom,
+    deleteRoom,
+    leaveRoom,
     setDraft,
     handleEvent,
     resync,

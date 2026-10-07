@@ -20,6 +20,7 @@ import IconAndText from "@src/components/shared/blocks/IconAndText.vue";
 import ImageViewer from "@src/components/shared/modals/ConversationInfoModal/ConversationInfoTab/ImageViewer.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import useStore from "@src/store/store";
 
 const props = defineProps<{
   conversation: IConversation;
@@ -27,7 +28,15 @@ const props = defineProps<{
   closeModal: () => void;
 }>();
 
-defineEmits(["active-page-change"]);
+defineEmits(["active-page-change", "leave-group"]);
+
+const store = useStore();
+
+// mapRoom puts only my own id in admins when the room says my_role is admin —
+// so membership in the list means I am a room admin (group creator).
+const isAdmin = computed(() =>
+  Boolean(props.conversation.admins?.includes(store.user?.id ?? "")),
+);
 
 const openImageViewer = ref(false);
 
@@ -211,14 +220,44 @@ const imageUrl = computed(() => {
         <IconAndText :icon="TrashIcon" title="delete contact" link />
       </div>
 
-      <!--(group) exit group-->
+      <!--(group) exit group (non-admin member)-->
       <div
         v-if="
-          ['group', 'broadcast'].includes(conversation.type) && !props.contact
+          ['group', 'broadcast'].includes(conversation.type) &&
+          !props.contact &&
+          !isAdmin
         "
         class="px-5 pt-5 flex items-center group"
       >
-        <IconAndText :icon="ArrowLeftOnRectangleIcon" title="exit group" link />
+        <IconAndText
+          :icon="ArrowLeftOnRectangleIcon"
+          title="exit group"
+          link
+          @click="$emit('leave-group')"
+        />
+      </div>
+
+      <!--(group) delete group (creator/admin)-->
+      <div
+        v-if="
+          ['group', 'broadcast'].includes(conversation.type) &&
+          !props.contact &&
+          isAdmin
+        "
+        class="px-5 pt-5 flex items-center group"
+      >
+        <IconAndText
+          :icon="TrashIcon"
+          title="delete group"
+          color="danger"
+          link
+          @click="
+            $emit('active-page-change', {
+              tabName: 'delete-group',
+              animationName: 'slide-left',
+            })
+          "
+        />
       </div>
     </div>
 
