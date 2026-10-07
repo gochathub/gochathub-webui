@@ -30,6 +30,7 @@ const activeConversation = inject("activeConversation") as Ref<
 const openSearch = ref(false);
 
 const openInfo = ref(false);
+const infoTab = ref<string>();
 
 // sidebar "Conversation info" routes here with ?info=1
 const route = useRoute();
@@ -38,6 +39,7 @@ watch(
   () => route.query.info,
   (info) => {
     if (!info) return;
+    infoTab.value = undefined;
     openInfo.value = true;
     router.replace({ query: {} });
   },
@@ -51,6 +53,13 @@ const handleOpenSearch = () => {
 
 // (event) open info modal
 const handleOpenInfo = () => {
+  infoTab.value = undefined;
+  openInfo.value = true;
+};
+
+// (event) open the info modal on the shared media page
+const handleOpenMedia = () => {
+  infoTab.value = "shared-media";
   openInfo.value = true;
 };
 </script>
@@ -70,6 +79,7 @@ const handleOpenInfo = () => {
       <ConversationInfoSection
         v-else
         :handle-open-info="handleOpenInfo"
+        :handle-open-media="handleOpenMedia"
         :handle-open-search="handleOpenSearch"
       />
     </div>
@@ -98,6 +108,7 @@ const handleOpenInfo = () => {
     <!--Contact info modal-->
     <ConversationInfoModal
       :open="openInfo"
+      :initial-tab="infoTab"
       :close-modal="() => (openInfo = false)"
       :conversation="activeConversation as IConversation"
     />

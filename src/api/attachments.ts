@@ -37,9 +37,11 @@ function putFile(
 }
 
 export async function deleteAttachment(attachmentId: string): Promise<void> {
-  await client.DELETE("/attachments/{attachmentId}", {
-    params: { path: { attachmentId } },
-  });
+  await unwrap(
+    await client.DELETE("/attachments/{attachmentId}", {
+      params: { path: { attachmentId } },
+    }),
+  );
 }
 
 export async function uploadAttachment(

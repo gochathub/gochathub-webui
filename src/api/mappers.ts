@@ -90,6 +90,17 @@ export function receiptState(m: ServerMessage, self: boolean): string {
 
 export function mapMessage(m: ServerMessage, meId: string): IMessage {
   const self = m.author_id === meId;
+  // an empty body with every attachment deleted would be a blank bubble
+  if (m.deleted_at || (!m.body && !m.attachments?.length)) {
+    // tombstone, same shape the message.deleted event produces
+    return {
+      id: m.id,
+      content: "Message deleted",
+      date: m.created_at,
+      sender: mapAuthorStub(m.author_id),
+      state: "deleted",
+    };
+  }
   return {
     id: m.id,
     content: m.body,

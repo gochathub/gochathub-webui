@@ -24,6 +24,7 @@ import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vu
 
 const props = defineProps<{
   handleOpenInfo: () => void;
+  handleOpenMedia: () => void;
   handleOpenSearch: () => void;
 }>();
 
@@ -177,9 +178,14 @@ const handleCloseConversation = () => {
           </button>
           <button
             class="dropdown-link dropdown-link-primary"
-            aria-label="share this contact"
+            aria-label="show shared media"
             role="menuitem"
-            @click="handleCloseDropdown"
+            @click="
+              () => {
+                handleCloseDropdown();
+                props.handleOpenMedia();
+              }
+            "
           >
             <ShareIcon class="h-5 w-5 mr-3 text-muted" />
             Shared media

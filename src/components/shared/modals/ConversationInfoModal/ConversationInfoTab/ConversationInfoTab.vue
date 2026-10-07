@@ -4,7 +4,13 @@ import type { IContact, IConversation } from "@src/types";
 
 import { computed, ref } from "vue";
 
-import { getAvatar, getName, getOddContact, presence } from "@src/utils";
+import {
+  canDeleteRoom,
+  getAvatar,
+  getName,
+  getOddContact,
+  presence,
+} from "@src/utils";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -35,9 +41,7 @@ const store = useStore();
 
 // mapRoom puts only my own id in admins when the room says my_role is admin —
 // so membership in the list means I am a room admin (group creator).
-const isAdmin = computed(() =>
-  Boolean(props.conversation.admins?.includes(store.user?.id ?? "")),
-);
+const isAdmin = computed(() => canDeleteRoom(props.conversation, store.user));
 
 const openImageViewer = ref(false);
 

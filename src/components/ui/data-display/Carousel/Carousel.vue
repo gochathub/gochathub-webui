@@ -4,6 +4,10 @@ import type { IAttachment, IConversation } from "@src/types";
 
 import { computed, inject, onMounted, onUnmounted, ref, watch } from "vue";
 
+import { deleteAttachment } from "@src/api/attachments";
+import useAuthStore from "@src/store/auth";
+import useRoomsStore from "@src/store/rooms";
+import useStore from "@src/store/store";
 import { hasAttachments } from "@src/utils";
 import { useFocusTrap } from "@vueuse/integrations/useFocusTrap";
 import VideoPlayer from "@src/components/ui/data-display/VideoPlayer.vue";
@@ -21,6 +25,10 @@ const props = defineProps<{
   // active conversation's messages
   items?: IAttachment[];
 }>();
+
+const auth = useAuthStore();
+const rooms = useRoomsStore();
+const store = useStore();
 
 const carousel: Ref<HTMLElement | undefined> = ref();
 
@@ -81,6 +89,59 @@ const selectedAttachment = computed(() => {
       : (startingIndex.value as number)
   ];
 });
+
+// the sent message that owns the selected attachment (pending composer files
+// belong to none, so they get no delete button — their chip has its own x)
+const ownerMessage = computed(() =>
+  conversation.value?.messages.find((m) =>
+    m.attachments?.some((a) => a.id === selectedAttachment.value?.id),
+  ),
+);
+
+// server rule: uploader or server admin
+const canDelete = computed(
+  () =>
+    Boolean(ownerMessage.value) &&
+    (auth.me?.role === "admin" ||
+      ownerMessage.value?.sender.id === auth.me?.id),
+);
+
+// (event) delete the attachment file for everyone, then drop it from the view
+const handleDelete = async () => {
+  const attachment = selectedAttachment.value;
+  const message = ownerMessage.value;
+  if (!attachment || !message) return;
+  if (!window.confirm(`Delete "${attachment.name}" for everyone?`)) return;
+  const index = moved.value ? currentIndex.value : startingIndex.value;
+  try {
+    await deleteAttachment(attachment.id);
+  } catch {
+    store.notifications = [
+      ...store.notifications,
+      {
+        flag: "account-update",
+        title: "Something went wrong",
+        message: "Could not delete the attachment.",
+      },
+    ];
+    return;
+  }
+  message.attachments = message.attachments?.filter(
+    (a) => a.id !== attachment.id,
+  );
+  // a message left with no text and no files would render as an empty bubble:
+  // tombstone it too (best effort — the attachment is already gone)
+  if (!message.content && !message.attachments?.length && conversation.value) {
+    rooms.deleteMessage(conversation.value.id, message.id).catch(() => {});
+  }
+  if (attachments.value.length === 0) {
+    handleCloseCarousel();
+    return;
+  }
+  moved.value = true;
+  currentIndex.value = Math.min(index ?? 0, attachments.value.length - 1);
+  imageInvisibility.value = true;
+};
 
 // the value of the css visibility property
 const imageInvisibility = ref(true);
@@ -238,6 +299,7 @@ onUnmounted(() => {
     aria-label="media carousel"
     role="dialog"
     aria-modal="true"
+    @contextmenu.stop
   >
     <!--overlay-->
     <FadeTransition>
@@ -262,6 +324,8 @@ onUnmounted(() => {
             :handle-close-carousel="handleCloseCarousel"
             :handle-increase-zoom="handleIncreaseZoom"
             :handle-decrease-zoom="handleDecreaseZoom"
+            :can-delete="canDelete"
+            :handle-delete="handleDelete"
           />
 
           <div

@@ -2,7 +2,7 @@
 import type { Ref } from "vue";
 import type { IContact, IConversation } from "@src/types";
 
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 
 import ConversationInfoTab from "@src/components/shared/modals/ConversationInfoModal/ConversationInfoTab/ConversationInfoTab.vue";
@@ -22,6 +22,8 @@ const props = defineProps<{
   open: boolean;
   conversation: IConversation;
   closeModal: () => void;
+  // page shown on open (default: conversation info)
+  initialTab?: string;
 }>();
 
 const store = useStore();
@@ -36,6 +38,14 @@ const animation = ref("slide-left");
 
 // name of the active modal page
 const activePageName = ref("conversation-info");
+
+// every open starts on the requested page
+watch(
+  () => props.open,
+  (open) => {
+    if (open) activePageName.value = props.initialTab ?? "conversation-info";
+  },
+);
 
 // the active modal page component
 const ActiveTab = computed((): any => {
@@ -109,8 +119,8 @@ const handleChangeActiveTab = async (event: {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="overflow-x-hidden">
-        <div class="w-full max-w-[26rem] bg-canvas rounded py-6">
+      <div class="w-full max-w-[34rem] overflow-x-hidden">
+        <div class="w-full bg-canvas rounded py-6">
           <!--content-->
           <SlideTransition :animation="animation">
             <component

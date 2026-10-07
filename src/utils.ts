@@ -177,3 +177,15 @@ export const unicodeToEmoji = (unicode: string) => {
     .map((hex) => String.fromCodePoint(hex))
     .join("");
 };
+
+/**
+ * can this user delete the room? Room admins (mapRoom puts only my own id in
+ * `admins`) and server admins — the server accepts both (DELETE /rooms/{id}).
+ */
+export const canDeleteRoom = (
+  conversation: IConversation,
+  user?: { id: string; role: string },
+) =>
+  Boolean(
+    user && (user.role === "admin" || conversation.admins?.includes(user.id)),
+  );

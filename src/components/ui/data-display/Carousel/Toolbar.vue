@@ -12,6 +12,9 @@ const props = defineProps<{
   handleIncreaseZoom: () => void;
   handleDecreaseZoom: () => void;
   isImage: boolean;
+  // uploader or server admin only; sent attachments are deleted for everyone
+  canDelete: boolean;
+  handleDelete: () => void;
 }>();
 </script>
 
@@ -45,9 +48,11 @@ const props = defineProps<{
 
     <!--delete media-->
     <IconButton
+      v-if="props.canDelete"
       aria-label="delete attachment"
       class="mr-5"
       title="delete attachment"
+      @click="props.handleDelete()"
     >
       <TrashIcon class="w-6 h-6 text-white opacity-80 hover:opacity-100" />
     </IconButton>

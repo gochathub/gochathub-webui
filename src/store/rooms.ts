@@ -236,6 +236,27 @@ export const useRoomsStore = defineStore("rooms", () => {
     }
   }
 
+  // a deleted message stays in the list as a tombstone
+  function tombstone(roomId: string, messageId: string) {
+    const existing = convById(roomId)?.messages.find((m) => m.id === messageId);
+    if (!existing) return;
+    existing.content = "Message deleted";
+    existing.state = "deleted";
+    existing.attachments = undefined;
+    existing.sender = mapAuthorStub(existing.sender.id);
+  }
+
+  // (event) delete a message (author, room admin or server admin — the
+  // server enforces); message.deleted also arrives over WS, this is idempotent.
+  async function deleteMessage(roomId: string, messageId: string) {
+    await unwrap(
+      await client.DELETE("/messages/{messageId}", {
+        params: { path: { messageId } },
+      }),
+    );
+    tombstone(roomId, messageId);
+  }
+
   // (event) per-member archive; moves the room between the two lists.
   async function setArchived(roomId: string, archived: boolean) {
     await unwrap(
@@ -341,14 +362,7 @@ export const useRoomsStore = defineStore("rooms", () => {
       case "message.deleted": {
         const msg = data.message as ServerMessage | undefined;
         if (!msg) return;
-        const conv = convById(roomId);
-        const existing = conv?.messages.find((m) => m.id === msg.id);
-        if (conv && existing) {
-          existing.content = "Message deleted";
-          existing.state = "deleted";
-          existing.attachments = undefined;
-          existing.sender = mapAuthorStub(existing.sender.id);
-        }
+        tombstone(roomId, msg.id);
         break;
       }
 
@@ -498,6 +512,7 @@ export const useRoomsStore = defineStore("rooms", () => {
     resyncMembers,
     sendMessage,
     setArchived,
+    deleteMessage,
     openRoom,
     createRoom,
     deleteRoom,

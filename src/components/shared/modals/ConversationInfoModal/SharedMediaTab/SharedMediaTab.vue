@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { IContact, IConversation, IMessage } from "@src/types";
-import { computed } from "vue";
+import type { IAttachment, IContact, IConversation } from "@src/types";
+import { computed, ref } from "vue";
 
+import { refreshAttachment } from "@src/api/attachments";
 import { hasAttachments } from "@src/utils";
+import Carousel from "@src/components/ui/data-display/Carousel/Carousel.vue";
 
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/outline";
 import MediaItem from "@src/components/shared/modals/ConversationInfoModal/SharedMediaTab/MediaItem.vue";
@@ -18,22 +20,44 @@ const props = defineProps<{
   contact?: IContact;
 }>();
 
-// extract messages that contain attachments.
-const attachmentMessages = computed(() => {
-  const media: IMessage[] = [];
+const keyword = ref("");
+
+// attachments of the conversation (or of one member), filtered by filename.
+const items = computed(() => {
+  const q = keyword.value.toLowerCase();
+  const out: { attachment: IAttachment; date: string }[] = [];
   for (const message of props.conversation.messages) {
-    if (hasAttachments(message)) {
-      if (props.contact) {
-        if (message.sender.id === props.contact.id) {
-          media.push(message);
-        }
-      } else {
-        media.push(message);
+    if (!hasAttachments(message)) continue;
+    if (props.contact && message.sender.id !== props.contact.id) continue;
+    for (const attachment of message.attachments ?? []) {
+      if (attachment.name.toLowerCase().includes(q)) {
+        out.push({ attachment, date: message.date });
       }
     }
   }
-  return media;
+  return out;
 });
+
+const media = computed(() =>
+  items.value
+    .map((i) => i.attachment)
+    .filter((a) => ["image", "video"].includes(a.type)),
+);
+
+const open = ref(false);
+const startingId = ref<string>();
+
+// (event) media opens in the carousel; files open via a fresh presigned URL
+// ponytail: carousel uses the URLs from the message payload, as the chat view does.
+const handleView = async (a: IAttachment) => {
+  if (["image", "video"].includes(a.type)) {
+    startingId.value = a.id;
+    open.value = true;
+    return;
+  }
+  const fresh = await refreshAttachment(a.id);
+  if (fresh.url) window.open(fresh.url, "_blank", "noopener");
+};
 </script>
 
 <template>
@@ -60,23 +84,33 @@ const attachmentMessages = computed(() => {
 
     <!--search-->
     <div class="mb-5 mx-5">
-      <SearchInput />
+      <SearchInput :value="keyword" @value-changed="(v) => (keyword = v)" />
     </div>
 
     <!--media messages-->
     <div tabindex="0" class="overflow-y-scroll max-h-55.5 scrollbar-thin">
-      <template v-if="attachmentMessages.length > 0">
-        <div v-for="(message, index) in attachmentMessages" :key="index">
-          <MediaItem
-            v-for="(attachment, aIndex) in message.attachments"
-            :key="aIndex"
-            :attachment="attachment"
-            :date="message.date"
-          />
-        </div>
+      <template v-if="items.length > 0">
+        <MediaItem
+          v-for="item in items"
+          :key="item.attachment.id"
+          :attachment="item.attachment"
+          :date="item.date"
+          @view="handleView"
+        />
       </template>
 
       <NoMedia v-else vertical />
     </div>
+
+    <!--teleported so the modal's overflow and stacking don't clip it-->
+    <Teleport to="body">
+      <Carousel
+        class="z-50!"
+        :open="open"
+        :items="media"
+        :starting-id="startingId"
+        :close-carousel="() => (open = false)"
+      />
+    </Teleport>
   </div>
 </template>

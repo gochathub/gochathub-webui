@@ -8,6 +8,7 @@ import useStore from "@src/store/store";
 import useRoomsStore from "@src/store/rooms";
 import { useRoute } from "vue-router";
 import {
+  canDeleteRoom,
   getActiveConversationId,
   getAvatar,
   getConversationIndex,
@@ -63,8 +64,13 @@ const rooms = useRoomsStore();
 const isArchived = computed(() =>
   store.archivedConversations.some((c) => c.id === props.conversation.id),
 );
-const isAdmin = computed(() =>
-  Boolean(props.conversation.admins?.includes(store.user?.id ?? "")),
+const isAdmin = computed(() => canDeleteRoom(props.conversation, store.user));
+const isGroup = computed(() => props.conversation.type === "group");
+// admins delete any room (direct chats too); other members can only leave groups
+const removeLabel = computed(() =>
+  isAdmin.value
+    ? `Delete ${isGroup.value ? "group" : "conversation"}`
+    : "Leave group",
 );
 
 // failed room changes surface through the sidebar notifications
@@ -107,7 +113,7 @@ const handleRemove = () => {
   return run(
     () => (isAdmin.value ? rooms.deleteRoom(id) : rooms.leaveRoom(id)),
     isAdmin.value
-      ? "Could not delete the group."
+      ? "Could not delete the conversation."
       : "Could not leave the group.",
   ).then((ok) => {
     if (ok && getActiveConversationId(route) === id)
@@ -292,14 +298,14 @@ const isActive = computed(
       </button>
 
       <button
-        v-if="props.conversation.type === 'group'"
+        v-if="isGroup || isAdmin"
         class="dropdown-link dropdown-link-danger"
-        :aria-label="isAdmin ? 'Delete the group' : 'Leave the group'"
+        :aria-label="removeLabel"
         role="menuitem"
         @click="handleRemove"
       >
         <TrashIcon class="h-5 w-5 mr-3" />
-        {{ isAdmin ? "Delete group" : "Leave group" }}
+        {{ removeLabel }}
       </button>
     </Dropdown>
   </div>

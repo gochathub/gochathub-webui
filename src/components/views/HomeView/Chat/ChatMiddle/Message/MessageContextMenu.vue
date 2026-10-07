@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { IConversation, IMessage } from "@src/types";
-import { inject } from "vue";
+import { computed, inject } from "vue";
 import type { Ref } from "vue";
 
+import useAuthStore from "@src/store/auth";
+import useRoomsStore from "@src/store/rooms";
 import useStore from "@src/store/store";
-import { getConversationIndex } from "@src/utils";
+import { canDeleteRoom, getConversationIndex } from "@src/utils";
 
 import {
   ArrowUturnLeftIcon,
@@ -29,10 +31,58 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const auth = useAuthStore();
+const rooms = useRoomsStore();
 
 const activeConversation = inject("activeConversation") as Ref<
   IConversation | undefined
 >;
+
+// author, room admin or server admin (the server enforces the same rule)
+const canDelete = computed(
+  () =>
+    props.message.state !== "deleted" &&
+    (props.message.sender.id === auth.me?.id ||
+      (activeConversation.value !== undefined &&
+        canDeleteRoom(activeConversation.value, auth.me))),
+);
+
+// (event) copy the message text; clipboard API needs a secure context, so
+// LAN http origins fall back to execCommand.
+const handleCopy = async () => {
+  props.handleCloseContextMenu();
+  const text = props.message.content;
+  if (typeof text !== "string") return;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+};
+
+// (event) delete the message; failures surface in the sidebar notifications
+const handleDelete = async () => {
+  props.handleCloseContextMenu();
+  if (!activeConversation.value) return;
+  if (!window.confirm("Delete this message for everyone?")) return;
+  try {
+    await rooms.deleteMessage(activeConversation.value.id, props.message.id);
+  } catch {
+    store.notifications = [
+      ...store.notifications,
+      {
+        flag: "account-update",
+        title: "Something went wrong",
+        message: "Could not delete the message.",
+      },
+    ];
+  }
+};
 
 // (event) pin message to conversation
 const handlePinMessage = () => {
@@ -105,7 +155,7 @@ const handleReplyToMessage = () => {
       class="dropdown-link dropdown-link-primary"
       role="menuitem"
       aria-label="copy this message"
-      @click="handleCloseContextMenu"
+      @click="handleCopy"
     >
       <ClipboardDocumentIcon class="h-5 w-5 mr-3" />
       Copy
@@ -154,10 +204,11 @@ const handleReplyToMessage = () => {
     </button>
 
     <button
+      v-if="canDelete"
       class="dropdown-link dropdown-link-danger"
       role="menuitem"
       aria-label="delete this message"
-      @click="handleCloseContextMenu"
+      @click="handleDelete"
     >
       <TrashIcon class="h-5 w-5 mr-3" />
       Delete Message
