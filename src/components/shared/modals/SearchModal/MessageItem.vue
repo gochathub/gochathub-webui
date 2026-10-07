@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { IMessage } from "@src/types";
 
-import { getFullName } from "@src/utils";
+import { getFullName, shorten } from "@src/utils";
+import { formatTime } from "@src/api/mappers";
 
 const props = defineProps<{
   message: IMessage;
@@ -10,7 +11,7 @@ const props = defineProps<{
 
 <template>
   <button
-    class="w-full p-5 flex outline-none hover:bg-indigo-100 focus:bg-indigo-100 active:bg-indigo-200 dark:hover:bg-gray-600 dark:focus:bg-gray-600 duration-200"
+    class="w-full p-5 flex outline-none hover:bg-select/50 focus:bg-select/70 active:bg-select dark:hover:bg-select/50 dark:focus:bg-select/70 dark:active:bg-select duration-200"
   >
     <!--profile image-->
     <div class="mr-4">
@@ -21,19 +22,23 @@ const props = defineProps<{
     </div>
 
     <!--name and message-->
-    <div class="grow">
-      <div class="flex flex-col items-start">
-        <p class="heading-2 text-black/70 dark:text-white/70 mb-4">
+    <div class="grow min-w-0">
+      <div class="flex flex-col items-start min-w-0">
+        <p class="heading-2 text-fg mb-4 truncate max-w-full">
           {{ getFullName(props.message.sender) }}
         </p>
 
-        <p class="body-2 text-black/70 dark:text-white/70">Wow really cool</p>
+        <p class="body-2 text-muted truncate max-w-full">
+          {{ shorten(String(props.message.content ?? "")) }}
+        </p>
       </div>
     </div>
 
     <!--message date-->
-    <div>
-      <p class="body-4 text-black/70 dark:text-white/70">1/5/2019</p>
+    <div class="shrink-0 ml-3">
+      <p class="body-4 text-muted whitespace-pre">
+        {{ formatTime(props.message.date) }}
+      </p>
     </div>
   </button>
 </template>

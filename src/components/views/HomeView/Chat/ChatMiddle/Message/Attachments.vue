@@ -194,62 +194,25 @@ const isNumber = (
           <div class="flex">
             <!--download button / icons-->
             <button
-              c
               class="w-8 h-8 mr-4 flex justify-center rounded-full outline-none items-center duration-200"
               :class="
                 props.self
-                  ? ['bg-indigo-300']
-                  : [
-                      'bg-indigo-50',
-                      'hover:bg-indigo-100',
-                      'active:bg-indigo-200',
-                      'dark:bg-gray-400',
-                      'dark:hover:bg-gray-300',
-                      'dark:focus:bg-gray-300',
-                      'dark:active:bg-gray-200',
-                    ]
+                  ? ['bg-accent']
+                  : ['bg-card', 'hover:bg-select/60', 'active:bg-select']
               "
             >
               <ArrowDownTrayIcon
                 class="stroke-2 h-5 w-5"
-                :class="
-                  props.self
-                    ? ['text-white']
-                    : ['text-blue-500', 'dark:text-gray-50']
-                "
+                :class="props.self ? ['text-white'] : ['text-muted']"
               />
             </button>
 
             <div class="flex flex-col justify-center">
-              <p
-                class="heading-2 mb-3"
-                :class="
-                  props.self
-                    ? ['text-black opacity-50 dark:text-white dark:opacity-70 ']
-                    : [
-                        'text-black',
-                        'opacity-50',
-                        'dark:text-white',
-                        'dark:opacity-70',
-                      ]
-                "
-              >
+              <p class="heading-2 mb-3 truncate">
                 {{ attachment.name }}
               </p>
 
-              <p
-                class="body-2"
-                :class="
-                  props.self
-                    ? ['text-black opacity-60 dark:text-white dark:opacity-70']
-                    : [
-                        'text-black',
-                        'opacity-50',
-                        'dark:text-white',
-                        'dark:opacity-70',
-                      ]
-                "
-              >
+              <p class="body-2 text-muted">
                 {{ attachment.size }}
               </p>
             </div>

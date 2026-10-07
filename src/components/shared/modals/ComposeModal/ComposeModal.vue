@@ -50,13 +50,13 @@ const activeTab = computed(() => {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-75 bg-white dark:bg-gray-800 rounded pt-6">
+      <div class="w-full max-w-[26rem] bg-canvas rounded pt-6">
         <!--header-->
         <div class="flex justify-between items-center mb-6 px-5">
           <p
             id="modal-title"
             ref="modalTitle"
-            class="heading-1 text-black/70 dark:text-white/70"
+            class="heading-1 text-fg"
             tabindex="0"
           >
             Compose

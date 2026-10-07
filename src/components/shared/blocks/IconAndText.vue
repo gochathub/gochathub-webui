@@ -18,10 +18,10 @@ defineEmits(["active-page-change"]);
 
 const colorClasses = computed(() => {
   if (props.color === "danger") {
-    return "text-red-400 group-hover:text-red-500";
+    return "text-error group-hover:text-red-500 dark:group-hover:text-red-400";
   } else {
-    return `text-black/50 dark:text-white/70
-        group-hover:text-indigo-500 group-active:text-indigo-600 
+    return `text-muted
+        group-hover:text-indigo-500 group-active:text-indigo-600
         dark:group-hover:text-indigo-300 dark:group-active:text-indigo-400`;
   }
 });

@@ -20,7 +20,8 @@ const props = defineProps<{
     <label
       v-if="props.label"
       :id="props.id"
-      class="body-2 text-black/70 dark:text-white/70 mb-3"
+      :for="props.id"
+      class="body-2 text-muted mb-3"
     >
       {{ props.label }}
     </label>
@@ -33,7 +34,7 @@ const props = defineProps<{
       <TextInput
         :id="props.id"
         :type="props.type || 'text'"
-        name="props.name"
+        :name="props.name"
         :value="value"
         class="text-input"
         :class="[

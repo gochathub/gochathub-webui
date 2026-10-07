@@ -66,7 +66,7 @@ const handleRemovePinnedMessage = () => {
         activeConversation?.pinnedMessage &&
         !activeConversation?.pinnedMessageHidden
       "
-      class="absolute z-10 w-full px-5 py-2 bg-white dark:bg-gray-800 flex items-center justify-between transition-all duration-500"
+      class="absolute z-10 w-full px-5 py-2 bg-canvas border-b border-hairline flex items-center justify-between transition-all duration-200"
     >
       <!--pinned message preview-->
       <MessagePreview :message="activeConversation?.pinnedMessage" />

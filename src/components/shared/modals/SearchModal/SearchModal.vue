@@ -18,14 +18,10 @@ const props = defineProps<{
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-75 py-6 bg-white dark:bg-gray-800 rounded">
+      <div class="w-full max-w-[26rem] py-6 bg-canvas rounded">
         <!--header-->
         <div class="mb-6 px-5 flex justify-between items-center">
-          <p
-            id="modal-title"
-            class="heading-1 text-black/70 dark:text-white/70"
-            tabindex="0"
-          >
+          <p id="modal-title" class="heading-1 text-fg" tabindex="0">
             Messages
           </p>
 

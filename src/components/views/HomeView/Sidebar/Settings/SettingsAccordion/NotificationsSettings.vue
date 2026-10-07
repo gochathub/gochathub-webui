@@ -36,10 +36,8 @@ const handleAllowToggle = (value: boolean) => {
     aria-controls="notifications-settings-collapse"
     @click="props.handleToggle()"
   >
-    <p class="heading-2 text-black/70 dark:text-white/70 mb-4">Notifications</p>
-    <p class="body-2 text-black/70 dark:text-white/70">
-      Customize notifications
-    </p>
+    <p class="heading-2 text-fg mb-4">Notifications</p>
+    <p class="body-2 text-muted">Customize notifications</p>
   </AccordionButton>
 
   <Collapse id="notifications-settings-collapse" :collapsed="props.collapsed">

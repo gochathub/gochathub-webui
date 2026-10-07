@@ -68,6 +68,23 @@ export const getName = (conversation: IConversation, hyphen?: boolean) => {
   }
 };
 
+// Human presence line for a peer's last-seen stamp. A zero/epoch timestamp
+// means presence is unknown or opted out (ADR-013) — show nothing.
+export const presence = (lastSeen?: Date | null): string => {
+  if (!lastSeen || lastSeen.getTime() === 0) {
+    return "";
+  }
+  const minutes = (Date.now() - lastSeen.getTime()) / 60000;
+  if (minutes < 2) {
+    return "Active now";
+  }
+  const fmt = new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+  return `Last seen ${fmt.format(lastSeen)}`;
+};
+
 /**
  * trim a string when it reaches a certain length and adds three dots
  * at the end.

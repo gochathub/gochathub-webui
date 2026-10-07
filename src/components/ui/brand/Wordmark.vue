@@ -1,8 +1,10 @@
 <script setup lang="ts">
 // brand lockup: hub icon (pack art, monochrome via currentColor) + wordmark
 // text in the app's Fredoka face. `size` scales icon and text together.
+// `iconOnly` drops the text for tight spaces (e.g. the navigation rail).
 defineProps<{
   size?: "sm" | "md" | "lg";
+  iconOnly?: boolean;
 }>();
 </script>
 
@@ -49,6 +51,6 @@ defineProps<{
         <circle cx="305" cy="256" r="15" />
       </g>
     </svg>
-    goChatHub
+    <span v-if="!iconOnly">goChatHub</span>
   </span>
 </template>

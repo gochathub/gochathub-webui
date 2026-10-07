@@ -3,7 +3,7 @@ import type { IContact, IConversation } from "@src/types";
 
 import { computed, ref } from "vue";
 
-import { getAvatar, getName, getOddContact } from "@src/utils";
+import { getAvatar, getName, getOddContact, presence } from "@src/utils";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -44,11 +44,7 @@ const imageUrl = computed(() => {
   <div>
     <div class="mb-6 px-5 flex justify-between items-center">
       <!--title-->
-      <p
-        id="modal-title"
-        class="heading-1 text-black/70 dark:text-white/70"
-        tabindex="0"
-      >
+      <p id="modal-title" class="heading-1 text-fg" tabindex="0">
         <span v-if="conversation.type === 'couple' || props.contact"
           >Contact</span
         >
@@ -78,7 +74,7 @@ const imageUrl = computed(() => {
         "
       >
         <ArrowUturnLeftIcon
-          class="w-5 h-5 text-black opacity-50 dark:text-white dark:opacity-70 group-focus:text-red-500 dark:group-focus:text-white group-hover:text-red-500 group-hover:opacity-100 dark:group-hover:text-white"
+          class="w-5 h-5 text-muted group-focus:text-red-500 group-hover:text-red-500"
         />
       </IconButton>
     </div>
@@ -105,22 +101,20 @@ const imageUrl = computed(() => {
         <!--name-->
         <div class="w-full flex justify-between">
           <div>
-            <p
-              class="heading-2 text-black/70 dark:text-white/70 mb-3 mr-5 text-start"
-            >
+            <p class="heading-2 text-fg mb-3 mr-5 text-start truncate">
               <span>
                 {{ getName(props.conversation) }}
               </span>
             </p>
 
-            <p
-              class="body-2 text-black/70 dark:text-white/70 font-extralight text-start"
-            >
+            <p class="body-2 text-muted text-start">
               <!--last seen-->
               <!--or number of group members-->
               {{
                 conversation.type === "couple" || props.contact
-                  ? "Last seen Dec 16, 2019"
+                  ? presence(
+                      (props.contact ?? conversation.contacts[0])?.lastSeen,
+                    )
                   : `${conversation.contacts.length} Contacts`
               }}
             </p>
@@ -144,7 +138,7 @@ const imageUrl = computed(() => {
     </div>
 
     <!--middle-->
-    <div class="w-full py-5 border-t border-gray-100 dark:border-gray-700">
+    <div class="w-full py-5 border-t border-hairline">
       <!--(contact) email-->
       <div
         v-if="conversation.type === 'couple' || props.contact"
@@ -200,7 +194,7 @@ const imageUrl = computed(() => {
     </div>
 
     <!--bottom-->
-    <div class="w-full border-t border-gray-100 dark:border-gray-700">
+    <div class="w-full border-t border-hairline">
       <!--(contact) block contact-->
       <div
         v-if="conversation.type === 'couple' || props.contact"

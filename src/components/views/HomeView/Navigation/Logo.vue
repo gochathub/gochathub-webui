@@ -27,7 +27,7 @@ const SkipLinkFocused = ref(false);
       :class="{ hidden: SkipLinkFocused }"
       class="outline-none"
     >
-      <Wordmark />
+      <Wordmark size="md" icon-only />
     </button>
   </div>
 </template>

@@ -31,7 +31,7 @@ const handleCheck = () => {
         :handle-check="handleCheck"
       />
       <label for="select-all">
-        <p class="body-2 text-black/70 dark:text-white/70">Select All</p>
+        <p class="body-2 text-muted">Select All</p>
       </label>
     </div>
     <div class="flex items-center">

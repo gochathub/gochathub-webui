@@ -7,21 +7,17 @@ import { BellSlashIcon } from "@heroicons/vue/24/outline";
     <!--icon-->
     <div>
       <div
-        class="w-7 h-7 mr-4 flex justify-center items-center rounded-full bg-gray-50 dark:bg-gray-700 transition duration-500"
+        class="w-7 h-7 mr-4 flex justify-center items-center rounded-full bg-select transition duration-500"
       >
-        <BellSlashIcon class="w-5 h-5 text-gray-500 dark:text-white/70" />
+        <BellSlashIcon class="w-5 h-5 text-muted" />
       </div>
     </div>
 
     <!--content-->
     <div>
-      <p class="heading-2 text-black/70 dark:text-white/70 mb-3">
-        No notifications
-      </p>
+      <p class="heading-2 text-fg mb-3">No notifications</p>
 
-      <p class="body-2 text-black/70 dark:text-white/70 flex">
-        Your notifications will appear here.
-      </p>
+      <p class="body-2 text-muted flex">Your notifications will appear here.</p>
     </div>
   </div>
 </template>

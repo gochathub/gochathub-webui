@@ -19,7 +19,7 @@ const handleInput = (event: any) => {
   <input
     :id="props.id"
     :type="props.type || 'text'"
-    name="props.name"
+    :name="props.name"
     class="text-input"
     :class="[props.bordered ? 'bordered-input' : 'ringed-input']"
     :value="props.value"

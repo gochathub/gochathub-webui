@@ -86,9 +86,7 @@ const handleClickOutside = (event: Event) => {
   <div>
     <!--header-->
     <div class="flex justify-between items-center mb-6 px-5">
-      <p id="modal-title" class="heading-1 text-black/70 dark:text-white/70">
-        Members
-      </p>
+      <p id="modal-title" class="heading-1 text-fg">Members</p>
 
       <!--return button-->
       <IconButton

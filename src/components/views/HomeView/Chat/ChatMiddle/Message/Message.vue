@@ -106,11 +106,14 @@ const replyMessage = computed(() =>
         </div>
       </div>
 
-      <div class="flex items-end">
+      <div
+        class="flex items-end grow min-w-0"
+        :class="{ 'justify-end': props.self }"
+      >
         <!--bubble-->
         <div
           v-click-outside="contextConfig"
-          class="group max-w-125 p-3.5 rounded-b-xl transition duration-200"
+          class="group max-w-[80%] p-3.5 rounded-b-xl transition duration-200"
           :class="{
             'rounded-tl-xl ml-4 order-2 bg-mine': props.self && !props.selected,
 
@@ -137,7 +140,7 @@ const replyMessage = computed(() =>
           <!-- eslint-disable vue/no-v-html -- renderMarkdown escapes the source first; every tag in the output is ours -->
           <p
             v-if="props.message.content && props.message.type !== 'recording'"
-            class="body-2 outline-none text-fg/90 dark:text-fg/85 break-words [&_pre]:overflow-x-auto"
+            class="body-2 outline-none text-fg/90 dark:text-fg/85 [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
             tabindex="0"
             v-html="renderMarkdown(props.message.content as string)"
           ></p>
@@ -164,8 +167,8 @@ const replyMessage = computed(() =>
         </div>
 
         <!--date-->
-        <div :class="props.self ? ['ml-4', 'order-1'] : ['mr-4']">
-          <p class="body-1 text-muted whitespace-pre">
+        <div class="shrink-0" :class="props.self ? ['order-1'] : []">
+          <p class="body-1 text-muted whitespace-nowrap">
             {{ formatTime(props.message.date) }}
           </p>
         </div>

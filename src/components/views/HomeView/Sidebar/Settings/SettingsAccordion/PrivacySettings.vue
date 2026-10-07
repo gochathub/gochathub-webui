@@ -27,12 +27,8 @@ prefs.load();
     aria-controls="privacy-settings-collapse"
     @click="props.handleToggle()"
   >
-    <p class="mb-4 heading-2 text-black/70 dark:text-white/70">
-      Privacy & Safety
-    </p>
-    <p class="body-2 text-black/70 dark:text-white/70">
-      Control your privacy settings
-    </p>
+    <p class="mb-4 heading-2 text-fg">Privacy & Safety</p>
+    <p class="body-2 text-muted">Control your privacy settings</p>
   </AccordionButton>
 
   <Collapse id="privacy-settings-collapse" :collapsed="props.collapsed">

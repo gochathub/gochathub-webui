@@ -10,15 +10,17 @@ const routes = [
     name: "Home",
     alias: "/",
     component: HomeView,
+    // relative child paths: an absolute child equal to the parent path gets
+    // shadowed by the parent record and never renders the child component
     children: [
       {
-        path: "/chat/",
+        path: "",
         alias: "/",
         name: "No-Chat",
         component: Chat,
       },
       {
-        path: "/chat/:id/",
+        path: ":id/",
         name: "Chat",
         component: Chat,
       },

@@ -89,9 +89,7 @@ onMounted(() => {
       class="mb-6"
     >
       <!--Group title-->
-      <p
-        class="heading-2 text-black/70 dark:text-white/70 mb-4 dark:text-white"
-      >
+      <p class="heading-2 text-fg mb-4">
         {{ name }}
       </p>
       <div class="flex flex-wrap justify-start">

@@ -101,10 +101,8 @@ const handleChangePassword = async () => {
     aria-controls="account-settings-collapse"
     @click="handleToggle()"
   >
-    <p class="heading-2 text-black/70 dark:text-white/70 mb-4">Account</p>
-    <p class="body-2 text-black/70 dark:text-white/70">
-      Update your profile details
-    </p>
+    <p class="heading-2 text-fg mb-4">Account</p>
+    <p class="body-2 text-muted">Update your profile details</p>
   </AccordionButton>
 
   <Collapse id="account-settings-collapse" :collapsed="props.collapsed">
@@ -123,9 +121,7 @@ const handleChangePassword = async () => {
     </Button>
 
     <!--change password-->
-    <p class="heading-2 text-black/70 dark:text-white/70 mb-4">
-      Change password
-    </p>
+    <p class="heading-2 text-fg mb-4">Change password</p>
     <PasswordInput
       label="Current password"
       class="mb-5"
@@ -138,7 +134,7 @@ const handleChangePassword = async () => {
       :value="newPassword"
       @value-changed="(value) => (newPassword = value)"
     />
-    <p v-if="pwError" role="alert" class="body-3 text-red-400 mb-4">
+    <p v-if="pwError" role="alert" class="body-3 text-error mb-4">
       {{ pwError }}
     </p>
     <Button

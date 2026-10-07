@@ -65,7 +65,7 @@ const handleSend = () => {
 <template>
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
-      <div class="w-100 bg-white dark:bg-gray-800 rounded py-6">
+      <div class="w-full max-w-[30rem] bg-canvas rounded py-6">
         <!--drop zone-->
         <div class="px-5 py-5">
           <DropFileUpload
@@ -74,7 +74,7 @@ const handleSend = () => {
             description="or drop them here"
             @value-changed="handleFiles"
           />
-          <p v-if="error" role="alert" class="body-3 text-red-400 mt-3">
+          <p v-if="error" role="alert" class="body-3 text-error mt-3">
             {{ error }}
           </p>
         </div>

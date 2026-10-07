@@ -24,7 +24,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'people'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -37,8 +37,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'people'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -49,7 +49,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'nature'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -62,8 +62,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'nature'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -74,7 +74,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'food'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -87,8 +87,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'food'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -99,7 +99,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'activity'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -112,8 +112,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'activity'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -124,7 +124,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'objects'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -133,8 +133,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'objects'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -145,7 +145,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'travel'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -158,8 +158,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'travel'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -170,7 +170,7 @@ defineEmits(["tab-change"]);
       class="pb-[.3125rem] border-b transition-colors duration-200"
       :class="[
         props.active === 'flags'
-          ? 'border-indigo-400 rounded-1'
+          ? 'border-accent rounded-1'
           : 'border-transparent',
       ]"
     >
@@ -183,8 +183,8 @@ defineEmits(["tab-change"]);
           class="w-5 h-5 transition-colors duration-200"
           :class="[
             props.active === 'flags'
-              ? ['text-indigo-400 dark:text-indigo-400']
-              : ['text-gray-500 dark:text-white dark:opacity-60'],
+              ? ['text-accent dark:text-indigo-400']
+              : ['text-muted'],
           ]"
         />
       </IconButton>

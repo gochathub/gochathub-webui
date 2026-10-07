@@ -89,7 +89,7 @@ onMounted(() => {
     @scroll.passive="handleScroll"
   >
     <template v-if="store.status !== 'loading'">
-      <div class="w-full max-w-[52rem] mx-auto flex flex-col">
+      <div class="w-full flex flex-col">
         <div
           v-for="(message, index) in activeConversation?.messages"
           :key="message.id"

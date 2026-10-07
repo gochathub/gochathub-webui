@@ -73,7 +73,7 @@ onUnmounted(() => {
   >
     <div
       v-if="loading"
-      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 bg-indigo-300 active:bg-indigo-400"
+      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 bg-accent active:bg-indigo-700 dark:active:bg-indigo-400"
     >
       <Spinner />
     </div>
@@ -81,7 +81,7 @@ onUnmounted(() => {
     <!--play/pause button-->
     <button
       v-else
-      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 bg-indigo-300 active:bg-indigo-400"
+      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 bg-accent active:bg-indigo-700 dark:active:bg-indigo-400"
       :aria-label="playing ? 'pause' : 'play'"
       @click="handleTogglePlay"
     >
@@ -94,16 +94,16 @@ onUnmounted(() => {
       <div :id="'waveform-' + props.recording.id" class="w-37.5"></div>
       <div
         v-show="loading"
-        class="absolute border animate-pulse w-37.5 border-gray-300"
+        class="absolute border animate-pulse w-37.5 border-hairline"
       ></div>
     </div>
 
     <p
-      class="body-1 text-black dark:text-white opacity-40 dark:opacity-70"
+      class="body-1 text-muted"
       tabindex="0"
-      aria-label="11 seconds"
+      :aria-label="props.recording.duration"
     >
-      00:11
+      {{ props.recording.duration }}
     </p>
   </div>
 </template>

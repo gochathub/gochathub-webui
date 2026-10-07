@@ -23,10 +23,8 @@ const store = useStore();
     aria-controls="appearance-settings-collapse"
     @click="props.handleToggle()"
   >
-    <p class="heading-2 text-black/70 dark:text-white/70 mb-4">Appearance</p>
-    <p class="body-2 text-black/70 dark:text-white/70">
-      Customize the look and feel
-    </p>
+    <p class="heading-2 text-fg mb-4">Appearance</p>
+    <p class="body-2 text-muted">Customize the look and feel</p>
   </AccordionButton>
 
   <Collapse id="appearance-settings-collapse" :collapsed="props.collapsed">

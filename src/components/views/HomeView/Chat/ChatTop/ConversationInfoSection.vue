@@ -6,6 +6,7 @@ import type { Ref } from "vue";
 
 import router from "@src/router";
 import useStore from "@src/store/store";
+import { presence } from "@src/utils";
 import { getAvatar, getName } from "@src/utils";
 
 import {
@@ -38,18 +39,12 @@ const presenceLine = computed(() => {
   const conv = activeConversation.value;
   if (!conv) return "";
   if (conv.type === "group") {
-    return `${conv.contacts.length + 1} members`;
+    const n = conv.contacts.length + 1;
+    return n === 1 ? "1 member" : `${n} members`;
   }
   const peer = conv.contacts[0];
-  if (!peer || peer.lastSeen.getTime() === 0) return "";
-  const minutes = (Date.now() - peer.lastSeen.getTime()) / 60000;
-  if (minutes < 2) return "Active now";
-  // locale-aware short stamp; truncate handles narrow headers
-  const fmt = new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-  return `Last seen ${fmt.format(peer.lastSeen)}`;
+  if (!peer) return "";
+  return presence(peer.lastSeen);
 });
 
 const showDropdown = ref(false);
