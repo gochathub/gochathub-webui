@@ -6,7 +6,6 @@ import Button from "@src/components/ui/inputs/Button.vue";
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import Modal from "@src/components/ui/utils/Modal.vue";
 import MessageItem from "@src/components/shared/modals/SearchModal/MessageItem.vue";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 
 const props = defineProps<{
   open: boolean;
@@ -40,7 +39,7 @@ const props = defineProps<{
         </div>
 
         <!--message-->
-        <ScrollBox class="max-h-57.5 overflow-y-scroll">
+        <div tabindex="0" class="max-h-57.5 overflow-y-scroll scrollbar-thin">
           <template v-if="props.conversation.messages.length > 0">
             <MessageItem
               v-for="(message, index) in props.conversation.messages"
@@ -50,7 +49,7 @@ const props = defineProps<{
           </template>
 
           <NoMessage v-else vertical />
-        </ScrollBox>
+        </div>
       </div>
     </template>
   </Modal>

@@ -164,7 +164,7 @@ onMounted(() => {
         <div class="relative">
           <Textarea
             id="compose-input"
-            class="max-h-[5rem] pr-12.5 resize-none scrollbar-hidden"
+            class="max-h-[5rem] pr-12.5 resize-none scrollbar-thin"
             :value="value"
             auto-resize
             cols="30"

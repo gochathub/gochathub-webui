@@ -132,11 +132,22 @@
 }
 
 /* custom utilities */
-@utility scrollbar-hidden {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-  .scrollbar-hidden::-webkit-scrollbar {
-    @apply hidden;
+
+/* thin, always-visible scrollbar; thumb derives from the muted text token
+   so it adapts to light/dark without its own token. */
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--muted) 35%, transparent) transparent;
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 100vh;
+    background: color-mix(in oklab, var(--muted) 35%, transparent);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 

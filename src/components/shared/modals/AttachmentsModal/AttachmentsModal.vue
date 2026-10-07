@@ -9,7 +9,6 @@ import Attachment from "@src/components/shared/modals/AttachmentsModal/Attachmen
 import Button from "@src/components/ui/inputs/Button.vue";
 import DropFileUpload from "@src/components/ui/inputs/DropFileUpload.vue";
 import Modal from "@src/components/ui/utils/Modal.vue";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 
 const props = defineProps<{
   open: boolean;
@@ -80,9 +79,10 @@ const handleSend = () => {
         </div>
 
         <!--uploaded attachments list-->
-        <ScrollBox
+        <div
           v-if="selected.length > 0"
-          class="max-h-35 overflow-y-scroll"
+          tabindex="0"
+          class="max-h-35 overflow-y-scroll scrollbar-thin"
         >
           <Attachment
             v-for="attachment in selected"
@@ -90,7 +90,7 @@ const handleSend = () => {
             :attachment="attachment"
             @remove="handleRemove"
           />
-        </ScrollBox>
+        </div>
 
         <!--Action buttons-->
         <div class="flex w-full px-5 py-5">

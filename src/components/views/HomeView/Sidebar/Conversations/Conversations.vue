@@ -94,7 +94,7 @@ onMounted(() => {
     <div
       role="list"
       aria-label="conversations"
-      class="w-full h-full scroll-smooth scrollbar-hidden"
+      class="w-full h-full scroll-smooth scrollbar-thin"
       style="overflow-x: visible; overflow-y: scroll"
     >
       <template v-if="store.status === 'loading' || store.delayLoading">

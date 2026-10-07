@@ -85,7 +85,7 @@ onMounted(() => {
 <template>
   <div
     ref="container"
-    class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-hidden"
+    class="grow px-5 py-5 flex flex-col overflow-y-scroll scrollbar-thin"
     @scroll.passive="handleScroll"
   >
     <template v-if="store.status !== 'loading'">

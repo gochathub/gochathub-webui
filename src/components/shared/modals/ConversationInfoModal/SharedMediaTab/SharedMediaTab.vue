@@ -8,7 +8,6 @@ import { ArrowUturnLeftIcon } from "@heroicons/vue/24/outline";
 import MediaItem from "@src/components/shared/modals/ConversationInfoModal/SharedMediaTab/MediaItem.vue";
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import NoMedia from "@src/components/states/empty-states/NoMedia.vue";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 
 defineEmits(["active-page-change"]);
@@ -65,7 +64,7 @@ const attachmentMessages = computed(() => {
     </div>
 
     <!--media messages-->
-    <ScrollBox class="overflow-y-scroll max-h-55.5">
+    <div tabindex="0" class="overflow-y-scroll max-h-55.5 scrollbar-thin">
       <template v-if="attachmentMessages.length > 0">
         <div v-for="(message, index) in attachmentMessages" :key="index">
           <MediaItem
@@ -78,6 +77,6 @@ const attachmentMessages = computed(() => {
       </template>
 
       <NoMedia v-else vertical />
-    </ScrollBox>
+    </div>
   </div>
 </template>

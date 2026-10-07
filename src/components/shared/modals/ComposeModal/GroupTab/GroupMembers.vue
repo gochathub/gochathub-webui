@@ -11,7 +11,6 @@ import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import ContactItem from "@src/components/shared/blocks/ContactItem.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import Checkbox from "@src/components/ui/inputs/Checkbox.vue";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 
 const props = defineProps<{
   selectedContacts?: IContact[];
@@ -65,7 +64,7 @@ const handleSelectedContactsChange = (contact: IContact) => {
     </div>
 
     <!--contacts-->
-    <ScrollBox class="overflow-y-scroll max-h-50 mb-5">
+    <div tabindex="0" class="overflow-y-scroll max-h-50 scrollbar-thin mb-5">
       <template
         v-if="store.status === 'success' && !store.delayLoading && store.user"
       >
@@ -85,7 +84,7 @@ const handleSelectedContactsChange = (contact: IContact) => {
       <template v-if="store.status === 'loading' || store.delayLoading">
         <Circle2Lines v-for="_idx in 3" :key="_idx" />
       </template>
-    </ScrollBox>
+    </div>
 
     <div class="flex px-5 mt-5 pb-6">
       <div class="grow"></div>

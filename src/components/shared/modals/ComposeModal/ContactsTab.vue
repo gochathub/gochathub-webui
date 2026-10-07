@@ -12,7 +12,6 @@ import Circle2Lines from "@src/components/states/loading-states/Circle2Lines.vue
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import ContactItem from "@src/components/shared/blocks/ContactItem.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 
 const props = defineProps<{
   closeModal: () => void;
@@ -40,7 +39,7 @@ const handleContactClick = async (contact: IContact) => {
     </div>
 
     <!--contacts-->
-    <ScrollBox class="overflow-y-scroll max-h-50">
+    <div tabindex="0" class="overflow-y-scroll max-h-50 scrollbar-thin">
       <template v-if="store.status === 'loading' || store.delayLoading">
         <Circle2Lines v-for="_idx in 3" :key="_idx" />
       </template>
@@ -59,7 +58,7 @@ const handleContactClick = async (contact: IContact) => {
       />
 
       <NoContacts v-else vertical />
-    </ScrollBox>
+    </div>
 
     <!--add affordance when there is nothing to pick from yet-->
     <div class="flex justify-center px-5 mt-2">

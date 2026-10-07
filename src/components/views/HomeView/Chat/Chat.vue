@@ -115,7 +115,7 @@ const handleCloseSelect = () => {
 
   <div
     v-else-if="getActiveConversationId(route) && activeConversation"
-    class="h-full flex flex-col scrollbar-hidden"
+    class="h-full flex flex-col scrollbar-thin"
   >
     <ChatTop
       :select-all="selectAll"

@@ -13,7 +13,6 @@ import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
 import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 
 const props = defineProps<{
   closeModal: () => void;
@@ -110,7 +109,7 @@ const handleClickOutside = (event: Event) => {
 
     <!--contacts-->
     <div ref="contactContainer">
-      <ScrollBox class="max-h-58 overflow-y-scroll">
+      <div tabindex="0" class="max-h-58 overflow-y-scroll scrollbar-thin">
         <ContactItem
           v-for="(contact, index) in props.conversation.contacts"
           :key="index"
@@ -186,7 +185,7 @@ const handleClickOutside = (event: Event) => {
             </div>
           </template>
         </ContactItem>
-      </ScrollBox>
+      </div>
     </div>
   </div>
 </template>

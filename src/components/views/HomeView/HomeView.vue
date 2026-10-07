@@ -23,12 +23,12 @@ const activeConversationId = computed(() => getActiveConversationId(route));
       <Navigation class="xs:order-1 md:order-none" />
       <!--sidebar-->
       <Sidebar
-        class="xs:grow-1 md:grow-0 xs:overflow-y-scroll md:overflow-visible scrollbar-hidden"
+        class="xs:grow-1 md:grow-0 xs:overflow-y-scroll md:overflow-visible scrollbar-thin"
       />
       <!--chat-->
       <div
         id="mainContent"
-        class="xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-hidden bg-canvas transition-all duration-500"
+        class="xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-thin bg-canvas transition-all duration-500"
         :class="
           activeConversationId
             ? ['xs:-left-[0rem]', 'xs:static']

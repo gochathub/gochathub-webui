@@ -7,7 +7,6 @@ import useStore from "@src/store/store";
 import { unicodeToEmoji } from "@src/utils";
 
 import emojis from "@src/components/ui/inputs/EmojiPicker/emojis.json";
-import ScrollBox from "@src/components/ui/utils/ScrollBox.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 
 interface IEmojiGroups {
@@ -82,7 +81,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ScrollBox class="w-full max-h-68.5 overflow-y-scroll">
+  <div tabindex="0" class="w-full max-h-68.5 overflow-y-scroll scrollbar-thin">
     <div
       v-for="[name, group] in Object.entries(filteredEmojis)"
       :key="name"
@@ -106,5 +105,5 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </ScrollBox>
+  </div>
 </template>

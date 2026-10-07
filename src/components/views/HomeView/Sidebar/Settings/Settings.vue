@@ -10,7 +10,7 @@ import SettingsAccordion from "@src/components/views/HomeView/Sidebar/Settings/S
     </SidebarHeader>
 
     <div
-      class="w-full h-full scroll-smooth scrollbar-hidden"
+      class="w-full h-full scroll-smooth scrollbar-thin"
       style="overflow-x: visible; overflow-y: scroll"
     >
       <SettingsAccordion />
