@@ -1,11 +1,31 @@
 <script setup lang="ts">
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
 import Button from "@src/components/ui/inputs/Button.vue";
-import DropFileUpload from "@src/components/ui/inputs/DropFileUpload.vue";
+import type { Ref } from "vue";
+import type { IConversation } from "@src/types";
+import { inject } from "vue";
+import client, { unwrap } from "@src/api/client";
+import type { UploadedAttachment } from "@src/api/attachments";
+import FileUploader from "@src/components/ui/inputs/FileUploader.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 
 defineEmits(["active-page-change"]);
+
+const conversation = inject("activeConversation") as Ref<
+  IConversation | undefined
+>;
+
+// (event) avatar uploaded → attach it to the room (server gates on admin)
+const handleAvatar = async (a: UploadedAttachment) => {
+  if (!conversation.value) return;
+  await unwrap(
+    await client.PATCH("/rooms/{roomId}", {
+      params: { path: { roomId: conversation.value.id } },
+      body: { avatar_attachment_id: a.id },
+    }),
+  );
+};
 </script>
 
 <template>
@@ -37,7 +57,12 @@ defineEmits(["active-page-change"]);
       </div>
 
       <div>
-        <DropFileUpload label="Avatar" />
+        <FileUploader
+          label="Avatar"
+          :accept="['image/*']"
+          max-size="2MB"
+          @uploaded="handleAvatar"
+        />
       </div>
     </div>
 

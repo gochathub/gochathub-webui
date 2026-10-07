@@ -21,6 +21,10 @@
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/integrations": "^10.4.1",
     "click-outside-vue3": "^4.0.1",
+    "filepond": "^4.32.12",
+    "filepond-plugin-file-validate-size": "^2.2.8",
+    "filepond-plugin-file-validate-type": "^1.2.9",
+    "filepond-plugin-image-preview": "^4.6.12",
     "focus-trap": "^7.5.2",
     "linkify-string": "^4.1.1",
     "linkifyjs": "^4.1.1",
@@ -29,6 +33,7 @@
     "prettier": "^3.0.3",
     "video.js": "7.21.6",
     "vue": "^3.3.4",
+    "vue-filepond": "^8.0.0",
     "vue-router": "4",
     "wavesurfer.js": "^7.3.0"
   },

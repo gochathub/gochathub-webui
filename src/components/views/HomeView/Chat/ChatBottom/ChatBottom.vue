@@ -5,6 +5,8 @@ import type { IAttachment, IConversation } from "@src/types";
 import useStore from "@src/store/store";
 import useRoomsStore from "@src/store/rooms";
 import ws from "@src/ws/client";
+import { deleteAttachment } from "@src/api/attachments";
+import PendingAttachments from "@src/components/views/HomeView/Chat/ChatBottom/PendingAttachments.vue";
 import { ref, inject, onMounted, computed } from "vue";
 
 import {
@@ -82,7 +84,11 @@ const handleSetDraft = () => {
 
 // (event) send the composed message; failures surface in the envelope toast.
 const handleSend = async () => {
-  if (!activeConversation.value || !value.value.trim()) return;
+  if (
+    !activeConversation.value ||
+    (!value.value.trim() && pendingAttachments.value.length === 0)
+  )
+    return;
   const room = activeConversation.value.id;
   const replyTo = activeConversation.value.replyMessage?.id;
   await rooms.sendMessage(
@@ -99,6 +105,14 @@ const handleSend = async () => {
 
 // attachments selected in the modal ride the next send
 const pendingAttachments: Ref<IAttachment[]> = ref([]);
+
+// (event) drop a pending attachment; it is already uploaded, so delete it too
+const handleRemovePending = (id: string) => {
+  pendingAttachments.value = pendingAttachments.value.filter(
+    (a) => a.id !== id,
+  );
+  deleteAttachment(id).catch(() => {});
+};
 
 // open modal used to send attachments.
 const openAttachmentsModal = ref(false);
@@ -142,6 +156,12 @@ onMounted(() => {
       {{ typingNames.join(", ") }} {{ typingNames.length > 1 ? "are" : "is" }}
       typing…
     </p>
+
+    <!--attachments waiting to be sent-->
+    <PendingAttachments
+      :attachments="pendingAttachments"
+      @remove="handleRemovePending"
+    />
 
     <div
       v-if="store.status !== 'loading'"
@@ -242,7 +262,7 @@ onMounted(() => {
       :open="openAttachmentsModal"
       :close-modal="() => (openAttachmentsModal = false)"
       :close-with-attachments="
-        (attachments) => (pendingAttachments = attachments)
+        (attachments) => pendingAttachments.push(...attachments)
       "
     />
   </div>

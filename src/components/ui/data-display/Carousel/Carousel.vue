@@ -17,6 +17,9 @@ const props = defineProps<{
   open: boolean;
   startingId?: string;
   closeCarousel: () => void;
+  // explicit media list (e.g. pending composer attachments); default is the
+  // active conversation's messages
+  items?: IAttachment[];
 }>();
 
 const carousel: Ref<HTMLElement | undefined> = ref();
@@ -36,6 +39,10 @@ const moved = ref(false);
 
 // all the attachment in the conversation or an empty array
 const attachments = computed(() => {
+  if (props.items) {
+    return props.items.filter((a) => ["video", "image"].includes(a.type));
+  }
+
   const attachments = [];
 
   if (conversation.value) {

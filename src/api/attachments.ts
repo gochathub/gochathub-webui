@@ -10,8 +10,42 @@ export interface UploadedAttachment {
   sizeBytes: number;
 }
 
+// XHR, not fetch: fetch has no upload progress events.
+function putFile(
+  url: string,
+  file: File,
+  onProgress?: (loaded: number, total: number) => void,
+  signal?: AbortSignal,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("PUT", url);
+    xhr.setRequestHeader(
+      "Content-Type",
+      file.type || "application/octet-stream",
+    );
+    xhr.upload.onprogress = (e) => onProgress?.(e.loaded, e.total);
+    xhr.onload = () =>
+      xhr.status >= 200 && xhr.status < 300
+        ? resolve()
+        : reject(new Error(`upload failed: ${xhr.status}`));
+    xhr.onerror = () => reject(new Error("upload failed: network"));
+    xhr.onabort = () => reject(new DOMException("aborted", "AbortError"));
+    signal?.addEventListener("abort", () => xhr.abort());
+    xhr.send(file);
+  });
+}
+
+export async function deleteAttachment(attachmentId: string): Promise<void> {
+  await client.DELETE("/attachments/{attachmentId}", {
+    params: { path: { attachmentId } },
+  });
+}
+
 export async function uploadAttachment(
   file: File,
+  onProgress?: (loaded: number, total: number) => void,
+  signal?: AbortSignal,
 ): Promise<UploadedAttachment> {
   const buf = await file.arrayBuffer();
   const digest = await crypto.subtle.digest("SHA-256", buf);
@@ -30,14 +64,7 @@ export async function uploadAttachment(
     }),
   );
 
-  const put = await fetch(session.upload_url, {
-    method: "PUT",
-    body: file,
-    headers: { "Content-Type": file.type || "application/octet-stream" },
-  });
-  if (!put.ok) {
-    throw new Error(`upload failed: ${put.status}`);
-  }
+  await putFile(session.upload_url, file, onProgress, signal);
 
   const created = await unwrap(
     await client.POST("/attachments/{attachmentId}/complete", {

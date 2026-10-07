@@ -3,11 +3,10 @@ import type { Ref } from "vue";
 import type { IAttachment } from "@src/types";
 import { ref } from "vue";
 
-import { uploadAttachment } from "@src/api/attachments";
+import type { UploadedAttachment } from "@src/api/attachments";
 
-import Attachment from "@src/components/shared/modals/AttachmentsModal/Attachment.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
-import DropFileUpload from "@src/components/ui/inputs/DropFileUpload.vue";
+import FileUploader from "@src/components/ui/inputs/FileUploader.vue";
 import Modal from "@src/components/ui/utils/Modal.vue";
 
 const props = defineProps<{
@@ -19,44 +18,39 @@ const props = defineProps<{
 
 const selected = ref<IAttachment[]>([]);
 const error = ref("");
-const busy = ref(false);
+const uploaderKey = ref(0);
 
-// (event) upload one file immediately (create → presigned PUT → complete)
-const handleFiles = async (file: File) => {
-  if (!file) return;
-  busy.value = true;
+// (event) FilePond finished create → presigned PUT → complete for one file
+const handleUploaded = (uploaded: UploadedAttachment) => {
   error.value = "";
-  try {
-    const uploaded = await uploadAttachment(file);
-    selected.value.push({
-      id: uploaded.id,
-      type: uploaded.mimeType.startsWith("image/")
-        ? "image"
-        : uploaded.mimeType.startsWith("video/")
-          ? "video"
-          : "file",
-      name: uploaded.filename,
-      size: `${Math.max(1, Math.round(uploaded.sizeBytes / 1024))} KB`,
-      url: "",
-    });
-  } catch (e) {
-    error.value =
-      e instanceof Error && /not configured|503|disabled/i.test(e.message)
-        ? "Attachment storage is not available on this deployment."
-        : "Upload failed. The file may exceed the size limit.";
-  } finally {
-    busy.value = false;
-  }
+  selected.value.push({
+    id: uploaded.id,
+    type: uploaded.mimeType.startsWith("image/")
+      ? "image"
+      : uploaded.mimeType.startsWith("video/")
+        ? "video"
+        : "file",
+    name: uploaded.filename,
+    size: `${Math.max(1, Math.round(uploaded.sizeBytes / 1024))} KB`,
+    url: "",
+  });
 };
 
-const handleRemove = (id: string) => {
+const handleRemoved = (id: string) => {
   selected.value = selected.value.filter((a) => a.id !== id);
+};
+
+const handleError = (msg: string) => {
+  error.value = /not configured|503|disabled/i.test(msg)
+    ? "Attachment storage is not available on this deployment."
+    : "Upload failed. The file may exceed the size limit.";
 };
 
 // (event) hand the selected attachments to the composer
 const handleSend = () => {
   props.closeWithAttachments([...selected.value]);
   selected.value = [];
+  uploaderKey.value++; // remount: FilePond would otherwise keep the handed-over files
   props.closeModal();
 };
 </script>
@@ -67,29 +61,17 @@ const handleSend = () => {
       <div class="w-full max-w-[30rem] bg-canvas rounded py-6">
         <!--drop zone-->
         <div class="px-5 py-5">
-          <DropFileUpload
-            id="attachment-upload"
+          <FileUploader
+            :key="uploaderKey"
             label="Select files"
-            description="or drop them here"
-            @value-changed="handleFiles"
+            multiple
+            @uploaded="handleUploaded"
+            @removed="handleRemoved"
+            @error="handleError"
           />
           <p v-if="error" role="alert" class="body-3 text-error mt-3">
             {{ error }}
           </p>
-        </div>
-
-        <!--uploaded attachments list-->
-        <div
-          v-if="selected.length > 0"
-          tabindex="0"
-          class="max-h-35 overflow-y-scroll scrollbar-thin"
-        >
-          <Attachment
-            v-for="attachment in selected"
-            :key="attachment.id"
-            :attachment="attachment"
-            @remove="handleRemove"
-          />
         </div>
 
         <!--Action buttons-->
