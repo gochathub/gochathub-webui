@@ -36,13 +36,13 @@ onMounted(() => invites.loadInvites());
       <div
         v-for="invite in invites.invites"
         :key="invite.id"
-        class="w-full px-5 py-5 mb-3 flex flex-col rounded bg-indigo-50 dark:bg-gray-700"
+        class="w-full px-5 py-5 mb-3 flex flex-col rounded bg-select"
         :aria-label="'invitation to ' + (invite.room.name ?? 'a room')"
       >
-        <p class="heading-2 text-black/70 dark:text-white/70 mb-2">
+        <p class="heading-2 text-fg mb-2">
           You've been invited ({{ invite.room.name ?? "private room" }})
         </p>
-        <p class="body-2 text-black/70 dark:text-white/70 mb-4">
+        <p class="body-2 text-muted mb-4">
           by {{ invite.inviter?.display_name ?? "someone" }}
         </p>
 

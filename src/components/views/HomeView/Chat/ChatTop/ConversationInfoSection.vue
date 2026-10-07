@@ -44,7 +44,12 @@ const presenceLine = computed(() => {
   if (!peer || peer.lastSeen.getTime() === 0) return "";
   const minutes = (Date.now() - peer.lastSeen.getTime()) / 60000;
   if (minutes < 2) return "Active now";
-  return `Last seen ${peer.lastSeen.toLocaleString()}`;
+  // locale-aware short stamp; truncate handles narrow headers
+  const fmt = new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+  return `Last seen ${fmt.format(peer.lastSeen)}`;
 });
 
 const showDropdown = ref(false);
@@ -89,10 +94,10 @@ const handleCloseConversation = () => {
       </IconButton>
     </div>
 
-    <div v-if="store.status !== 'loading'" class="flex grow">
+    <div v-if="store.status !== 'loading'" class="flex grow min-w-0">
       <!--avatar-->
       <button
-        class="mr-5 outline-none"
+        class="mr-5 outline-none shrink-0"
         aria-label="profile avatar"
         @click="props.handleOpenInfo"
       >
@@ -105,9 +110,9 @@ const handleCloseConversation = () => {
       </button>
 
       <!--name and last seen-->
-      <div class="flex flex-col">
+      <div class="flex flex-col min-w-0">
         <p
-          class="w-fit heading-2 text-black/70 dark:text-white/70 mb-2 cursor-pointer"
+          class="heading-2 text-fg mb-2 cursor-pointer truncate"
           tabindex="0"
           @click="props.handleOpenInfo"
         >
@@ -115,7 +120,7 @@ const handleCloseConversation = () => {
         </p>
 
         <p
-          class="body-2 text-black/70 dark:text-white/70 font-extralight rounded-[.25rem]"
+          class="body-2 text-muted rounded-[.25rem] truncate"
           tabindex="0"
           aria-label="presence"
         >
@@ -124,7 +129,7 @@ const handleCloseConversation = () => {
       </div>
     </div>
 
-    <div class="flex" :class="{ hidden: store.status === 'loading' }">
+    <div class="flex shrink-0" :class="{ hidden: store.status === 'loading' }">
       <!--search button-->
       <IconButton
         title="search messages"
@@ -133,7 +138,7 @@ const handleCloseConversation = () => {
         @click="props.handleOpenSearch"
       >
         <MagnifyingGlassIcon
-          class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-indigo-300"
+          class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
         />
       </IconButton>
 
@@ -172,9 +177,7 @@ const handleCloseConversation = () => {
               }
             "
           >
-            <InformationCircleIcon
-              class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-            />
+            <InformationCircleIcon class="h-5 w-5 mr-3 text-muted" />
             Profile Information
           </button>
           <button
@@ -183,9 +186,7 @@ const handleCloseConversation = () => {
             role="menuitem"
             @click="handleCloseDropdown"
           >
-            <ShareIcon
-              class="h-5 w-5 mr-3 text-black opacity-60 dark:text-white dark:opacity-70"
-            />
+            <ShareIcon class="h-5 w-5 mr-3 text-muted" />
             Shared media
           </button>
           <button

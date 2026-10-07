@@ -67,7 +67,7 @@ const handleChangeActiveTab = async (event: {
   <Modal :open="props.open" :close-modal="props.closeModal">
     <template #content>
       <div class="overflow-x-hidden">
-        <div class="w-75 bg-white dark:bg-gray-800 rounded py-6">
+        <div class="w-full max-w-[26rem] bg-canvas rounded py-6">
           <!--content-->
           <SlideTransition :animation="animation">
             <component

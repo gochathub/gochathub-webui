@@ -27,7 +27,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
 
 <template>
   <div
-    class="xs:w-full md:w-11 md:h-full md:py-7 xs:py-5 px-5 flex xs:flex-row md:flex-col items-center transition-all duration-500"
+    class="xs:w-full md:w-14 md:h-full md:py-7 xs:py-5 px-5 md:px-3 flex xs:flex-row md:flex-col items-center bg-surface xs:border-b md:border-b-0 md:border-r border-hairline transition-all duration-500"
   >
     <!--logo-->
     <Logo />
@@ -73,7 +73,6 @@ const handleActiveSidebarComponentChange = (value: string) => {
             <NavLink
               :icon="BellIcon"
               title="Notifications"
-              :notifications="3"
               :active="store.activeSidebarComponent === 'notifications'"
               @click="() => handleActiveSidebarComponentChange('notifications')"
             />
@@ -117,9 +116,7 @@ const handleActiveSidebarComponentChange = (value: string) => {
       </nav>
 
       <!--separator-->
-      <hr
-        class="xs:hidden md:block mb-6 border-gray-100 dark:border-gray-600"
-      />
+      <hr class="xs:hidden md:block mb-6 border-hairline" />
 
       <!--user avatar-->
       <AccountDropdown

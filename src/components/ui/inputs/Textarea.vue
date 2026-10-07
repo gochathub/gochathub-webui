@@ -35,7 +35,7 @@ const handleInput = (event: any) => {
   <textarea
     :id="props.id"
     ref="textarea"
-    name="props.name"
+    :name="props.name"
     class="text-input"
     :class="[props.bordered ? 'bordered-input' : 'ringed-input']"
     :value="props.value"

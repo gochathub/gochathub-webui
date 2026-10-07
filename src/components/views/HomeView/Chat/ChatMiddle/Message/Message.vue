@@ -84,10 +84,16 @@ const replyMessage = computed(() =>
 </script>
 
 <template>
-  <div class="select-none">
-    <div class="xs:mb-6 md:mb-5 flex" :class="{ 'justify-end': props.self }">
+  <div>
+    <div class="mb-3 flex" :class="{ 'justify-end': props.self }">
       <!--avatar-->
-      <div class="mr-4" :class="{ 'ml-[2.25rem]': props.followUp && !divider }">
+      <div
+        class="mr-4"
+        :class="{
+          'ml-[2.25rem]': props.followUp && !divider,
+          hidden: props.self,
+        }"
+      >
         <div
           v-if="!hideAvatar()"
           :aria-label="getFullName(props.message.sender)"
@@ -104,18 +110,16 @@ const replyMessage = computed(() =>
         <!--bubble-->
         <div
           v-click-outside="contextConfig"
-          class="group max-w-125 p-5 rounded-b-xl transition duration-500"
+          class="group max-w-125 p-3.5 rounded-b-xl transition duration-200"
           :class="{
-            'rounded-tl-xl ml-4 order-2 bg-indigo-50 dark:bg-gray-600':
-              props.self && !props.selected,
+            'rounded-tl-xl ml-4 order-2 bg-mine': props.self && !props.selected,
 
-            'rounded-tr-xl mr-4 bg-gray-50 dark:bg-gray-600':
-              !props.self && !props.selected,
+            'rounded-tr-xl mr-4 bg-card': !props.self && !props.selected,
 
-            'rounded-tl-xl ml-4 order-2 bg-indigo-200 dark:bg-indigo-500':
+            'rounded-tl-xl ml-4 order-2 bg-indigo-200 dark:bg-indigo-900':
               props.self && props.selected,
 
-            'rounded-tr-xl mr-4 bg-indigo-200 dark:bg-indigo-500':
+            'rounded-tr-xl mr-4 bg-indigo-200 dark:bg-indigo-900':
               !props.self && props.selected,
           }"
           @click="handleCloseContextMenu"
@@ -133,7 +137,7 @@ const replyMessage = computed(() =>
           <!-- eslint-disable vue/no-v-html -- renderMarkdown escapes the source first; every tag in the output is ours -->
           <p
             v-if="props.message.content && props.message.type !== 'recording'"
-            class="body-2 outline-none text-black opacity-60 dark:text-white dark:opacity-70"
+            class="body-2 outline-none text-fg/90 dark:text-fg/85 break-words [&_pre]:overflow-x-auto"
             tabindex="0"
             v-html="renderMarkdown(props.message.content as string)"
           ></p>
@@ -161,7 +165,7 @@ const replyMessage = computed(() =>
 
         <!--date-->
         <div :class="props.self ? ['ml-4', 'order-1'] : ['mr-4']">
-          <p class="body-1 text-black/70 dark:text-white/70 whitespace-pre">
+          <p class="body-1 text-muted whitespace-pre">
             {{ formatTime(props.message.date) }}
           </p>
         </div>

@@ -47,11 +47,11 @@ const props = defineProps<{
 
     <!--notification content-->
     <div class="grow">
-      <p class="heading-2 text-black/70 dark:text-white/70 mb-4">
+      <p class="heading-2 text-fg mb-4">
         {{ props.notification.title }}
       </p>
 
-      <p class="body-2 text-black/70 dark:text-white/70">
+      <p class="body-2 text-muted">
         {{ props.notification.message }}
       </p>
     </div>

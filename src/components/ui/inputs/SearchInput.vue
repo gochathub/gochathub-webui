@@ -21,7 +21,7 @@ const props = defineProps<{
   >
     <template #startAdornment>
       <MagnifyingGlassIcon
-        class="w-5 h-5 mx-[8px] translate-y-[75%] text-gray-400 dark:text-white dark:opacity-70"
+        class="w-5 h-5 mx-[8px] translate-y-[75%] text-muted"
       />
     </template>
     <template #endAdornment>

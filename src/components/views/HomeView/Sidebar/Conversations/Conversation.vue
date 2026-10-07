@@ -83,14 +83,13 @@ const isActive = computed(
 </script>
 
 <template>
-  <div class="select-none">
+  <div>
     <button
       :aria-label="'conversation with' + getName(props.conversation)"
       tabindex="0"
-      class="w-full h-23 px-5 py-6 mb-3 flex rounded focus:bg-indigo-50 dark:active:bg-gray-600 dark:focus:bg-gray-600 dark:hover:bg-gray-600 hover:bg-indigo-50 active:bg-indigo-100 focus:outline-none transition duration-500 ease-out"
+      class="w-full px-5 py-4 mb-3 flex rounded focus:bg-select active:bg-select dark:hover:bg-select/50 hover:bg-select/50 focus:outline-none transition duration-200 ease-out"
       :class="{
-        'md:bg-indigo-50': isActive,
-        'md:dark:bg-gray-600': isActive,
+        'md:bg-select': isActive,
       }"
       @contextmenu.prevent="handleShowContextMenu"
       @click="
@@ -112,14 +111,14 @@ const isActive = computed(
         <div class="w-full">
           <!--conversation name-->
           <div class="flex items-start">
-            <div class="grow mb-3 text-start">
-              <p class="heading-2 text-black/70 dark:text-white/70">
+            <div class="grow mb-3 text-start min-w-0">
+              <p class="heading-2 text-fg truncate">
                 {{ getName(props.conversation) }}
               </p>
             </div>
 
             <!--last message date-->
-            <p class="body-1 text-black/70 dark:text-white/70">
+            <p class="body-1 text-muted shrink-0 ml-3">
               {{ lastMessage ? formatTime(lastMessage.date) : "" }}
             </p>
           </div>
@@ -128,12 +127,7 @@ const isActive = computed(
         <div class="flex justify-between">
           <div>
             <!--empty conversation-->
-            <p
-              v-if="!lastMessage"
-              class="body-2 text-black/70 dark:text-white/70"
-            >
-              no messages yet
-            </p>
+            <p v-if="!lastMessage" class="body-2 text-muted">no messages yet</p>
 
             <!--draft Message-->
             <p
@@ -141,7 +135,7 @@ const isActive = computed(
                 props.conversation.draftMessage &&
                 props.conversation.id !== getActiveConversationId(route)
               "
-              class="body-2 flex justify-start items-center text-red-400"
+              class="body-2 flex justify-start items-center text-error truncate"
             >
               draft: {{ shorten(props.conversation.draftMessage) }}
             </p>
@@ -151,13 +145,15 @@ const isActive = computed(
               v-else-if="
                 lastMessage?.type === 'recording' && lastMessage?.content
               "
-              class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
+              class="body-2 text-muted flex justify-start items-center"
             >
-              <MicrophoneIcon
-                class="w-4 h-4 mr-2 text-black opacity-60 dark:text-white dark:opacity-70"
-                :class="{ 'text-indigo-400': props.conversation.unread }"
-              />
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
+              <MicrophoneIcon class="w-4 h-4 mr-2 text-muted shrink-0" />
+              <span
+                class="truncate"
+                :class="{
+                  'text-accent dark:text-indigo-400': props.conversation.unread,
+                }"
+              >
                 Recording
                 {{ (lastMessage.content as IRecording).duration }}
               </span>
@@ -166,10 +162,12 @@ const isActive = computed(
             <!--attachments title-->
             <p
               v-else-if="hasAttachments(lastMessage)"
-              class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
-              :class="{ 'text-indigo-400': props.conversation.unread }"
+              class="body-2 text-muted flex justify-start items-center"
+              :class="{
+                'text-accent dark:text-indigo-400': props.conversation.unread,
+              }"
             >
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
+              <span class="truncate">
                 {{ (lastMessage?.attachments as IAttachment[])[0].name }}
               </span>
             </p>
@@ -177,23 +175,24 @@ const isActive = computed(
             <!--last message content -->
             <p
               v-else
-              class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
-              :class="{ 'text-indigo-400': props.conversation.unread }"
+              class="body-2 text-muted flex justify-start items-center"
+              :class="{
+                'text-accent dark:text-indigo-400': props.conversation.unread,
+              }"
             >
-              <span :class="{ 'text-indigo-400': props.conversation.unread }">
+              <span class="truncate">
                 {{ shorten(String(lastMessage.content ?? "")) }}
               </span>
             </p>
           </div>
 
-          <div v-if="props.conversation.unread">
-            <div
-              class="w-4.5 h-4.5 flex justify-center items-center rounded-[50%] bg-indigo-300"
-            >
-              <p class="body-1 text-white">
-                {{ props.conversation.unread }}
-              </p>
-            </div>
+          <div
+            v-if="props.conversation.unread"
+            class="min-w-4.5 h-4.5 px-1 mt-1 flex justify-center items-center rounded-full bg-accent shrink-0 ml-2"
+          >
+            <p class="body-1 text-white">
+              {{ props.conversation.unread }}
+            </p>
           </div>
         </div>
       </div>

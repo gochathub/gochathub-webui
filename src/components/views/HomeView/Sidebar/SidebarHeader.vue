@@ -1,11 +1,8 @@
 <template>
   <div
-    class="w-full min-h-[5rem] max-h-fit px-5 py-6 flex justify-between items-center"
+    class="w-full min-h-[3.5rem] max-h-fit px-5 py-4 flex justify-between items-center"
   >
-    <p
-      tabindex="0"
-      class="heading-1 text-black/70 dark:text-white/70 outline-none"
-    >
+    <p tabindex="0" class="heading-1 text-fg outline-none">
       <slot name="title"></slot>
     </p>
 

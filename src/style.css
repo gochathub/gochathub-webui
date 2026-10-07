@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --breakpoint-*: initial;
@@ -22,7 +22,7 @@
   --spacing-10: 4rem;
   --spacing-11: 5rem;
   --spacing-12: 6rem;
-  --spacing-13: 10rem;
+  --spacing-13: 3.25rem;
 
   --font-sans: Open Sans, sans-serif;
   --font-display: Fredoka;
@@ -33,7 +33,6 @@
   --radius-lg: 1.25rem;
   --radius-full: 624.9375rem;
 
-  --opacity-50: 54%;
 
   --shadow-sm: 0rem 0.0625rem 0.1875rem 0rem rgba(5, 5, 5, 0.1);
   --shadow-md:
@@ -64,6 +63,50 @@
       background-position: 0% 0%;
     }
   }
+}
+
+/*
+  Semantic surface/text tokens. Flipped by the .dark class on the app root
+  (App.vue); token utilities pick the value automatically, so components
+  need no dark: variant for these.
+*/
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-select: var(--select);
+  --color-card: var(--card);
+  --color-mine: var(--mine);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-error: var(--error);
+  --color-hairline: var(--hairline);
+}
+
+:root {
+  --canvas: #ffffff;
+  --surface: #f3f4f6;
+  --select: #e0e7ff;
+  --card: #f9fafb;
+  --mine: #e0e7ff;
+  --fg: #111827;
+  --muted: #4b5563;
+  --accent: #4f46e5;
+  --error: #dc2626;
+  --hairline: #e5e7eb;
+}
+
+.dark {
+  --canvas: #1f2937;
+  --surface: #111827;
+  --select: #374151;
+  --card: #374151;
+  --mine: #312e81;
+  --fg: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #4f46e5;
+  --error: #f87171;
+  --hairline: #374151;
 }
 
 /*
@@ -136,10 +179,10 @@
   @apply text-sm font-semibold leading-5 tracking-[.01rem] text-white;
 }
 @utility outlined-text {
-  @apply text-sm font-semibold leading-5 tracking-[.01rem] text-black/70 dark:text-white hover:text-white focus:text-white;
+  @apply text-sm font-semibold leading-5 tracking-[.01rem] text-fg dark:text-white hover:text-white focus:text-white;
 }
 @utility ghost-text {
-  @apply text-sm font-light leading-5 tracking-[.01rem] text-black/70 dark:text-white dark:hover:text-white;
+  @apply text-sm font-light leading-5 tracking-[.01rem] text-fg dark:text-white dark:hover:text-white;
 }
 @utility btn {
   /***  Button  ***/
@@ -147,28 +190,28 @@
     transition-all duration-200 ease-out;
 }
 @utility contained-primary {
-  @apply bg-indigo-300 dark:bg-indigo-400  focus:ring-3 focus:ring-indigo-100 active:ring-3 active:ring-indigo-200;
+  @apply bg-accent dark:bg-accent  focus:ring-3 focus:ring-indigo-100 active:ring-3 active:ring-indigo-200;
 }
 @utility contained-success {
   @apply bg-green-500 dark:bg-green-500 focus:ring-3 focus:ring-green-100 active:ring-3 active:ring-green-200;
 }
 @utility contained-danger {
-  @apply bg-red-300 dark:bg-red-400 focus:ring-3 focus:ring-red-100 active:ring-3 active:ring-red-200;
+  @apply bg-red-600 dark:bg-red-500 focus:ring-3 focus:ring-red-100 active:ring-3 active:ring-red-200;
 }
 @utility outlined-primary {
-  @apply bg-white/0 hover:bg-indigo-300 focus:bg-indigo-300 dark:hover:bg-indigo-400 dark:focus:bg-indigo-400
-   border border-gray-100  dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-400 focus:border-indigo-300 dark:focus:border-indigo-400;
+  @apply bg-white/0 hover:bg-accent focus:bg-accent
+   border border-hairline hover:border-accent focus:border-accent;
 }
 @utility outlined-success {
   @apply bg-white/0 hover:bg-green-300 dark:hover:bg-green-400 focus:bg-green-300 dark:focus:bg-green-400
     border border-gray-100 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-400 focus:border-green-300 dark:focus:border-green-400;
 }
 @utility outlined-danger {
-  @apply bg-white/0 hover:bg-red-200 dark:hover:bg-red-400 focus:bg-red-200 dark:focus:bg-red-400
-    border border-gray-200 dark:border-gray-600 hover:border-red-200 dark:hover:border-red-400 focus:border-red-200 dark:focus:border-red-400;
+  @apply bg-white/0 hover:bg-red-600 dark:hover:bg-red-400 focus:bg-red-600 dark:focus:bg-red-400
+    border border-hairline hover:border-red-600 dark:hover:border-red-400 focus:border-red-600 dark:focus:border-red-400;
 }
 @utility ghost-primary {
-  @apply hover:bg-indigo-50 hover:text-indigo-400 dark:hover:bg-gray-600 active:bg-indigo-100;
+  @apply hover:bg-select hover:text-indigo-600 dark:hover:text-indigo-400 active:bg-select;
 }
 @utility ghost-success {
   @apply hover:bg-green-50 hover:text-green-400 dark:hover:bg-gray-600 active:bg-green-100;
@@ -179,10 +222,10 @@
 @utility ic-btn {
   /***  IconButton  ***/
   @apply flex justify-center items-center
-     rounded-full text-gray-400 dark:text-white outline-hidden focus:outline-hidden transition-all;
+     rounded-full text-muted outline-hidden focus:outline-hidden transition-all;
 }
 @utility ic-btn-contained-primary {
-  @apply bg-indigo-300 hover:bg-indigo-400 focus:bg-indigo-400 dark:focus:bg-indigo-300 dark:bg-indigo-400 dark:hover:bg-indigo-400 text-white duration-200;
+  @apply bg-accent hover:bg-indigo-500 focus:bg-indigo-500 dark:focus:bg-indigo-500 text-white duration-200;
 }
 @utility ic-btn-contained-success {
   @apply bg-green-400 hover:bg-green-500 active:bg-green-600 text-white duration-500;
@@ -214,26 +257,25 @@
 @utility text-input {
   /***  Input  ***/
   @apply max-w-full w-full h-8 p-4 rounded-sm content-center outline-hidden
-  text-sm text-black dark:text-white/70 placeholder-black/50 dark:placeholder-white/50
+  text-sm text-fg dark:text-fg/80 placeholder-black/50 dark:placeholder-white/50
   focus:outline-hidden transition duration-200 ease-out;
 }
 @utility bordered-input {
-  @apply border border-gray-200 bg-gray-50 dark:bg-gray-700
-   dark:focus:bg-gray-700/0 focus:bg-gray-700/0 focus:border-indigo-300
-  dark:border-gray-600;
+  @apply border border-hairline bg-card
+   focus:bg-transparent focus:border-accent;
 }
 @utility ringed-input {
-  @apply bg-gray-50 border-0 dark:bg-gray-700 focus:ring-3 focus:ring-indigo-100 dark:focus:bg-gray-700/0 focus:bg-gray-700/0;
+  @apply bg-card border-0 focus:ring-3 focus:ring-indigo-100 focus:bg-transparent;
 }
 @utility dropdown-link {
   /* DropdownLink */
-  @apply w-full px-4 py-3 flex items-center border-b opacity-60 
-  outline-hidden text-sm border-gray-200 dark:border-gray-600 
+  @apply w-full px-4 py-3 flex items-center border-b opacity-60
+  outline-hidden text-sm border-hairline
   transition-all duration-200;
 }
 @utility dropdown-link-danger {
-  @apply text-red-500 dark:hover:text-red-50 hover:bg-red-50 active:bg-red-100 dark:hover:bg-red-900;
+  @apply text-red-600 dark:text-red-500 dark:hover:text-red-50 hover:bg-red-100 active:bg-red-100 dark:hover:bg-red-900;
 }
 @utility dropdown-link-primary {
-  @apply text-black/70 dark:text-white/70 active:bg-gray-100 dark:hover:bg-gray-600 dark:focus:bg-gray-600 hover:bg-gray-50;
+  @apply text-fg dark:text-fg/80 active:bg-gray-100 dark:hover:bg-gray-600 dark:focus:bg-gray-600 hover:bg-gray-50;
 }

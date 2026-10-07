@@ -18,7 +18,7 @@ const ActiveMethod = computed((): any => {
 
 <template>
   <div class="w-full h-full">
-    <div class="w-full h-full flex dark:bg-gray-800">
+    <div class="w-full h-full flex">
       <!--login and register forms-->
       <FadeTransition>
         <component :is="ActiveMethod" />

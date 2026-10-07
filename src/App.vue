@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { onMounted, watch } from "vue";
 
 import useStore from "@src/store/store";
 import useAuthStore from "@src/store/auth";
@@ -58,32 +58,11 @@ watch(
     if (status === "open") useRoomsStore().resync();
   },
 );
-
-// the app height
-const height = ref(`${window.innerHeight}px`);
-
-// change the app height to the window hight.
-const resizeWindow = () => {
-  height.value = `${window.innerHeight}px`;
-};
-
-// and add the resize event when the component mounts.
-onMounted(() => {
-  window.addEventListener("resize", resizeWindow);
-});
-
-// remove the event when un-mounting the component.
-onUnmounted(() => {
-  window.removeEventListener("resize", resizeWindow);
-});
 </script>
 
 <template>
   <div :class="{ dark: store.settings.darkMode }">
-    <div
-      class="bg-white dark:bg-gray-800 transition-colors duration-500"
-      :style="{ height: height }"
-    >
+    <div class="h-dvh bg-canvas transition-colors duration-500">
       <router-view v-slot="{ Component }">
         <FadeTransition>
           <component :is="Component" />

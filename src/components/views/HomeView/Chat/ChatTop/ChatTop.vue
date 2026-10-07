@@ -44,7 +44,7 @@ const handleOpenInfo = () => {
 <template>
   <div class="w-full">
     <!--Top section-->
-    <div class="w-full min-h-21 px-5 py-6">
+    <div class="w-full min-h-16 px-5 py-4 border-b border-hairline">
       <SelectSection
         v-if="props.selectMode"
         :select-mode="props.selectMode"

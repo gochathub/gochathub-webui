@@ -24,7 +24,7 @@ const handleActiveTabChange = (tab: string) => {
 <template>
   <div
     v-if="props.show"
-    class="w-75 p-5 rounded-2xl border shadow-xl shadow-outline bg-white dark:bg-gray-800 border-gray-50 dark:border-gray-700"
+    class="w-75 p-5 rounded-2xl border shadow-xl bg-canvas border-hairline"
   >
     <!--Tabs-->
     <EmojiTabs

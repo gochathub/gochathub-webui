@@ -19,7 +19,7 @@ const SkipLinkFocused = ref(false);
       @blur="SkipLinkFocused = false"
       @focus="SkipLinkFocused = true"
     >
-      <ForwardIcon class="w-7 h-6 text-indigo-300" />
+      <ForwardIcon class="w-7 h-6 text-indigo-600 dark:text-indigo-400" />
     </a>
 
     <button

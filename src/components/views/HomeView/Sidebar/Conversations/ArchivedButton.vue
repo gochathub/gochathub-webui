@@ -13,37 +13,19 @@ const store = useStore();
   <div>
     <button
       :aria-label="'toggle archived conversations'"
-      class="group w-full h-23 px-5 py-6 mb-3 flex rounded focus:outline-none transition duration-300 ease-out"
-      :class="
-        props.open
-          ? [
-              'bg-red-300',
-              'hover:bg-red-400',
-              'focus:bg-red-400',
-              'active:bg-red-400',
-              'dark:bg-red-400',
-              'dark:hover:bg-red-300',
-              'dark:focus:bg-red-300',
-              'dark:active:bg-red-300',
-            ]
-          : [
-              'focus:bg-indigo-50',
-              'dark:active:bg-gray-600',
-              'dark:focus:bg-gray-600',
-              'dark:hover:bg-gray-600',
-              ' hover:bg-indigo-50',
-              'active:bg-indigo-100',
-            ]
-      "
+      class="group w-full px-5 py-4 mb-3 flex rounded focus:bg-select hover:bg-select/50 active:bg-select dark:hover:bg-select/50 dark:active:bg-select dark:focus:bg-select focus:outline-none transition duration-200 ease-out"
+      :class="{
+        'bg-select': props.open,
+      }"
       tabindex="0"
     >
       <!--archived icon-->
       <div class="mr-4" :class="{ hidden: props.open }">
         <div
-          class="w-7 h-7 flex justify-center items-center rounded-full bg-gray-50 dark:bg-gray-500 transition duration-500"
+          class="w-7 h-7 flex justify-center items-center rounded-full bg-card dark:bg-gray-500 transition duration-200"
         >
           <ArchiveBoxIcon
-            class="w-5 h-5 stroke-1 text-gray-500 dark:text-white transition duration-500"
+            class="w-5 h-5 stroke-1 text-muted dark:text-white transition duration-200"
           />
         </div>
       </div>
@@ -53,25 +35,9 @@ const store = useStore();
         class="w-full h-full flex justify-center items-center"
         :class="{ hidden: !props.open }"
       >
-        <XMarkIcon
-          class="w-5 h-5 mr-3 stroke-1"
-          :class="
-            props.open
-              ? [
-                  'text-white',
-                  'dark:text-white',
-                  'group-hover:text-white',
-                  'group-focus:text-white',
-                ]
-              : []
-          "
-        />
+        <XMarkIcon class="w-5 h-5 mr-3 stroke-1 text-fg" />
 
-        <p
-          class="body-2 text-white dark:text-white group-hover:text-white group-focus:text-white"
-        >
-          Close Archive
-        </p>
+        <p class="body-2 text-fg">Close Archive</p>
       </div>
 
       <div class="w-full flex flex-col" :class="{ hidden: props.open }">
@@ -79,18 +45,14 @@ const store = useStore();
           <!--title-->
           <div class="flex items-start">
             <div class="grow mb-4 text-start">
-              <p class="heading-2 text-black/70 dark:text-white/70">
-                Archived Conversations
-              </p>
+              <p class="heading-2 text-fg">Archived Conversations</p>
             </div>
           </div>
         </div>
 
         <div>
           <!--number of conversations -->
-          <p
-            class="body-2 text-black/70 dark:text-white/70 flex justify-start items-center"
-          >
+          <p class="body-2 text-muted flex justify-start items-center">
             {{ store.archivedConversations.length }}
             conversations
           </p>

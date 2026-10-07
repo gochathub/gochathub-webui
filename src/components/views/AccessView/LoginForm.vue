@@ -46,14 +46,12 @@ const handleLogin = async () => {
   <div
     class="p-5 md:basis-1/2 xs:basis-full flex flex-col justify-center items-center"
   >
-    <div class="w-full md:px-[26%] xs:px-[10%]">
+    <div class="w-full max-w-md">
       <!--header-->
       <div class="mb-6 flex flex-col">
         <Wordmark size="lg" class="mb-4" />
-        <p class="heading-2 text-black/70 dark:text-white/70 mb-4">
-          Welcome back
-        </p>
-        <p class="body-3 text-black/75 dark:text-white/70 font-light">
+        <p class="heading-2 text-fg mb-4">Welcome back</p>
+        <p class="body-3 text-muted font-light">
           Sign in to your account to start messaging.
         </p>
       </div>
@@ -82,7 +80,7 @@ const handleLogin = async () => {
           "
         />
 
-        <p v-if="error" role="alert" class="body-3 text-indigo-400 mt-4">
+        <p v-if="error" role="alert" class="body-3 text-error mt-4">
           {{ error }}
         </p>
 
@@ -98,7 +96,7 @@ const handleLogin = async () => {
         </div>
       </form>
 
-      <p class="body-3 text-black/70 dark:text-white/60 text-center">
+      <p class="body-3 text-muted text-center">
         Need an account? Ask your administrator — accounts are created via the
         server CLI.
       </p>

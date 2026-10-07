@@ -136,7 +136,7 @@ onMounted(() => {
     <!--typing indicator-->
     <p
       v-if="typingNames.length > 0"
-      class="body-3 text-black/50 dark:text-white/50 px-5"
+      class="body-3 text-muted px-5"
       aria-live="polite"
     >
       {{ typingNames.join(", ") }} {{ typingNames.length > 1 ? "are" : "is" }}
@@ -145,7 +145,7 @@ onMounted(() => {
 
     <div
       v-if="store.status !== 'loading'"
-      class="h-auto min-h-21 p-5 flex items-end"
+      class="h-auto min-h-16 p-4 flex items-end"
     >
       <div class="min-h-[2.75rem]">
         <!--select attachments button-->
@@ -183,7 +183,7 @@ onMounted(() => {
           <!--mention autocomplete-->
           <div
             v-if="mentionMatches.length > 0"
-            class="absolute bottom-13 left-0 z-10 w-56 py-1 rounded-xl bg-white dark:bg-gray-700 shadow-lg border border-gray-100 dark:border-gray-600"
+            class="absolute bottom-13 left-0 z-10 w-56 py-1 rounded-xl bg-canvas shadow-lg border border-hairline"
             role="listbox"
             aria-label="mention suggestions"
           >
@@ -191,7 +191,7 @@ onMounted(() => {
               v-for="contact in mentionMatches"
               :key="contact.id"
               role="option"
-              class="w-full text-left px-4 py-2 body-3 text-black/80 dark:text-white/80 hover:bg-gray-100 dark:hover:bg-gray-600"
+              class="w-full text-left px-4 py-2 body-3 text-fg dark:text-fg/80 hover:bg-select/60"
               @click="handlePickMention(contact.username)"
             >
               <span class="font-semibold">@{{ contact.username }}</span>
@@ -211,7 +211,7 @@ onMounted(() => {
               <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
               <FaceSmileIcon
                 v-else
-                class="w-[1.25rem] h-[1.25rem] text-gray-400 group-hover:text-indigo-300"
+                class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
               />
             </IconButton>
 

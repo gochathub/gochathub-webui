@@ -28,7 +28,7 @@ const ActiveComponent = computed((): any => {
 
 <template>
   <aside
-    class="xs:w-full md:w-72.5 h-full xs:px-5 md:p-0 flex flex-col overflow-visible transition-all duration-500"
+    class="xs:w-full md:w-72.5 h-full xs:px-5 md:p-0 flex flex-col overflow-visible bg-surface md:border-r border-hairline transition-all duration-500"
   >
     <FadeTransition>
       <component :is="ActiveComponent" class="h-full flex flex-col" />

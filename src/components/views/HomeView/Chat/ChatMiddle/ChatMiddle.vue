@@ -89,24 +89,26 @@ onMounted(() => {
     @scroll.passive="handleScroll"
   >
     <template v-if="store.status !== 'loading'">
-      <div
-        v-for="(message, index) in activeConversation?.messages"
-        :key="index"
-      >
-        <TimelineDivider
-          v-if="renderDivider(index, index - 1)"
-          :label="formatDay(message.date)"
-        />
+      <div class="w-full max-w-[52rem] mx-auto flex flex-col">
+        <div
+          v-for="(message, index) in activeConversation?.messages"
+          :key="message.id"
+        >
+          <TimelineDivider
+            v-if="renderDivider(index, index - 1)"
+            :label="formatDay(message.date)"
+          />
 
-        <Message
-          :message="message"
-          :self="isSelf(message)"
-          :follow-up="isFollowUp(index, index - 1)"
-          :divider="renderDivider(index, index - 1)"
-          :selected="props.selectedMessages.includes(message.id)"
-          :handle-select-message="handleSelectMessage"
-          :handle-deselect-message="handleDeselectMessage"
-        />
+          <Message
+            :message="message"
+            :self="isSelf(message)"
+            :follow-up="isFollowUp(index, index - 1)"
+            :divider="renderDivider(index, index - 1)"
+            :selected="props.selectedMessages.includes(message.id)"
+            :handle-select-message="handleSelectMessage"
+            :handle-deselect-message="handleDeselectMessage"
+          />
+        </div>
       </div>
     </template>
   </div>
