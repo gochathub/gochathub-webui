@@ -14,7 +14,6 @@ import Modal from "@src/components/ui/utils/Modal.vue";
 import SlideTransition from "@src/components/ui/transitions/SlideTransition.vue";
 import useStore from "@src/store/store";
 import useRoomsStore from "@src/store/rooms";
-import useContactsStore from "@src/store/contacts";
 
 defineEmits(["activePageChange"]);
 
@@ -97,21 +96,12 @@ const handleChangeActiveTab = async (event: {
   tabName: string;
   animationName: string;
   contact?: IContact;
-  removeContact?: boolean;
 }) => {
   animation.value = event.animationName;
   activePageName.value = event.tabName;
 
   if (event.contact) {
     selectedMember.value = event.contact;
-  }
-
-  if (event.removeContact) {
-    if (selectedMember.value) {
-      await useContactsStore().removeContact(selectedMember.value.id);
-    }
-    selectedMember.value = undefined;
-    props.closeModal();
   }
 };
 </script>

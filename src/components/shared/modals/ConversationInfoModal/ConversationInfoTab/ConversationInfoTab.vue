@@ -132,7 +132,7 @@ const imageUrl = computed(() => {
                   ? presence(
                       (props.contact ?? conversation.contacts[0])?.lastSeen,
                     )
-                  : `${conversation.contacts.length} Contacts`
+                  : `${conversation.contacts.length + 1} members`
               }}
             </p>
           </div>

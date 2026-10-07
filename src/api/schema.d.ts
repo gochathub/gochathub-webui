@@ -304,7 +304,8 @@ export interface paths {
     delete: operations["removeRoomMember"];
     options?: never;
     head?: never;
-    patch?: never;
+    /** @description Promote or demote a member (room admins and server admins). The last admin of a room cannot be demoted (409 conflict). Emits room.member_role_changed. */
+    patch: operations["setRoomMemberRole"];
     trace?: never;
   };
   "/rooms/{roomId}/archived": {
@@ -858,6 +859,15 @@ export interface components {
     ValidateDeviceRequest: {
       /** @description The decrypted validation ping token sent back by the app. */
       token: string;
+    };
+    /** @description A member's public profile plus their role in this room. */
+    RoomMember: components["schemas"]["User"] & {
+      /** @enum {string} */
+      room_role: "admin" | "member";
+    };
+    SetMemberRoleRequest: {
+      /** @enum {string} */
+      role: "admin" | "member";
     };
     AddMemberRequest: {
       user_id: string;
@@ -1502,7 +1512,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          "application/json": components["schemas"]["User"][];
+          "application/json": components["schemas"]["RoomMember"][];
         };
       };
     };
@@ -1546,6 +1556,39 @@ export interface operations {
     responses: {
       /** @description Removed */
       204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  setRoomMemberRole: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        roomId: components["parameters"]["RoomId"];
+        userId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SetMemberRoleRequest"];
+      };
+    };
+    responses: {
+      /** @description Updated */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      403: components["responses"]["Forbidden"];
+      /** @description Would leave the room without an admin */
+      409: {
         headers: {
           [name: string]: unknown;
         };

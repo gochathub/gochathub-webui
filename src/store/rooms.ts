@@ -190,13 +190,53 @@ export const useRoomsStore = defineStore("rooms", () => {
         await client.GET("/rooms/{roomId}/members", {
           params: { path: { roomId } },
         }),
-      )) as components["schemas"]["User"][];
+      )) as components["schemas"]["RoomMember"][];
       conv.contacts = members
         .filter((m) => m.id !== auth.me?.id)
         .map((u) => mapContact(u, u.last_seen_at ?? null));
+      // admins now lists every room admin (me included when I am one)
+      conv.admins = members
+        .filter((m) => m.room_role === "admin")
+        .map((m) => m.id);
     } catch {
       // not a member anymore — leave as-is
     }
+  }
+
+  // member management (room admins / server admins; the server enforces).
+  // The room.member_* events refetch for everyone else; refetch here too so
+  // the acting client updates without waiting for its own event.
+  async function addMember(roomId: string, userId: string) {
+    await unwrap(
+      await client.POST("/rooms/{roomId}/members", {
+        params: { path: { roomId } },
+        body: { user_id: userId },
+      }),
+    );
+    await resyncMembers(roomId);
+  }
+
+  async function removeMember(roomId: string, userId: string) {
+    await unwrap(
+      await client.DELETE("/rooms/{roomId}/members/{userId}", {
+        params: { path: { roomId, userId } },
+      }),
+    );
+    await resyncMembers(roomId);
+  }
+
+  async function setMemberRole(
+    roomId: string,
+    userId: string,
+    role: "admin" | "member",
+  ) {
+    await unwrap(
+      await client.PATCH("/rooms/{roomId}/members/{userId}", {
+        params: { path: { roomId, userId } },
+        body: { role },
+      }),
+    );
+    await resyncMembers(roomId);
   }
 
   async function sendMessage(
@@ -409,6 +449,7 @@ export const useRoomsStore = defineStore("rooms", () => {
       }
 
       case "room.member_added":
+      case "room.member_role_changed":
         await resyncMembers(roomId);
         break;
 
@@ -512,6 +553,9 @@ export const useRoomsStore = defineStore("rooms", () => {
     resyncMembers,
     sendMessage,
     setArchived,
+    addMember,
+    removeMember,
+    setMemberRole,
     deleteMessage,
     openRoom,
     createRoom,
