@@ -18,7 +18,7 @@ import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import ScaleTransition from "@src/components/ui/transitions/ScaleTransition.vue";
 import ReplyMessage from "@src/components/views/HomeView/Chat/ChatBottom/ReplyMessage.vue";
 import EmojiPicker from "@src/components/ui/inputs/EmojiPicker/EmojiPicker.vue";
-import Textarea from "@src/components/ui/inputs/Textarea.vue";
+import RichEditor from "@src/components/ui/inputs/RichEditor.vue";
 
 const store = useStore();
 const rooms = useRoomsStore();
@@ -162,22 +162,16 @@ onMounted(() => {
       <!--message textarea-->
       <div class="grow md:mr-5 xs:mr-4 self-end">
         <div class="relative">
-          <Textarea
-            id="compose-input"
-            class="max-h-[5rem] pr-12.5 resize-none scrollbar-thin"
-            :value="value"
-            auto-resize
-            cols="30"
-            rows="1"
+          <RichEditor
+            :model-value="value"
             placeholder="Write your message here"
-            aria-label="Write your message here"
-            @value-changed="
+            @update:model-value="
               (newValue) => {
                 value = newValue;
                 handleSetDraft();
               }
             "
-            @keydown.enter.exact.prevent="handleSend"
+            @send="handleSend"
           />
 
           <!--mention autocomplete-->

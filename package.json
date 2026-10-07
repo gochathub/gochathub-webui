@@ -14,6 +14,10 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.18",
+    "@tiptap/extension-placeholder": "^3.31.4",
+    "@tiptap/markdown": "^3.31.4",
+    "@tiptap/starter-kit": "^3.31.4",
+    "@tiptap/vue-3": "^3.31.4",
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/integrations": "^10.4.1",
     "click-outside-vue3": "^4.0.1",
