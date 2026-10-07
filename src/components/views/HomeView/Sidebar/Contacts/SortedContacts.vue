@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IContactGroup } from "@src/types";
 import type { Ref } from "vue";
 
@@ -86,10 +87,11 @@ const handleClickOutside = (event: Event) => {
           class="flex items-center min-w-0 transition-all duration-200 ease-out"
           :aria-label="getFullName(contact)"
         >
-          <div
-            :style="{ backgroundImage: `url(${contact.avatar})` }"
-            class="w-[2.25rem] h-[2.25rem] mr-4 rounded-full bg-cover bg-center shrink-0 bg-card"
-          ></div>
+          <Avatar
+            :src="contact.avatar"
+            :name="getFullName(contact)"
+            class="w-[2.25rem] h-[2.25rem] mr-4"
+          />
 
           <div class="flex flex-col items-start min-w-0">
             <!--contact name-->

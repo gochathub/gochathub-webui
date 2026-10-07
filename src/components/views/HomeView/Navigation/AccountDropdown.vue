@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import useStore from "@src/store/store";
 import useAuthStore from "@src/store/auth";
 import { useRouter } from "vue-router";
@@ -67,11 +68,12 @@ const handleLogout = async () => {
       aria-label="toggle profile menu"
       @click="handleShowDropdown"
     >
-      <div
+      <Avatar
         id="user-avatar"
-        :style="{ backgroundImage: `url(${store.user?.avatar})` }"
-        class="w-7 h-7 rounded-full bg-cover bg-center"
-      ></div>
+        :src="store.user?.avatar"
+        :name="`${store.user?.firstName ?? ''} ${store.user?.lastName ?? ''}`"
+        class="w-7 h-7"
+      />
     </button>
 
     <!--dropdown menu-->

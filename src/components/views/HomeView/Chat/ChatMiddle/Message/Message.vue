@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IConversation, IMessage, IRecording } from "@src/types";
 import type { Ref } from "vue";
 
@@ -99,10 +100,11 @@ const replyMessage = computed(() =>
           :aria-label="getFullName(props.message.sender)"
           class="outline-none"
         >
-          <div
-            :style="{ backgroundImage: `url(${props.message.sender.avatar})` }"
-            class="w-[2.25rem] h-[2.25rem] bg-cover bg-center rounded-full"
-          ></div>
+          <Avatar
+            :src="props.message.sender.avatar"
+            :name="getFullName(props.message.sender)"
+            class="w-[2.25rem] h-[2.25rem]"
+          />
         </div>
       </div>
 

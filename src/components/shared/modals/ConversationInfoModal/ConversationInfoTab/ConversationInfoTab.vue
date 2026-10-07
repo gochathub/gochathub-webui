@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IContact, IConversation } from "@src/types";
 
 import { computed, ref } from "vue";
@@ -98,12 +99,15 @@ const imageUrl = computed(() => {
             aria-label="view avatar"
             @click="openImageViewer = true"
           >
-            <div
-              :style="{
-                backgroundImage: `url(${getAvatar(props.conversation)})`,
-              }"
-              class="w-9.5 h-9.5 rounded-full bg-cover bg-center"
-            ></div>
+            <Avatar
+              :src="imageUrl"
+              :name="
+                props.contact
+                  ? `${props.contact.firstName} ${props.contact.lastName}`
+                  : (getName(props.conversation) ?? '')
+              "
+              class="w-9.5 h-9.5"
+            />
           </button>
         </div>
 

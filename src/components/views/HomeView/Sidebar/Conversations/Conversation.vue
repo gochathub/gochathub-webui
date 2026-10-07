@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IAttachment, IConversation, IRecording } from "@src/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
@@ -101,10 +102,11 @@ const isActive = computed(
     >
       <!--profile image-->
       <div class="mr-4">
-        <div
-          :style="{ backgroundImage: `url(${getAvatar(props.conversation)})` }"
-          class="w-7 h-7 rounded-full bg-cover bg-center"
-        ></div>
+        <Avatar
+          :src="getAvatar(props.conversation)"
+          :name="getName(props.conversation) ?? ''"
+          class="w-7 h-7"
+        />
       </div>
 
       <div class="w-full flex flex-col">

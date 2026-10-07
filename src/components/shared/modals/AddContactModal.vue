@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { Ref } from "vue";
 import { ref, watch } from "vue";
 
@@ -93,10 +94,11 @@ const handleAdd = async (userId: string) => {
             :disabled="busy"
             @click="handleAdd(user.id)"
           >
-            <div
-              :style="{ backgroundImage: `url(${user.avatar_url ?? ''})` }"
-              class="w-7 h-7 mr-3 rounded-full bg-cover bg-center bg-gray-200 dark:bg-gray-600"
-            ></div>
+            <Avatar
+              :src="user.avatar_url"
+              :name="user.display_name"
+              class="w-7 h-7 mr-3"
+            />
             <div class="text-left min-w-0">
               <p class="body-2 text-fg truncate">{{ user.display_name }}</p>
               <p class="body-3 text-muted truncate">@{{ user.username }}</p>

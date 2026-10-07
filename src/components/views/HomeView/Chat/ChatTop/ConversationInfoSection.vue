@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IConversation } from "@src/types";
 
 import { inject, ref, computed } from "vue";
@@ -96,12 +97,11 @@ const handleCloseConversation = () => {
         aria-label="profile avatar"
         @click="props.handleOpenInfo"
       >
-        <div
-          :style="{
-            backgroundImage: `url(${getAvatar(activeConversation as IConversation)})`,
-          }"
-          class="w-[2.25rem] h-[2.25rem] rounded-full bg-cover bg-center"
-        ></div>
+        <Avatar
+          :src="getAvatar(activeConversation as IConversation)"
+          :name="getName(activeConversation as IConversation) ?? ''"
+          class="w-[2.25rem] h-[2.25rem]"
+        />
       </button>
 
       <!--name and last seen-->

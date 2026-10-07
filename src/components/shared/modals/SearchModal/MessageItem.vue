@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IMessage } from "@src/types";
 
 import { getFullName, shorten } from "@src/utils";
@@ -15,10 +16,11 @@ const props = defineProps<{
   >
     <!--profile image-->
     <div class="mr-4">
-      <div
-        :style="{ backgroundImage: `url(${props.message.sender.avatar})` }"
-        class="w-7 h-7 rounded-full bg-cover bg-center"
-      ></div>
+      <Avatar
+        :src="props.message.sender.avatar"
+        :name="getFullName(props.message.sender)"
+        class="w-7 h-7"
+      />
     </div>
 
     <!--name and message-->
