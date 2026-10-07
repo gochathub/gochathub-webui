@@ -1,4 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#181f2f"/>
-  <text x="32" y="43" font-family="Fredoka, sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#818cf8">gH</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+<g stroke="#71808E" stroke-width="28">
+<path d="M256 82V143"/><path d="M132 145L181 174"/><path d="M380 145L331 174"/>
+<path d="M132 367L181 338"/><path d="M380 367L331 338"/><path d="M256 430V369"/>
+</g>
+<g fill="#71808E">
+<circle cx="256" cy="66" r="34"/><circle cx="112" cy="133" r="34"/><circle cx="400" cy="133" r="34"/>
+<circle cx="112" cy="379" r="34"/><circle cx="400" cy="379" r="34"/><circle cx="256" cy="446" r="34"/>
+</g>
+<path d="M173 165H339C377 165 401 188 401 226V286C401 324 377 347 339 347H238L183 392V347H173C135 347 111 324 111 286V226C111 188 135 165 173 165Z"
+fill="#FFFFFF" stroke="#27313A" stroke-width="24"/>
+<g fill="#71808E"><circle cx="207" cy="256" r="15"/><circle cx="256" cy="256" r="15"/><circle cx="305" cy="256" r="15"/></g>
+</g></svg>
