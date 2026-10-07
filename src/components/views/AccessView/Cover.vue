@@ -24,7 +24,7 @@ import Wordmark from "@src/components/ui/brand/Wordmark.vue";
 
 <style scoped>
 .text-gradient {
-  background: -webkit-linear-gradient(left top, #de6dce, #e7ddee);
+  background: -webkit-linear-gradient(left top, #aab4bc, #eef1f3);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
