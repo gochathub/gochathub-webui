@@ -5,6 +5,7 @@ import type { Ref } from "vue";
 import { computed, ref } from "vue";
 
 import useStore from "@src/store/store";
+import useRoomsStore from "@src/store/rooms";
 import { useRoute } from "vue-router";
 import {
   getActiveConversationId,
@@ -56,6 +57,62 @@ const handleShowContextMenu = (event: any) => {
 // (event) closes the context menu
 const handleCloseContextMenu = () => {
   showContextMenu.value = false;
+};
+
+const rooms = useRoomsStore();
+const isArchived = computed(() =>
+  store.archivedConversations.some((c) => c.id === props.conversation.id),
+);
+const isAdmin = computed(() =>
+  Boolean(props.conversation.admins?.includes(store.user?.id ?? "")),
+);
+
+// failed room changes surface through the sidebar notifications
+const run = async (action: () => Promise<unknown>, message: string) => {
+  showContextMenu.value = false;
+  try {
+    await action();
+    return true;
+  } catch {
+    store.notifications = [
+      ...store.notifications,
+      { flag: "account-update", title: "Something went wrong", message },
+    ];
+    return false;
+  }
+};
+
+// (event) open the room with its info modal
+const handleInfo = () => {
+  showContextMenu.value = false;
+  router.push({ path: `/chat/${props.conversation.id}/`, query: { info: 1 } });
+};
+
+// (event) archive/unarchive for me only
+const handleArchive = () =>
+  run(
+    () => rooms.setArchived(props.conversation.id, !isArchived.value),
+    "Could not update the archive. Please try again.",
+  );
+
+// (event) admin deletes the group, other members leave it
+// ponytail: native confirm(); swap for a modal if the UI wants one.
+const handleRemove = () => {
+  const name = getName(props.conversation);
+  const msg = isAdmin.value
+    ? `Delete "${name}" for everyone? This cannot be undone.`
+    : `Leave "${name}"?`;
+  if (!window.confirm(msg)) return;
+  const id = props.conversation.id;
+  return run(
+    () => (isAdmin.value ? rooms.deleteRoom(id) : rooms.leaveRoom(id)),
+    isAdmin.value
+      ? "Could not delete the group."
+      : "Could not leave the group.",
+  ).then((ok) => {
+    if (ok && getActiveConversationId(route) === id)
+      router.push({ path: "/chat/" });
+  });
 };
 
 // (event) select this conversation.
@@ -216,7 +273,7 @@ const isActive = computed(
         class="dropdown-link dropdown-link-primary"
         aria-label="Show conversation information"
         role="menuitem"
-        @click="handleCloseContextMenu"
+        @click="handleInfo"
       >
         <InformationCircleIcon class="h-5 w-5 mr-3" />
         Conversation info
@@ -224,22 +281,25 @@ const isActive = computed(
 
       <button
         class="dropdown-link dropdown-link-primary"
-        aria-label="Add conversation to archive"
+        :aria-label="
+          isArchived ? 'Unarchive conversation' : 'Archive conversation'
+        "
         role="menuitem"
-        @click="handleCloseContextMenu"
+        @click="handleArchive"
       >
         <ArchiveBoxArrowDownIcon class="h-5 w-5 mr-3" />
-        Archive conversation
+        {{ isArchived ? "Unarchive" : "Archive" }} conversation
       </button>
 
       <button
+        v-if="props.conversation.type === 'group'"
         class="dropdown-link dropdown-link-danger"
-        aria-label="Delete the conversation"
+        :aria-label="isAdmin ? 'Delete the group' : 'Leave the group'"
         role="menuitem"
-        @click="handleCloseContextMenu"
+        @click="handleRemove"
       >
         <TrashIcon class="h-5 w-5 mr-3" />
-        Delete conversation
+        {{ isAdmin ? "Delete group" : "Leave group" }}
       </button>
     </Dropdown>
   </div>

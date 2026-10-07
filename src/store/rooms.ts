@@ -236,6 +236,23 @@ export const useRoomsStore = defineStore("rooms", () => {
     }
   }
 
+  // (event) per-member archive; moves the room between the two lists.
+  async function setArchived(roomId: string, archived: boolean) {
+    await unwrap(
+      await client.PUT("/rooms/{roomId}/archived", {
+        params: { path: { roomId } },
+        body: { archived },
+      }),
+    );
+    const [from, to] = archived
+      ? [chat.conversations, chat.archivedConversations]
+      : [chat.archivedConversations, chat.conversations];
+    const conv = from.find((c) => c.id === roomId);
+    if (!conv) return;
+    from.splice(from.indexOf(conv), 1);
+    to.push(conv);
+  }
+
   // (event) delete a group (room admin — the creator): server soft-deletes
   // via archived_at and broadcasts room.archived.
   async function deleteRoom(roomId: string) {
@@ -480,6 +497,7 @@ export const useRoomsStore = defineStore("rooms", () => {
     loadOlderMessages,
     resyncMembers,
     sendMessage,
+    setArchived,
     openRoom,
     createRoom,
     deleteRoom,

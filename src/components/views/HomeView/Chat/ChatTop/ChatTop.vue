@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { IConversation } from "@src/types";
 
-import { inject, ref } from "vue";
+import { inject, ref, watch } from "vue";
 import type { Ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import useStore from "@src/store/store";
 
@@ -29,6 +30,19 @@ const activeConversation = inject("activeConversation") as Ref<
 const openSearch = ref(false);
 
 const openInfo = ref(false);
+
+// sidebar "Conversation info" routes here with ?info=1
+const route = useRoute();
+const router = useRouter();
+watch(
+  () => route.query.info,
+  (info) => {
+    if (!info) return;
+    openInfo.value = true;
+    router.replace({ query: {} });
+  },
+  { immediate: true },
+);
 
 // (event) open search modal
 const handleOpenSearch = () => {
