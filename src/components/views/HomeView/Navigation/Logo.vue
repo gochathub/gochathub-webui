@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import router from "@src/router";
 import Wordmark from "@src/components/ui/brand/Wordmark.vue";
 import { ForwardIcon } from "@heroicons/vue/24/outline";
 
@@ -25,7 +26,8 @@ const SkipLinkFocused = ref(false);
     <button
       aria-label="goChatHub"
       :class="{ hidden: SkipLinkFocused }"
-      class="outline-none"
+      class="outline-none [&_svg]:w-[1.75rem] [&_svg]:h-[1.75rem]"
+      @click="router.push({ name: 'No-Chat' })"
     >
       <Wordmark size="md" icon-only />
     </button>
