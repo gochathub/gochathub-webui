@@ -14,6 +14,8 @@ export default defineConfig({
       "@custom_types": resolve(rootDir, "src/@custom_types"),
     },
   },
+  // pre-bundling moves harper.js away from its .wasm, so the wasm URL 404s
+  optimizeDeps: { exclude: ["harper.js"] },
   server: {
     // LAN + public vhost testing: bind all interfaces; Vite's allowHosts
     // check permits IPs by default, the public hostname gets an entry.

@@ -814,6 +814,10 @@ export interface components {
       read_receipts: boolean;
       allow_group_invites: boolean;
       allow_private_messages: boolean;
+      /** @description Client-side grammar check toggle (stored only). */
+      spellcheck_enabled: boolean;
+      /** @description Personal dictionary. */
+      spellcheck_words: string[];
     };
     /** @description Partial update; omitted fields keep current values. */
     UpdatePreferencesRequest: {
@@ -821,6 +825,8 @@ export interface components {
       read_receipts?: boolean;
       allow_group_invites?: boolean;
       allow_private_messages?: boolean;
+      spellcheck_enabled?: boolean;
+      spellcheck_words?: string[];
     };
     AddContactRequest: {
       user_id: string;

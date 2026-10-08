@@ -17,6 +17,8 @@
     ],
     "skipLibCheck": true,
     "paths": {
+      "harper.js": ["./node_modules/harper.js/dist/index.d.ts"],
+      "harper.js/binary": ["./node_modules/harper.js/dist/binary.d.ts"],
       "*": [
         "./src/client/@custom_types/*"
       ],

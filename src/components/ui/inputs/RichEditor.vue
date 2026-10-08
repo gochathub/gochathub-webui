@@ -4,6 +4,8 @@ import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import { Markdown } from "@tiptap/markdown";
 import Placeholder from "@tiptap/extension-placeholder";
+import usePrefsStore from "@src/store/prefs";
+import { Harper } from "@src/spellcheck/harper";
 import {
   BoldIcon,
   ItalicIcon,
@@ -24,6 +26,8 @@ const emit = defineEmits<{
   send: [];
 }>();
 
+const prefs = usePrefsStore();
+
 const editor = useEditor({
   content: props.modelValue,
   contentType: "markdown",
@@ -36,12 +40,20 @@ const editor = useEditor({
     }),
     Markdown,
     Placeholder.configure({ placeholder: props.placeholder }),
+    Harper.configure({
+      enabled: () => prefs.spellcheck,
+      words: () => prefs.words,
+      addWord: (w) => prefs.addWord(w),
+    }),
   ],
   editorProps: {
     attributes: {
       id: "compose-input",
       "aria-label": props.placeholder ?? "Message",
       class: "rich-editor outline-hidden",
+      // Harper replaces Chrome's checker (squiggles would double up); users
+      // with Harper off keep native checking via the watch below
+      spellcheck: prefs.spellcheck ? "false" : "true",
     },
     // Enter sends; Shift+Enter is a line break. Inside lists/code blocks plain
     // Enter keeps its native job (new item / newline); Ctrl/Cmd+Enter sends there.
@@ -60,6 +72,20 @@ const editor = useEditor({
   },
   onUpdate: ({ editor }) => emit("update:modelValue", editor.getMarkdown()),
 });
+
+// toggling the setting: swap native spellcheck and make Harper re-check
+// (an empty transaction triggers the extension's update hook)
+watch(
+  () => prefs.spellcheck,
+  (on) => {
+    const ed = editor.value;
+    if (!ed) return;
+    ed.view.dom.setAttribute("spellcheck", on ? "false" : "true");
+    ed.view.dispatch(ed.state.tr);
+  },
+);
+// prefs arrive after the editor mounts; the watch above applies them
+prefs.load().catch(() => {});
 
 // external changes (send clears, draft restore, mention pick)
 watch(
@@ -196,6 +222,18 @@ const buttons = [
 .rich-editor blockquote {
   border-left: 2px solid rgb(165 180 252);
   padding-left: 0.75rem;
+}
+.rich-editor .harper-spell,
+.rich-editor .harper-grammar {
+  text-decoration: underline wavy;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.rich-editor .harper-spell {
+  text-decoration-color: rgb(239 68 68);
+}
+.rich-editor .harper-grammar {
+  text-decoration-color: rgb(59 130 246);
 }
 .rich-editor code {
   padding: 0 0.25rem;

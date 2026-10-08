@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useStore from "@src/store/store";
+import usePrefsStore from "@src/store/prefs";
 
 import AccordionButton from "@src/components/ui/data-display/AccordionButton.vue";
 import Collapse from "@src/components/ui/utils/Collapse.vue";
@@ -11,6 +12,8 @@ const props = defineProps<{
 }>();
 
 const store = useStore();
+const prefs = usePrefsStore();
+prefs.load();
 </script>
 
 <template>
@@ -33,6 +36,13 @@ const store = useStore();
       description="Apply a theme with dark colors"
       :value="!!store.settings.darkMode"
       :handle-toggle-switch="(value) => (store.settings.darkMode = value)"
+      class="mb-7"
+    />
+    <SettingsSwitch
+      title="Grammar & Spelling"
+      description="Check English grammar and spelling while you type"
+      :value="prefs.spellcheck"
+      :handle-toggle-switch="(value) => prefs.setSpellcheck(value)"
       class="mb-7"
     />
   </Collapse>
