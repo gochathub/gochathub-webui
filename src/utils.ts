@@ -2,6 +2,7 @@ import useStore from "@src/store/store";
 import type { IContact, IConversation, IMessage, IRecording } from "@src/types";
 import { useRoute } from "vue-router";
 import { formatDateTime } from "@src/api/mappers";
+import { truncate } from "@src/emoji";
 
 /**
  * combine first name and last name of a contact.
@@ -99,14 +100,7 @@ export const shorten = (message: IMessage | string, maxLength: number = 23) => {
   }
 
   if (text && typeof text === "string") {
-    let trimmedString = text;
-    if (text.length > maxLength) {
-      // trim the string to the maximum length.
-      trimmedString = trimmedString.slice(0, maxLength);
-      // add three dots to indicate that there is more to the message.
-      trimmedString += "...";
-    }
-    return trimmedString;
+    return truncate(text, maxLength);
   }
 
   return "";

@@ -71,3 +71,16 @@ test("doc mode gives headings slug ids for anchor links", () => {
   expect(out).toContain('id="why-it-stays-delivered"');
   expect(renderMarkdown("## x")).not.toContain("id=");
 });
+
+test("unescapes Tiptap's backslash escapes and keeps them literal", () => {
+  expect(renderMarkdown("snake\\_case \\*not italic\\* \\[x\\]")).toBe(
+    "<p>snake_case *not italic* [x]</p>",
+  );
+  expect(renderMarkdown("`a\\_b`")).toContain("a\\_b");
+});
+
+test("shortcodes with escaped underscores render", () => {
+  expect(renderMarkdown(":rolling\\_on\\_the\\_floor\\_laughing: :+1:")).toBe(
+    "<p>🤣 👍</p>",
+  );
+});

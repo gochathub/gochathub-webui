@@ -20,6 +20,7 @@ import type { IContact, IConversation, IMessage } from "@src/types";
 import type { components } from "@src/api/schema";
 import type { WSEnvelope } from "@src/ws/client";
 import ws from "@src/ws/client";
+import { plainText } from "@src/emoji";
 
 type ServerRoom = components["schemas"]["Room"];
 type ServerMessage = components["schemas"]["Message"];
@@ -439,7 +440,7 @@ export const useRoomsStore = defineStore("rooms", () => {
             const who = msg.author?.display_name ?? "New message";
             const title =
               conv.type === "group" ? `${conv.name ?? "Room"} — ${who}` : who;
-            const body = msg.body.slice(0, 80);
+            const body = plainText(msg.body);
             try {
               new Notification(title, { body });
             } catch {

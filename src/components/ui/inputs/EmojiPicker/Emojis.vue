@@ -5,6 +5,7 @@ import type { IEmoji } from "@src/types";
 import { watch, ref, onMounted } from "vue";
 import useStore from "@src/store/store";
 import { unicodeToEmoji } from "@src/utils";
+import { nameMatches, withTone } from "@src/emoji";
 
 import emojis from "@src/components/ui/inputs/EmojiPicker/emojis.json";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
@@ -20,8 +21,7 @@ interface IEmojiGroups {
   flags: IEmoji[];
 }
 
-type EmojiGroupNames =
-  "people" | "nature" | "food" | "activity" | "objects" | "travel" | "flags";
+type EmojiGroupNames = keyof IEmojiGroups;
 
 const props = defineProps<{
   keyword: string;
@@ -39,23 +39,14 @@ const filteredEmojis: Ref<IEmojiGroups> = ref(emojis);
 const filterEmojis = () => {
   const _emojiGroups = {} as IEmojiGroups;
 
-  // search emojis
+  // search emojis: a keyword searches every group, otherwise the active tab
   Object.keys(emojis).forEach((key) => {
     const _emojis: IEmoji[] = [];
-    if (key === props.activeTab) {
+    if (props.keyword || key === props.activeTab) {
       (emojis as IEmojiGroups)[key as EmojiGroupNames].forEach((emoji) => {
-        // if search key match
-        if (emoji["n"][0].includes(props.keyword.toLocaleLowerCase())) {
-          let result = emoji.u;
-          // check skin tone
-          if (store.emojiSkinTone !== "neutral" && Array.isArray(emoji.v)) {
-            const v_index =
-              emoji.v?.findIndex((v) => v.includes(store.emojiSkinTone)) || -1;
-            if (v_index !== -1 && emoji.v) {
-              result = emoji.v[v_index];
-            }
-          }
-          return _emojis.push({ ...emoji, r: result });
+        if (nameMatches(emoji.n, props.keyword)) {
+          const r = withTone(emoji.u, emoji.v, store.emojiSkinTone);
+          _emojis.push({ ...emoji, r });
         }
       });
 

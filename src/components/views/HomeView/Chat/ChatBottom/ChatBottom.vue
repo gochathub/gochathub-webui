@@ -22,6 +22,7 @@ import ScaleTransition from "@src/components/ui/transitions/ScaleTransition.vue"
 import ReplyMessage from "@src/components/views/HomeView/Chat/ChatBottom/ReplyMessage.vue";
 import EmojiPicker from "@src/components/ui/inputs/EmojiPicker/EmojiPicker.vue";
 import RichEditor from "@src/components/ui/inputs/RichEditor.vue";
+import { findShortcodes } from "@src/emoji";
 
 const store = useStore();
 const rooms = useRoomsStore();
@@ -66,6 +67,17 @@ const mentionMatches = computed(() => {
 
 const handlePickMention = (username: string) => {
   value.value = value.value.replace(/@([a-zA-Z0-9_-]*)$/, `@${username} `);
+};
+
+// :shortcode autocomplete (2+ chars after a colon that starts a word)
+// (Tiptap's markdown writes _ as \_)
+const SHORTCODE_TAIL = /(^|\s):((?:[a-z0-9+-]|\\?_){2,})$/;
+const shortcodeMatches = computed(() => {
+  const m = value.value.match(SHORTCODE_TAIL);
+  return m ? findShortcodes(m[2]!) : [];
+});
+const handlePickShortcode = (char: string) => {
+  value.value = value.value.replace(SHORTCODE_TAIL, `$1${char}`);
 };
 
 // typing indicator — throttled, stops on silence/send
@@ -218,6 +230,24 @@ onMounted(() => {
             >
               <span class="font-semibold">@{{ contact.username }}</span>
               {{ contact.firstName }}
+            </button>
+          </div>
+
+          <!--shortcode autocomplete-->
+          <div
+            v-if="shortcodeMatches.length > 0"
+            class="absolute bottom-13 left-0 z-10 w-56 py-1 rounded-xl bg-canvas shadow-lg border border-hairline"
+            role="listbox"
+            aria-label="emoji suggestions"
+          >
+            <button
+              v-for="m in shortcodeMatches"
+              :key="m.name"
+              role="option"
+              class="w-full text-left px-4 py-2 body-3 text-fg dark:text-fg/80 hover:bg-select/60"
+              @click="handlePickShortcode(m.char)"
+            >
+              {{ m.char }} :{{ m.name }}:
             </button>
           </div>
 

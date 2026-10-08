@@ -24,7 +24,9 @@
   --spacing-12: 6rem;
   --spacing-13: 3.25rem;
 
-  --font-sans: Open Sans, sans-serif;
+  --font-sans:
+    Open Sans, "Twemoji Country Flags", "Apple Color Emoji", "Segoe UI Emoji",
+    "Noto Color Emoji", sans-serif;
   --font-display: Fredoka;
 
   --radius-none: 0;

@@ -3,7 +3,7 @@
 // HTML in the source is escaped first — every tag in the output is ours.
 
 import { slugify } from "../help";
-import emojis from "../components/ui/inputs/EmojiPicker/emojis.json";
+import { lookupShortcode } from "../emoji";
 
 const ESC: Record<string, string> = {
   "&": "&amp;",
@@ -17,19 +17,13 @@ function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ESC[c]!);
 }
 
-// :shortcode: -> char, built from the picker's emoji data (n[1..] are aliases)
-const SHORTCODES = new Map<string, string>();
-for (const e of Object.values(emojis).flat()) {
-  const char = String.fromCodePoint(
-    ...e.u.split("-").map((h) => parseInt(h, 16)),
-  );
-  for (const name of e.n.slice(1)) SHORTCODES.set(name, char);
-}
-
 function safeUrl(url: string): string | null {
   if (/^https?:\/\//i.test(url) || url.startsWith("/")) return url;
   return null;
 }
+
+const PARKED = "\\`*_[]~";
+const PARK = [...PARKED].map((_c, i) => String.fromCharCode(0xe010 + i));
 
 // inline formatting on already-escaped text
 function inline(s: string, doc = false): string {
@@ -37,9 +31,16 @@ function inline(s: string, doc = false): string {
 
   // fenced/inline code first: contents stay literal
   out = out.replace(
-    /`([^`\n]+)`/g,
+    /(?<!\\)`([^`\n]+)`/g,
     (_m, code) =>
       `<code class="px-1 rounded bg-black/10 dark:bg-white/10">${code}</code>`,
+  );
+
+  // Tiptap backslash-escapes _ * [ ] ~ ` \ in text: park them as private-use
+  // chars so no pass below treats them as syntax; restored at the end
+  out = out.replace(
+    /(<code[^>]*>.*?<\/code>)|\\([\\`*_[\]~])/g,
+    (m, code, ch) => code ?? PARK[PARKED.indexOf(ch)],
   );
 
   // links [text](url)
@@ -65,11 +66,11 @@ function inline(s: string, doc = false): string {
 
   // shortcodes last; skip code spans and tag attributes
   out = out.replace(
-    /(<code[^>]*>.*?<\/code>|<[^>]*>)|:([a-z0-9_+-]+):/g,
-    (m, skip, name) => skip ?? SHORTCODES.get(name) ?? m,
+    /(<code[^>]*>.*?<\/code>|<[^>]*>)|:([a-z0-9+\-]+):/g,
+    (m, skip, name) => skip ?? lookupShortcode(name.replaceAll("", "_")) ?? m,
   );
 
-  return out;
+  return out.replace(/[-]/g, (c) => PARKED[c.charCodeAt(0) - 0xe010]!);
 }
 
 // doc: help pages keep heading levels and open /paths in the same tab

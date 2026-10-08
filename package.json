@@ -21,6 +21,7 @@
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/integrations": "^10.4.1",
     "click-outside-vue3": "^4.0.1",
+    "country-flag-emoji-polyfill": "^0.1.10",
     "filepond": "^4.32.12",
     "filepond-plugin-file-validate-size": "^2.2.8",
     "filepond-plugin-file-validate-type": "^1.2.9",

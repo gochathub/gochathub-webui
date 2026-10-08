@@ -5,6 +5,7 @@ import {
   precacheAndRoute,
 } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
+import { plainText } from "./emoji";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -37,7 +38,7 @@ async function describe(
     const group = r.type !== "direct" && r.name;
     return {
       title: group ? `${r.name} — ${who}` : who,
-      body: m.body.slice(0, 80),
+      body: plainText(m.body),
     };
   } catch {
     // session expired or fetch failed: generic is the safe fallback
