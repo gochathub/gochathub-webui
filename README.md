@@ -35,6 +35,55 @@ Accounts are CLI-managed (no signup): `chat-server user create <name>
 Attachment uploads need object storage (S3) — `ALLOW_UPLOADS` without
 storage configured returns an error the UI surfaces.
 
+## Two-factor authentication (TOTP)
+
+Optional per user; users manage it in Settings → Account → Two-factor
+authentication.
+
+- **Set up:** scan the QR code (or enter the secret) in an authenticator app,
+  confirm with a 6-digit code, then save the 10 one-time backup codes — they
+  are shown once.
+- **Sign-in:** after the password, a 2FA account gets a second step that
+  accepts a TOTP code or an unused backup code. The server returns
+  `two_factor_required` with a short-lived challenge (5 minutes, 5 attempts);
+  the UI redeems it at `POST /auth/login/2fa`. No session exists until both
+  steps pass.
+- **Manage:** regenerate backup codes (needs a current code) or turn 2FA off
+  (needs the password and a code).
+- **Lost device:** an admin runs `chat-server user 2fa-reset <username>` on
+  the server; it removes the factor and revokes the user's sessions.
+- Rocket.Chat TOTP enrollments are imported by server migration `003_totp.sql`
+  (email-2FA is not carried over). Imported backup codes are unverified — if
+  one fails, regenerate.
+
+Flow lives in `store/auth.ts` (`login`, `login2fa`, `setupTwoFactor`,
+`enableTwoFactor`, `regenerateBackupCodes`, `disableTwoFactor`); UI in
+`LoginForm.vue` and `TwoFactorSettings.vue`.
+
+## Cloudflare Turnstile (login bot protection)
+
+The login form shows a Turnstile widget and keeps **Sign in** disabled until it
+returns a token. The token is single-use, so the widget resets after every
+password attempt. The server verifies it against Cloudflare `siteverify`
+before checking the password and answers `403 captcha_failed` when it is
+missing or rejected. `/auth/login/2fa` is not gated.
+
+The widget is active only when a site key is built in:
+
+| Where      | Setting                   | Notes                                                                                                             |
+| ---------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Web build  | `VITE_TURNSTILE_SITE_KEY` | Public key. Read at build time; unset = no widget. Put it in `.env.production` (gitignored) for production builds |
+| Server env | `TURNSTILE_SECRET`        | Secret key; unset = server skips the check. Never commit it                                                       |
+| Server env | `TURNSTILE_HOSTNAME`      | Optional: pin tokens to this site's hostname                                                                      |
+
+The widget's hostname list in the Cloudflare dashboard must include the
+deployment hostname.
+
+For development, use Cloudflare's published test keys (always pass, banner
+"For testing only"): site key `1x00000000000000000000AA` in the Vite env and
+secret `1x0000000000000000000000000000000AA` in the server env. Leaving both
+unset disables Turnstile entirely.
+
 ## Commands
 
 ```sh
@@ -51,6 +100,7 @@ bun run generate-schema  # openapi-typescript from api/openapi.yaml
 
 ```
 src/api/          openapi-fetch client, generated schema.d.ts, mappers, markdown renderer
+src/turnstile.ts  Turnstile script loader + site key (VITE_TURNSTILE_SITE_KEY)
 src/ws/           WebSocket client (frames per docs/WEBSOCKETS.md) + session lifecycle
 src/store/        Pinia stores: chat (UI state), rooms, contacts, invites, prefs, auth
 src/components/   template UI adapted to the server model
