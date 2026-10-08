@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 
 import useStore from "@src/store/store";
@@ -10,7 +10,9 @@ import { mapUser } from "@src/api/mappers";
 import Button from "@src/components/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
+import TurnstileWidget from "@src/components/ui/inputs/TurnstileWidget.vue";
 import Wordmark from "@src/components/ui/brand/Wordmark.vue";
+import { turnstileSiteKey } from "@src/turnstile";
 
 const router = useRouter();
 const store = useStore();
@@ -19,6 +21,12 @@ const auth = useAuthStore();
 const username = ref("");
 const password = ref("");
 const code = ref("");
+// Turnstile: no site key configured = no widget, no gating
+const turnstileToken = ref<string | undefined>(undefined);
+const turnstile = ref<InstanceType<typeof TurnstileWidget>>();
+const needsToken = computed(
+  () => !!turnstileSiteKey && !auth.challenge && !turnstileToken.value,
+);
 const submitting = ref(false);
 const error = ref("");
 
@@ -31,7 +39,7 @@ const handleLogin = async () => {
 
   try {
     if (secondStep) await auth.login2fa(code.value.trim());
-    else await auth.login(username.value, password.value);
+    else await auth.login(username.value, password.value, turnstileToken.value);
     if (auth.challenge) return; // now waiting for the code
     store.$patch({ user: mapUser(auth.me!), status: "success" });
     router.push({ name: "No-Chat" });
@@ -41,9 +49,13 @@ const handleLogin = async () => {
         ? secondStep
           ? "Invalid or expired code."
           : "Wrong username or password."
-        : "Something went wrong. Please try again.";
+        : e instanceof ApiError && e.code === "captcha_failed"
+          ? "Verification failed. Please try again."
+          : "Something went wrong. Please try again.";
   } finally {
     submitting.value = false;
+    // tokens are single-use: every password attempt needs a fresh one
+    if (!secondStep) turnstile.value?.reset();
   }
 };
 
@@ -92,6 +104,13 @@ const handleBack = () => {
               }
             "
           />
+          <TurnstileWidget
+            v-if="turnstileSiteKey"
+            ref="turnstile"
+            :site-key="turnstileSiteKey"
+            @token="(t) => (turnstileToken = t)"
+            @expired="turnstileToken = undefined"
+          />
         </template>
         <template v-else>
           <LabeledTextInput
@@ -120,9 +139,10 @@ const handleBack = () => {
         <!--local controls-->
         <div class="mb-6 mt-6">
           <Button
-            class="contained-primary contained-text w-full mb-4"
+            class="contained-primary contained-text w-full mb-4 disabled:opacity-50"
             type="submit"
             :loading="submitting"
+            :disabled="needsToken"
           >
             {{ auth.challenge ? "Verify" : "Sign in" }}
           </Button>

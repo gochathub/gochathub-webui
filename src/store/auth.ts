@@ -26,9 +26,18 @@ export const useAuthStore = defineStore("auth", () => {
   // Set when the password was right but a second factor is still needed.
   const challenge = ref<string | undefined>(undefined);
 
-  async function login(username: string, password: string): Promise<void> {
+  async function login(
+    username: string,
+    password: string,
+    turnstileToken?: string,
+  ): Promise<void> {
     const result = await client.POST("/auth/login", {
-      body: { username, password, token_request: false },
+      body: {
+        username,
+        password,
+        token_request: false,
+        turnstile_token: turnstileToken,
+      },
     });
     try {
       me.value = (await unwrap(result)).user;

@@ -13,6 +13,7 @@ export type ApiErrorCode =
   | "validation"
   | "rate_limited"
   | "two_factor_required"
+  | "captcha_failed"
   | "internal";
 
 export class ApiError extends Error {

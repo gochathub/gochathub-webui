@@ -741,6 +741,8 @@ export interface components {
       username: string;
       /** Format: password */
       password: string;
+      /** @description Cloudflare Turnstile response token. Required (single-use) when the server has Turnstile enabled; ignored otherwise. A missing or rejected token fails with 403 `captcha_failed` before credentials are checked. */
+      turnstile_token?: string;
       /**
        * @description Non-browser clients (Android, integrations) set this to receive the opaque session token in the response body for `Authorization: Bearer` use; browser clients use the cookie only (ADR-015).
        * @default false
@@ -1161,6 +1163,15 @@ export interface operations {
       };
       /** @description Bad credentials (`unauthorized`), or the password was right and the account has two-factor enabled (`two_factor_required`, with `error.challenge` — redeem it at `/auth/login/2fa`; no session exists yet). */
       401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Turnstile token missing or rejected (`captcha_failed`). */
+      403: {
         headers: {
           [name: string]: unknown;
         };
