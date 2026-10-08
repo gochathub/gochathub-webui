@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import AccessView from "@src/components/views/AccessView/AccessView.vue";
 import HomeView from "@src/components/views/HomeView/HomeView.vue";
 import Chat from "@src/components/views/HomeView/Chat/Chat.vue";
+import HelpView from "@src/components/views/HelpView/HelpView.vue";
 import useAuthStore from "@src/store/auth";
 
 const routes = [
@@ -31,6 +32,11 @@ const routes = [
     name: "Access",
     component: AccessView,
   },
+  {
+    path: "/help/:slug?",
+    name: "Help",
+    component: HelpView,
+  },
 ];
 
 // create the router
@@ -44,6 +50,9 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
   await auth.bootstrap();
+
+  // help is public: locked-out users need it most
+  if (to.name === "Help") return true;
 
   const loggedIn = auth.me !== undefined;
   const isAccess = to.name === "Access";

@@ -152,6 +152,7 @@ const handleBack = () => {
       <p class="body-3 text-muted text-center">
         Need an account? Ask your administrator — accounts are created via the
         server CLI.
+        <router-link to="/help" class="underline">Help</router-link>
       </p>
     </div>
   </div>

@@ -8,6 +8,7 @@ import {
   ArrowLeftOnRectangleIcon,
   ArrowPathIcon,
   InformationCircleIcon,
+  QuestionMarkCircleIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
 import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
@@ -108,6 +109,19 @@ const handleLogout = async () => {
       >
         <ArrowPathIcon class="h-5 w-5 mr-3 text-muted" />
         Password Change
+      </button>
+
+      <button
+        class="dropdown-link dropdown-link-primary xs:flex md:hidden"
+        aria-label="help"
+        role="menuitem"
+        @click="
+          props.handleCloseDropdown();
+          router.push('/help');
+        "
+      >
+        <QuestionMarkCircleIcon class="h-5 w-5 mr-3 text-muted" />
+        Help
       </button>
 
       <button

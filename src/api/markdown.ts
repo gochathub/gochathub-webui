@@ -31,7 +31,7 @@ function safeUrl(url: string): string | null {
 }
 
 // inline formatting on already-escaped text
-function inline(s: string): string {
+function inline(s: string, doc = false): string {
   let out = s;
 
   // fenced/inline code first: contents stay literal
@@ -45,7 +45,9 @@ function inline(s: string): string {
   out = out.replace(
     /\[([^\]\n]+)]\((https?:\/\/[^)\s]+|\/[^)\s]*)\)/g,
     (_m, text, url) =>
-      `<a class="underline" href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`,
+      doc && url.startsWith("/")
+        ? `<a class="underline" href="${url}">${text}</a>`
+        : `<a class="underline" href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`,
   );
 
   // mentions @username
@@ -69,7 +71,11 @@ function inline(s: string): string {
   return out;
 }
 
-export function renderMarkdown(src: string): string {
+// doc: help pages keep heading levels and open /paths in the same tab
+export function renderMarkdown(
+  src: string,
+  { doc = false }: { doc?: boolean } = {},
+): string {
   const lines = esc(src).split("\n");
   const html: string[] = [];
   let inCode = false;
@@ -115,24 +121,29 @@ export function renderMarkdown(src: string): string {
       if (listTag !== "ul") flushList();
       listTag = "ul";
       listBuf = listBuf ?? [];
-      listBuf.push(`<li>${inline(ulItem[1]!)}</li>`);
+      listBuf.push(`<li>${inline(ulItem[1]!, doc)}</li>`);
     } else if (olItem) {
       if (listTag !== "ol") flushList();
       listTag = "ol";
       listBuf = listBuf ?? [];
-      listBuf.push(`<li>${inline(olItem[1]!)}</li>`);
+      listBuf.push(`<li>${inline(olItem[1]!, doc)}</li>`);
     } else {
       flushList();
       if (heading) {
-        html.push(`<h3 class="font-semibold mt-2">${inline(heading[2]!)}</h3>`);
+        const n = doc ? heading[1]!.length : 3;
+        const cls =
+          doc && n < 3
+            ? `${n === 1 ? "text-2xl" : "text-xl"} font-semibold text-fg mt-6 mb-3`
+            : "font-semibold mt-2";
+        html.push(`<h${n} class="${cls}">${inline(heading[2]!, doc)}</h${n}>`);
       } else if (quote) {
         html.push(
-          `<blockquote class="border-l-2 border-indigo-300 pl-3">${inline(quote[1]!)}</blockquote>`,
+          `<blockquote class="border-l-2 border-indigo-300 pl-3">${inline(quote[1]!, doc)}</blockquote>`,
         );
       } else if (line.trim() === "") {
         html.push("");
       } else {
-        html.push("<p>" + inline(line) + "</p>");
+        html.push("<p>" + inline(line, doc) + "</p>");
       }
     }
   }

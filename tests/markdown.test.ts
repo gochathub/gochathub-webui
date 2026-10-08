@@ -46,3 +46,22 @@ test("renders :shortcode: aliases, leaves unknown names and code alone", () => {
   expect(renderMarkdown("`:poop:`")).not.toContain("💩");
   expect(renderMarkdown("12:30:45")).toBe("<p>12:30:45</p>");
 });
+
+test("doc mode keeps heading levels and opens /paths in the same tab", () => {
+  const out = renderMarkdown(
+    "# One\n## Two\n[x](/help/rooms) [y](https://a.b)",
+    {
+      doc: true,
+    },
+  );
+  expect(out).toContain("<h1");
+  expect(out).toContain("<h2");
+  expect(out).toContain('<a class="underline" href="/help/rooms">x</a>');
+  expect(out).toContain('target="_blank"');
+});
+
+test("default mode is unchanged by doc mode", () => {
+  const out = renderMarkdown("# One\n[x](/help/rooms)");
+  expect(out).toContain("<h3");
+  expect(out).toContain('href="/help/rooms" target="_blank"');
+});

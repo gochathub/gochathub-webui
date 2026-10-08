@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 import useStore from "@src/store/store";
 
@@ -8,6 +9,7 @@ import {
   ChatBubbleOvalLeftIcon,
   Cog6ToothIcon,
   MoonIcon,
+  QuestionMarkCircleIcon,
   SunIcon,
   UserIcon,
 } from "@heroicons/vue/24/solid";
@@ -16,6 +18,7 @@ import Logo from "@src/components/views/HomeView/Navigation/Logo.vue";
 import NavLink from "@src/components/views/HomeView/Navigation/NavLink.vue";
 
 const store = useStore();
+const router = useRouter();
 
 const showDropdown = ref(false);
 
@@ -101,6 +104,14 @@ const handleActiveSidebarComponentChange = (value: string) => {
               :icon="store.settings.darkMode ? SunIcon : MoonIcon"
               title="Night mode"
               @click="store.settings.darkMode = !store.settings.darkMode"
+            />
+          </li>
+          <!--help button-->
+          <li>
+            <NavLink
+              :icon="QuestionMarkCircleIcon"
+              title="Help"
+              @click="router.push('/help')"
             />
           </li>
           <!--settings button-->
