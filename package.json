@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "vue-tsc --noEmit && tsc -p tsconfig.sw.json && vite build",
     "preview": "vite preview",
-    "typecheck": "vue-tsc --noEmit",
+    "typecheck": "vue-tsc --noEmit && tsc -p tsconfig.sw.json",
     "lint": "eslint --ext .vue,.ts src --max-warnings 0",
     "smoke": "bun test tests/smoke",
     "generate-schema": "openapi-typescript api/openapi.yaml -o src/api/schema.d.ts"
@@ -58,6 +58,10 @@
     "tailwindcss": "^4.1.7",
     "typescript": "^5.2.2",
     "vite": "^5",
-    "vue-tsc": "^3.3.12"
+    "vite-plugin-pwa": "^2.0.0",
+    "vue-tsc": "^3.3.12",
+    "workbox-core": "^7.4.1",
+    "workbox-precaching": "^7.4.1",
+    "workbox-routing": "^7.4.1"
   }
 }

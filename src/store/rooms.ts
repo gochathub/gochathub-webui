@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 import client, { unwrap } from "@src/api/client";
+import { pushActive } from "@src/push";
 import useStore from "@src/store/store";
 import useAuthStore from "@src/store/auth";
 import useInvitesStore from "@src/store/invites";
@@ -430,6 +431,7 @@ export const useRoomsStore = defineStore("rooms", () => {
             conv.unread = 0;
           } else if (
             document.hidden &&
+            !pushActive() && // background push already notifies
             chat.settings.allowNotifications &&
             "Notification" in window &&
             Notification.permission === "granted"

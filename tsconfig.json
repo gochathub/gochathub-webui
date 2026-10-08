@@ -36,6 +36,7 @@
     "src/**/*.tsx",
     "src/**/*.vue"
   ],
+  "exclude": ["src/sw.ts"],
   "references": [
     {
       "path": "./tsconfig.node.json"

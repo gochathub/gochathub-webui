@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 import client, { ApiError, unwrap } from "@src/api/client";
+import { disablePush } from "@src/push";
 import type { components } from "@src/api/schema";
 
 export const useAuthStore = defineStore("auth", () => {
@@ -112,6 +113,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function logout(): Promise<void> {
     try {
+      await disablePush(); // needs the session; the device dies with it
       await unwrap(await client.POST("/auth/logout", {}));
     } finally {
       me.value = undefined;

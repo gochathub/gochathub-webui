@@ -1,13 +1,47 @@
 import { defineConfig } from "vite";
 import alias from "@rollup/plugin-alias";
 import vue from "@vitejs/plugin-vue";
+import { VitePWA } from "vite-plugin-pwa";
 import { resolve } from "path";
 
 const rootDir = resolve(__dirname);
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), alias()],
+  plugins: [
+    vue(),
+    alias(),
+    // custom sw.ts: push + notificationclick handlers; prompt-for-update
+    VitePWA({
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "sw.ts",
+      registerType: "prompt",
+      manifest: {
+        name: "goChatHub",
+        short_name: "goChatHub",
+        start_url: "/",
+        scope: "/",
+        display: "standalone",
+        theme_color: "#182027",
+        background_color: "#182027",
+        icons: [
+          { src: "/pwa-192.png", sizes: "192x192", type: "image/png" },
+          { src: "/pwa-512.png", sizes: "512x512", type: "image/png" },
+          {
+            src: "/pwa-maskable-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+      injectManifest: {
+        // shell only: harper's 16 MB wasm stays a lazy, opt-in download
+        globIgnores: ["**/*.wasm"],
+      },
+    }),
+  ],
   resolve: {
     alias: {
       "@src": resolve(rootDir, "src"),

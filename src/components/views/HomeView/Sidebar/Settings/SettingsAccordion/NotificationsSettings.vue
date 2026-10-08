@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useStore from "@src/store/store";
+import { disablePush, enablePush, pushSupported } from "@src/push";
 
 import AccordionButton from "@src/components/ui/data-display/AccordionButton.vue";
 import Collapse from "@src/components/ui/utils/Collapse.vue";
@@ -14,14 +15,30 @@ const store = useStore();
 
 // (event) toggle browser notifications: permission comes from the platform;
 // the switch persists the preference and requests when enabling.
-const handleAllowToggle = (value: boolean) => {
+const handleAllowToggle = async (value: boolean) => {
   store.settings.allowNotifications = value;
-  if (
-    value &&
-    "Notification" in window &&
-    Notification.permission === "default"
-  ) {
-    void Notification.requestPermission();
+  if (!value) {
+    await disablePush();
+    return;
+  }
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "default") {
+    await Notification.requestPermission();
+  }
+  // background push when supported; otherwise the WS path covers hidden tabs
+  if (Notification.permission === "granted" && pushSupported()) {
+    try {
+      await enablePush();
+    } catch {
+      store.notifications = [
+        ...store.notifications,
+        {
+          flag: "account-update",
+          title: "Something went wrong",
+          message: "Could not enable background notifications.",
+        },
+      ];
+    }
   }
 };
 </script>
@@ -43,7 +60,7 @@ const handleAllowToggle = (value: boolean) => {
   <Collapse id="notifications-settings-collapse" :collapsed="props.collapsed">
     <SettingsSwitch
       title="Allow Notifications"
-      description="Desktop notifications for new messages when the tab is hidden"
+      description="Notifications for new messages, even when the app is closed"
       :value="!!store.settings.allowNotifications"
       :handle-toggle-switch="handleAllowToggle"
       class="mb-7"

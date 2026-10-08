@@ -8,7 +8,9 @@ import useRoomsStore from "@src/store/rooms";
 import { startWS, stopWS } from "@src/ws/connection";
 import ws from "@src/ws/client";
 
+import router from "@src/router";
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
+import UpdatePrompt from "@src/components/shared/UpdatePrompt.vue";
 
 // Refactoring code:
 // todo refactor remove getters from utils file and add them to store folder.
@@ -51,6 +53,13 @@ watch(
   { immediate: true },
 );
 
+// notification click on an already-open window: the SW asks us to navigate
+navigator.serviceWorker?.addEventListener("message", (e) => {
+  if (typeof e.data?.openRoom === "string") {
+    void router.push({ name: "Chat", params: { id: e.data.openRoom } });
+  }
+});
+
 // reconnect: REST is reauthoritative per WEBSOCKETS.md
 watch(
   () => ws.status.value,
@@ -69,5 +78,6 @@ watch(
         </FadeTransition>
       </router-view>
     </div>
+    <UpdatePrompt />
   </div>
 </template>
