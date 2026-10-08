@@ -12,16 +12,25 @@ export type ApiErrorCode =
   | "conflict"
   | "validation"
   | "rate_limited"
+  | "two_factor_required"
   | "internal";
 
 export class ApiError extends Error {
   code: ApiErrorCode;
   status: number;
+  // two_factor_required only: redeem at POST /auth/login/2fa
+  challenge?: string;
 
-  constructor(code: ApiErrorCode, message: string, status: number) {
+  constructor(
+    code: ApiErrorCode,
+    message: string,
+    status: number,
+    challenge?: string,
+  ) {
     super(message);
     this.code = code;
     this.status = status;
+    this.challenge = challenge;
   }
 }
 
@@ -78,6 +87,7 @@ export async function unwrap<
       result.error.error.code as ApiErrorCode,
       result.error.error.message,
       result.response.status,
+      (result.error.error as { challenge?: string }).challenge,
     );
   }
   return result.data as Exclude<T, undefined>;

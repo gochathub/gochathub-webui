@@ -18,27 +18,39 @@ const auth = useAuthStore();
 
 const username = ref("");
 const password = ref("");
+const code = ref("");
 const submitting = ref(false);
 const error = ref("");
 
-// (event) log in with the httpOnly session cookie; on failure surface the
-// server's stable code so the UI can branch later.
+// (event) log in with the httpOnly session cookie; a 2FA account stops after
+// the password (auth.challenge set) and finishes with a code.
 const handleLogin = async () => {
   error.value = "";
   submitting.value = true;
+  const secondStep = !!auth.challenge;
 
   try {
-    await auth.login(username.value, password.value);
+    if (secondStep) await auth.login2fa(code.value.trim());
+    else await auth.login(username.value, password.value);
+    if (auth.challenge) return; // now waiting for the code
     store.$patch({ user: mapUser(auth.me!), status: "success" });
     router.push({ name: "No-Chat" });
   } catch (e) {
     error.value =
       e instanceof ApiError && e.code === "unauthorized"
-        ? "Wrong username or password."
+        ? secondStep
+          ? "Invalid or expired code."
+          : "Wrong username or password."
         : "Something went wrong. Please try again.";
   } finally {
     submitting.value = false;
   }
+};
+
+const handleBack = () => {
+  auth.cancel2fa();
+  code.value = "";
+  error.value = "";
 };
 </script>
 
@@ -58,27 +70,48 @@ const handleLogin = async () => {
 
       <!--form-->
       <form class="mb-6" @submit.prevent="handleLogin">
-        <LabeledTextInput
-          :value="username"
-          label="Username"
-          placeholder="Enter your username"
-          class="mb-5"
-          @value-changed="
-            (value) => {
-              username = value;
-            }
-          "
-        />
-        <PasswordInput
-          :value="password"
-          label="Password"
-          placeholder="Enter your password"
-          @value-changed="
-            (value) => {
-              password = value;
-            }
-          "
-        />
+        <template v-if="!auth.challenge">
+          <LabeledTextInput
+            :value="username"
+            label="Username"
+            placeholder="Enter your username"
+            class="mb-5"
+            @value-changed="
+              (value) => {
+                username = value;
+              }
+            "
+          />
+          <PasswordInput
+            :value="password"
+            label="Password"
+            placeholder="Enter your password"
+            @value-changed="
+              (value) => {
+                password = value;
+              }
+            "
+          />
+        </template>
+        <template v-else>
+          <LabeledTextInput
+            :value="code"
+            label="Authentication code"
+            placeholder="6-digit code or backup code"
+            @value-changed="
+              (value) => {
+                code = value;
+              }
+            "
+          />
+          <button
+            type="button"
+            class="body-3 text-muted mt-3 underline"
+            @click="handleBack"
+          >
+            Back
+          </button>
+        </template>
 
         <p v-if="error" role="alert" class="body-3 text-error mt-4">
           {{ error }}
@@ -91,7 +124,7 @@ const handleLogin = async () => {
             type="submit"
             :loading="submitting"
           >
-            Sign in
+            {{ auth.challenge ? "Verify" : "Sign in" }}
           </Button>
         </div>
       </form>

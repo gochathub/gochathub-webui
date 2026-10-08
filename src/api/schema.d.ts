@@ -68,6 +68,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/auth/login/2fa": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Redeem a `two_factor_required` challenge with a TOTP code or an unused backup code. A challenge lives 5 minutes and allows 5 attempts. */
+    post: operations["login2fa"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/auth/logout": {
     parameters: {
       query?: never;
@@ -147,6 +164,74 @@ export interface paths {
     options?: never;
     head?: never;
     patch: operations["changePassword"];
+    trace?: never;
+  };
+  "/users/me/2fa/setup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Start TOTP enrollment. Returns the secret and an `otpauth://` URL for a QR code; nothing is enforced until `/users/me/2fa/enable`. */
+    post: operations["setupTwoFactor"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/2fa/enable": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Confirm enrollment with a first TOTP code. Backup codes are shown once. */
+    post: operations["enableTwoFactor"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/2fa/backup-codes": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Replace all backup codes. Requires a current TOTP code. */
+    post: operations["regenerateBackupCodes"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/2fa": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** @description Disable two-factor. Requires the password and a TOTP or backup code. */
+    delete: operations["disableTwoFactor"];
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   "/users/search": {
@@ -662,6 +747,34 @@ export interface components {
        */
       token_request: boolean;
     };
+    Login2FARequest: {
+      /** @description The `error.challenge` from a `two_factor_required` login. */
+      challenge: string;
+      /** @description 6-digit TOTP code or a single-use backup code. */
+      code: string;
+      /**
+       * @description Same meaning as on LoginRequest.
+       * @default false
+       */
+      token_request: boolean;
+    };
+    TwoFactorSetup: {
+      /** @description Base32 secret for manual entry. */
+      secret: string;
+      /** @description `otpauth://totp/...` URI to render as a QR code. */
+      otpauth_url: string;
+    };
+    TwoFactorCodeRequest: {
+      code: string;
+    };
+    DisableTwoFactorRequest: {
+      /** Format: password */
+      password: string;
+      code: string;
+    };
+    BackupCodes: {
+      backup_codes: string[];
+    };
     /** @description Login response. Browsers: cookie set, `token` omitted. Clients that sent `token_request: true` receive the opaque session token for bearer use (ADR-015). */
     AuthResponse: {
       /** @description The same opaque session token carried by the cookie; present only when the request set token_request. */
@@ -676,6 +789,8 @@ export interface components {
       role: "user" | "moderator" | "admin";
       /** @description Present only on self payloads (GET/PATCH /users/me, login). */
       email?: string | null;
+      /** @description Present only on self payloads (GET/PATCH /users/me, login). */
+      two_factor_enabled?: boolean;
       /** @description IANA tz name for client-side rendering; UTC RFC 3339 on the wire. */
       timezone?: string | null;
       /** @description Resolved avatar URL (presigned attachment URL, or server-side Gravatar fallback, or null for client-side monogram) — ADR-011. */
@@ -1044,6 +1159,39 @@ export interface operations {
           "application/json": components["schemas"]["AuthResponse"];
         };
       };
+      /** @description Bad credentials (`unauthorized`), or the password was right and the account has two-factor enabled (`two_factor_required`, with `error.challenge` — redeem it at `/auth/login/2fa`; no session exists yet). */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  login2fa: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Login2FARequest"];
+      };
+    };
+    responses: {
+      /** @description Authenticated */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AuthResponse"];
+        };
+      };
       401: components["responses"]["Unauthorized"];
     };
   };
@@ -1215,6 +1363,121 @@ export interface operations {
     };
     responses: {
       /** @description Password changed; all sessions (including this one) revoked. */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+    };
+  };
+  setupTwoFactor: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Pending enrollment */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TwoFactorSetup"];
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      /** @description Two-factor is already enabled. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  enableTwoFactor: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TwoFactorCodeRequest"];
+      };
+    };
+    responses: {
+      /** @description Enabled */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BackupCodes"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+      /** @description Two-factor is already enabled. */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  regenerateBackupCodes: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TwoFactorCodeRequest"];
+      };
+    };
+    responses: {
+      /** @description New backup codes (old ones are void) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["BackupCodes"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+    };
+  };
+  disableTwoFactor: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DisableTwoFactorRequest"];
+      };
+    };
+    responses: {
+      /** @description Disabled */
       204: {
         headers: {
           [name: string]: unknown;
