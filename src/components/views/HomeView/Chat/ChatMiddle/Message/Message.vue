@@ -112,67 +112,70 @@ const replyMessage = computed(() =>
         class="flex items-end grow min-w-0"
         :class="{ 'justify-end': props.self }"
       >
-        <!--bubble-->
+        <!--date above the bubble-->
         <div
-          v-click-outside="contextConfig"
-          class="group max-w-[80%] p-3.5 rounded-b-xl transition duration-200"
-          :class="{
-            'rounded-tl-xl ml-4 order-2 bg-mine': props.self && !props.selected,
-
-            'rounded-tr-xl mr-4 bg-card': !props.self && !props.selected,
-
-            'rounded-tl-xl ml-4 order-2 bg-indigo-200 dark:bg-indigo-900':
-              props.self && props.selected,
-
-            'rounded-tr-xl mr-4 bg-indigo-200 dark:bg-indigo-900':
-              !props.self && props.selected,
-          }"
-          @click="handleCloseContextMenu"
-          @contextmenu.prevent="handleShowContextMenu"
+          class="flex flex-col min-w-0 max-w-[80%]"
+          :class="props.self ? 'items-end order-2 ml-4' : 'items-start mr-4'"
         >
-          <!--reply to-->
-          <MessagePreview
-            v-if="replyMessage"
-            :message="replyMessage"
-            :self="props.self"
-            class="mb-5 px-3"
-          />
+          <p class="mb-1 body-1 text-muted whitespace-nowrap">
+            {{ formatDateTime(props.message.date) }}
+          </p>
 
-          <!--content-->
-          <!-- eslint-disable vue/no-v-html -- renderMarkdown escapes the source first; every tag in the output is ours -->
-          <p
-            v-if="props.message.content && props.message.type !== 'recording'"
-            class="body-2 outline-none text-fg/90 dark:text-fg/85 [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
-            tabindex="0"
-            v-html="renderMarkdown(props.message.content as string)"
-          ></p>
-          <!-- eslint-enable vue/no-v-html -->
-
-          <!--recording-->
+          <!--bubble-->
           <div
-            v-else-if="
-              props.message.content && props.message.type === 'recording'
-            "
+            v-click-outside="contextConfig"
+            class="group p-3.5 rounded-b-xl transition duration-200"
+            :class="{
+              'rounded-tl-xl bg-mine': props.self && !props.selected,
+
+              'rounded-tr-xl bg-card': !props.self && !props.selected,
+
+              'rounded-tl-xl bg-indigo-200 dark:bg-indigo-900':
+                props.self && props.selected,
+
+              'rounded-tr-xl bg-indigo-200 dark:bg-indigo-900':
+                !props.self && props.selected,
+            }"
+            @click="handleCloseContextMenu"
+            @contextmenu.prevent="handleShowContextMenu"
           >
-            <Recording
-              :recording="props.message.content as IRecording"
+            <!--reply to-->
+            <MessagePreview
+              v-if="replyMessage"
+              :message="replyMessage"
+              :self="props.self"
+              class="mb-5 px-3"
+            />
+
+            <!--content-->
+            <!-- eslint-disable vue/no-v-html -- renderMarkdown escapes the source first; every tag in the output is ours -->
+            <p
+              v-if="props.message.content && props.message.type !== 'recording'"
+              class="body-2 outline-none text-fg/90 dark:text-fg/85 [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
+              tabindex="0"
+              v-html="renderMarkdown(props.message.content as string)"
+            ></p>
+            <!-- eslint-enable vue/no-v-html -->
+
+            <!--recording-->
+            <div
+              v-else-if="
+                props.message.content && props.message.type === 'recording'
+              "
+            >
+              <Recording
+                :recording="props.message.content as IRecording"
+                :self="props.self"
+              />
+            </div>
+
+            <!--attachments-->
+            <Attachments
+              v-if="(props.message.attachments as [])?.length > 0"
+              :message="props.message"
               :self="props.self"
             />
           </div>
-
-          <!--attachments-->
-          <Attachments
-            v-if="(props.message.attachments as [])?.length > 0"
-            :message="props.message"
-            :self="props.self"
-          />
-        </div>
-
-        <!--date-->
-        <div class="shrink-0" :class="props.self ? ['order-1'] : []">
-          <p class="body-1 text-muted whitespace-nowrap">
-            {{ formatDateTime(props.message.date) }}
-          </p>
         </div>
 
         <!--read receipt-->

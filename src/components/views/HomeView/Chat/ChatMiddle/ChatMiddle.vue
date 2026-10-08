@@ -52,19 +52,38 @@ const renderDivider = (index: number, previousIndex: number): boolean => {
   return prev.toDateString() !== curr.toDateString();
 };
 
-// scroll messages to bottom whenever the list grows.
+// Keep the scroll position sensible when the list changes. Runs before the DOM
+// updates (default "pre" flush) so the old geometry can be measured.
+// - opened/loaded a conversation, or sent a message: go to the bottom
+// - new message from others: follow only if already near the bottom
+// - older page prepended: hold position (keep the same message in view)
+const NEAR_BOTTOM_PX = 150;
 watch(
-  () => activeConversation.value?.messages.length,
-  async (after, before) => {
+  () => {
+    const m = activeConversation.value?.messages;
+    return [activeConversation.value?.id, m?.[0]?.id, m?.at(-1)?.id] as const;
+  },
+  async ([convId, first, last], [prevConv, prevFirst, prevLast]) => {
+    const el = container.value;
+    if (!el) return;
+    const oldHeight = el.scrollHeight;
+    const oldTop = el.scrollTop;
+    const nearBottom = oldHeight - oldTop - el.clientHeight < NEAR_BOTTOM_PX;
+    const newest = activeConversation.value?.messages.at(-1);
     await nextTick();
-    if (container.value && after && after >= (before ?? 0) + 1) {
-      container.value.scrollTop = container.value.scrollHeight;
+    if (convId !== prevConv || prevLast === undefined) {
+      el.scrollTop = el.scrollHeight;
+    } else if (last !== prevLast) {
+      if (nearBottom || (newest && isSelf(newest))) {
+        el.scrollTop = el.scrollHeight;
+      }
+    } else if (first !== prevFirst) {
+      el.scrollTop = oldTop + (el.scrollHeight - oldHeight);
     }
   },
 );
 
-// scroll to a message picked from search and flash it. Runs after the
-// grow-watcher above (which jumps to the bottom) has settled.
+// scroll to a message picked from search and flash it.
 const rooms = useRoomsStore();
 const highlightId = ref<string>();
 watch(
@@ -73,13 +92,14 @@ watch(
     if (!id) return;
     rooms.focusMessageId = undefined;
     await nextTick();
-    setTimeout(() => {
+    // next frame: after the prepend-anchoring above has restored its position
+    requestAnimationFrame(() => {
       container.value
         ?.querySelector(`[data-message-id="${CSS.escape(id)}"]`)
         ?.scrollIntoView({ block: "center" });
       highlightId.value = id;
       setTimeout(() => (highlightId.value = undefined), 2000);
-    }, 50);
+    });
   },
 );
 

@@ -166,18 +166,27 @@ export const useRoomsStore = defineStore("rooms", () => {
     }
   }
 
-  async function loadOlderMessages(roomId: string) {
+  // one older-page fetch per room at a time; concurrent callers share it
+  const olderInFlight = new Map<string, Promise<void>>();
+
+  function loadOlderMessages(roomId: string): Promise<void> {
     const cursor = olderCursor.value[roomId];
-    if (!cursor) return;
-    const page = await unwrap(
-      await client.GET("/rooms/{roomId}/messages", {
-        params: { query: { limit: 50, before: cursor }, path: { roomId } },
-      }),
-    );
-    const conv = convById(roomId);
-    if (!conv) return;
-    insertMessages(conv, page.items, true);
-    olderCursor.value[roomId] = page.next_cursor ?? undefined;
+    if (!cursor) return Promise.resolve();
+    const running = olderInFlight.get(roomId);
+    if (running) return running;
+    const p = (async () => {
+      const page = await unwrap(
+        await client.GET("/rooms/{roomId}/messages", {
+          params: { query: { limit: 50, before: cursor }, path: { roomId } },
+        }),
+      );
+      const conv = convById(roomId);
+      if (!conv) return;
+      insertMessages(conv, page.items, true);
+      olderCursor.value[roomId] = page.next_cursor ?? undefined;
+    })().finally(() => olderInFlight.delete(roomId));
+    olderInFlight.set(roomId, p);
+    return p;
   }
 
   // advance the read cursor to the newest message. Rooms never opened have no
