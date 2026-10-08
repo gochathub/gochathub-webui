@@ -2,6 +2,7 @@
 import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IMessage } from "@src/types";
 
+import { UserIcon } from "@heroicons/vue/24/outline";
 import { getFullName, shorten } from "@src/utils";
 import { formatDateTime } from "@src/api/mappers";
 
@@ -27,9 +28,15 @@ const props = defineProps<{
     <!--name and message-->
     <div class="grow min-w-0">
       <div class="flex flex-col items-start min-w-0">
-        <p class="heading-2 text-fg mb-4 truncate max-w-full">
-          {{ getFullName(props.message.sender) }}
-        </p>
+        <div class="flex items-center mb-4 min-w-0 max-w-full">
+          <UserIcon
+            class="w-5 h-5 mr-1.5 text-muted shrink-0"
+            aria-label="user"
+          />
+          <p class="heading-2 text-fg truncate">
+            {{ getFullName(props.message.sender) }}
+          </p>
+        </div>
 
         <p class="body-2 text-muted truncate max-w-full">
           {{ shorten(String(props.message.content ?? "")) }}
