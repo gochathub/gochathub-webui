@@ -84,6 +84,12 @@ const setLink = () => {
   else if (/^https?:\/\//i.test(url)) chain.setLink({ href: url }).run();
 };
 
+// insert at the caret (refocuses the editor); onUpdate emits the new markdown
+defineExpose({
+  insert: (text: string) =>
+    editor.value?.chain().focus().insertContent(text).run(),
+});
+
 onBeforeUnmount(() => editor.value?.destroy());
 
 const buttons = [

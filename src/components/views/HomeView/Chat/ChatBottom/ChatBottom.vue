@@ -49,6 +49,7 @@ const typingNames = computed(() => {
 
 // open emoji picker.
 const showPicker = ref(false);
+const editorRef = ref<InstanceType<typeof RichEditor>>();
 
 // mention autocomplete state
 const mentionQuery = computed(() => {
@@ -183,6 +184,7 @@ onMounted(() => {
       <div class="grow md:mr-5 xs:mr-4 self-end">
         <div class="relative">
           <RichEditor
+            ref="editorRef"
             :model-value="value"
             placeholder="Write your message here"
             @update:model-value="
@@ -237,15 +239,9 @@ onMounted(() => {
                 class="absolute z-10 bottom-13.75 md:right-0 xs:right-[-5rem] mt-2"
               >
                 <div role="none">
-                  <!-- ponytail: appends at end, not at the caret -->
                   <EmojiPicker
                     :show="showPicker"
-                    @pick="
-                      (char) => {
-                        value += char;
-                        handleSetDraft();
-                      }
-                    "
+                    @pick="(char) => editorRef?.insert(char)"
                   />
                 </div>
               </div>
