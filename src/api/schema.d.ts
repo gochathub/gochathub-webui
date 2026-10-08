@@ -1851,6 +1851,8 @@ export interface operations {
       query?: {
         limit?: number;
         before?: string;
+        /** @description Case-insensitive substring match on message body (deleted messages excluded). Paginates with `before`/`next_cursor` like the plain list. */
+        q?: string;
       };
       header?: never;
       path: {

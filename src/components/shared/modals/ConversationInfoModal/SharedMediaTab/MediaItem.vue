@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { IAttachment } from "@src/types";
 
+import { formatDateTime } from "@src/api/mappers";
+
 import {
   DocumentIcon,
   PhotoIcon,
@@ -46,7 +48,7 @@ defineEmits<{ view: [IAttachment] }>();
         </p>
 
         <p class="body-4 text-muted shrink-0 ml-3">
-          {{ props.date }}
+          {{ formatDateTime(props.date) }}
         </p>
       </div>
 

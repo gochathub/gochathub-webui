@@ -16,7 +16,7 @@ import {
   hasAttachments,
   shorten,
 } from "@src/utils";
-import { formatTime } from "@src/api/mappers";
+import { formatDateTime } from "@src/api/mappers";
 import router from "@src/router";
 
 import {
@@ -184,7 +184,7 @@ const isActive = computed(
 
             <!--last message date-->
             <p class="body-1 text-muted shrink-0 ml-3">
-              {{ lastMessage ? formatTime(lastMessage.date) : "" }}
+              {{ lastMessage ? formatDateTime(lastMessage.date) : "" }}
             </p>
           </div>
         </div>

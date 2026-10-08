@@ -180,6 +180,32 @@ export const useRoomsStore = defineStore("rooms", () => {
     olderCursor.value[roomId] = page.next_cursor ?? undefined;
   }
 
+  // message ChatMiddle should scroll to and highlight, then clear
+  const focusMessageId = ref<string>();
+
+  // page back through history until the message is loaded, then ask the
+  // thread to focus it. ponytail: sequential pages; an "around" endpoint
+  // would make very old hits instant.
+  async function goToMessage(roomId: string, messageId: string) {
+    const loaded = () =>
+      convById(roomId)?.messages.some((m) => m.id === messageId);
+    while (!loaded() && olderCursor.value[roomId]) {
+      await loadOlderMessages(roomId);
+    }
+    if (loaded()) focusMessageId.value = messageId;
+  }
+
+  // server-side body search; results are not merged into the room's messages
+  // ponytail: first page (newest 50 matches) only; follow next_cursor if needed
+  async function searchMessages(roomId: string, q: string) {
+    const page = await unwrap(
+      await client.GET("/rooms/{roomId}/messages", {
+        params: { query: { limit: 50, q }, path: { roomId } },
+      }),
+    );
+    return page.items.map(serverMessage);
+  }
+
   async function resyncMembers(roomId: string) {
     const conv = convById(roomId);
     if (!conv || !auth.me) return;
@@ -550,6 +576,9 @@ export const useRoomsStore = defineStore("rooms", () => {
     loadRooms,
     loadMessages,
     loadOlderMessages,
+    searchMessages,
+    focusMessageId,
+    goToMessage,
     resyncMembers,
     sendMessage,
     setArchived,

@@ -6,7 +6,7 @@ import type { Ref } from "vue";
 import { inject, ref, computed } from "vue";
 
 import { getFullName, getMessageById } from "@src/utils";
-import { formatTime } from "@src/api/mappers";
+import { formatDateTime } from "@src/api/mappers";
 import { renderMarkdown } from "@src/api/markdown";
 
 import Attachments from "@src/components/views/HomeView/Chat/ChatMiddle/Message/Attachments.vue";
@@ -171,7 +171,7 @@ const replyMessage = computed(() =>
         <!--date-->
         <div class="shrink-0" :class="props.self ? ['order-1'] : []">
           <p class="body-1 text-muted whitespace-nowrap">
-            {{ formatTime(props.message.date) }}
+            {{ formatDateTime(props.message.date) }}
           </p>
         </div>
 

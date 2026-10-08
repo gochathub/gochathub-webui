@@ -3,7 +3,7 @@ import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IMessage } from "@src/types";
 
 import { getFullName, shorten } from "@src/utils";
-import { formatTime } from "@src/api/mappers";
+import { formatDateTime } from "@src/api/mappers";
 
 const props = defineProps<{
   message: IMessage;
@@ -12,6 +12,7 @@ const props = defineProps<{
 
 <template>
   <button
+    type="button"
     class="w-full p-5 flex outline-none hover:bg-select/50 focus:bg-select/70 active:bg-select dark:hover:bg-select/50 dark:focus:bg-select/70 dark:active:bg-select duration-200"
   >
     <!--profile image-->
@@ -39,7 +40,7 @@ const props = defineProps<{
     <!--message date-->
     <div class="shrink-0 ml-3">
       <p class="body-4 text-muted whitespace-pre">
-        {{ formatTime(props.message.date) }}
+        {{ formatDateTime(props.message.date) }}
       </p>
     </div>
   </button>

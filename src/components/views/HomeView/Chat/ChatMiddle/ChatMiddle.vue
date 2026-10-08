@@ -63,6 +63,26 @@ watch(
   },
 );
 
+// scroll to a message picked from search and flash it. Runs after the
+// grow-watcher above (which jumps to the bottom) has settled.
+const rooms = useRoomsStore();
+const highlightId = ref<string>();
+watch(
+  () => rooms.focusMessageId,
+  async (id) => {
+    if (!id) return;
+    rooms.focusMessageId = undefined;
+    await nextTick();
+    setTimeout(() => {
+      container.value
+        ?.querySelector(`[data-message-id="${CSS.escape(id)}"]`)
+        ?.scrollIntoView({ block: "center" });
+      highlightId.value = id;
+      setTimeout(() => (highlightId.value = undefined), 2000);
+    }, 50);
+  },
+);
+
 // load older history when scrolled to the top (cursor pagination, no offset).
 const handleScroll = () => {
   const rooms = useRoomsStore();
@@ -93,6 +113,9 @@ onMounted(() => {
         <div
           v-for="(message, index) in activeConversation?.messages"
           :key="message.id"
+          :data-message-id="message.id"
+          class="rounded transition-colors duration-500"
+          :class="{ 'bg-select/60': highlightId === message.id }"
         >
           <TimelineDivider
             v-if="renderDivider(index, index - 1)"

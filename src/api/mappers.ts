@@ -148,15 +148,33 @@ export function mapAuthorStub(id: string): IContact {
 }
 
 // Render helpers (viewer locale; peer timezone grouping comes later).
-const timeFmt = new Intl.DateTimeFormat(undefined, {
+const dateTimeFmt = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
   hour: "numeric",
   minute: "2-digit",
+  second: "2-digit",
+  timeZoneName: "short",
 });
-const dayFmt = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
+// "Tue, Aug 23, 2016" (en-US already formats it with these commas)
+const dayFmt = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
 
-export function formatTime(iso: string): string {
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? iso : timeFmt.format(d);
+// "Tue, Aug 23, 2016 1:12:45 PM EEST" in the browser's zone. Intl en-US
+// inserts a comma after the year; rebuild from parts to drop it.
+export function formatDateTime(value: string | Date): string {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return String(value);
+  const p = Object.fromEntries(
+    dateTimeFmt.formatToParts(d).map((x) => [x.type, x.value]),
+  );
+  return `${p.weekday}, ${p.month} ${p.day}, ${p.year} ${p.hour}:${p.minute}:${p.second} ${p.dayPeriod} ${p.timeZoneName}`;
 }
 
 export function formatDay(iso: string): string {

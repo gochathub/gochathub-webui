@@ -1,6 +1,7 @@
 import useStore from "@src/store/store";
 import type { IContact, IConversation, IMessage, IRecording } from "@src/types";
 import { useRoute } from "vue-router";
+import { formatDateTime } from "@src/api/mappers";
 
 /**
  * combine first name and last name of a contact.
@@ -78,11 +79,7 @@ export const presence = (lastSeen?: Date | null): string => {
   if (minutes < 2) {
     return "Active now";
   }
-  const fmt = new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-  return `Last seen ${fmt.format(lastSeen)}`;
+  return `Last seen ${formatDateTime(lastSeen)}`;
 };
 
 /**
