@@ -9,6 +9,7 @@ import NoNotifications from "@src/components/states/empty-states/NoNotifications
 import Notification from "@src/components/views/HomeView/Sidebar/Notifications/Notification.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import SidebarHeader from "@src/components/views/HomeView/Sidebar/SidebarHeader.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 const store = useStore();
 const invites = useInvitesStore();
@@ -26,6 +27,12 @@ onMounted(() => invites.loadInvites());
   <div>
     <SidebarHeader>
       <template #title>Notifications</template>
+      <template #actions>
+        <HelpLink
+          to="/help/notifications#the-notifications-panel"
+          label="notifications"
+        />
+      </template>
     </SidebarHeader>
 
     <div

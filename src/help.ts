@@ -20,3 +20,13 @@ export function parsePage(raw: string): HelpPage {
   }
   return { title: fm.title, weight: Number(fm.weight), body: m[2]! };
 }
+
+// heading text -> id, same shape as Hugo's default so anchors match the site.
+// Input may be HTML-escaped (renderMarkdown escapes before parsing).
+export const slugify = (text: string) =>
+  text
+    .replace(/&#?\w+;/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 -]/g, "")
+    .trim()
+    .replace(/ /g, "-");

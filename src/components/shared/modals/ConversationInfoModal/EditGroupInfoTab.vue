@@ -9,6 +9,7 @@ import type { UploadedAttachment } from "@src/api/attachments";
 import FileUploader from "@src/components/ui/inputs/FileUploader.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 defineEmits(["active-page-change"]);
 
@@ -32,9 +33,12 @@ const handleAvatar = async (a: UploadedAttachment) => {
   <div>
     <!--header-->
     <div class="px-5 mb-6 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-fg" tabindex="0">
-        Edit Group Info
-      </p>
+      <div class="flex items-center gap-1">
+        <p id="modal-title" class="heading-1 text-fg" tabindex="0">
+          Edit Group Info
+        </p>
+        <HelpLink to="/help/rooms#roles" label="group roles" />
+      </div>
 
       <!--return button-->
       <IconButton

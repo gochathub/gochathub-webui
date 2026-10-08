@@ -7,6 +7,7 @@ import useStore from "@src/store/store";
 import useContactsStore from "@src/store/contacts";
 
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import Modal from "@src/components/ui/utils/Modal.vue";
 
@@ -57,9 +58,12 @@ const handleAdd = async (userId: string) => {
       <div class="w-full max-w-[26rem] bg-canvas rounded py-6">
         <!--modal header-->
         <div class="flex justify-between items-center px-5">
-          <p id="modal-title" class="heading-1 text-fg" tabindex="0">
-            Add Contact
-          </p>
+          <div class="flex items-center gap-1">
+            <p id="modal-title" class="heading-1 text-fg" tabindex="0">
+              Add Contact
+            </p>
+            <HelpLink to="/help/rooms#add-a-contact" label="adding contacts" />
+          </div>
 
           <Button
             class="outlined-danger ghost-text py-2 px-4"

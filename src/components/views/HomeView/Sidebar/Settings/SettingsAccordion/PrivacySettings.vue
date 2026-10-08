@@ -34,6 +34,7 @@ prefs.load();
   <Collapse id="privacy-settings-collapse" :collapsed="props.collapsed">
     <SettingsSwitch
       title="Show Last Seen"
+      help-to="/help/read-receipts#last-seen"
       description="Allow people to see your last login"
       :value="!!store.settings.lastSeen"
       :handle-toggle-switch="(value) => prefs.set('lastSeen', value)"
@@ -41,6 +42,7 @@ prefs.load();
     />
     <SettingsSwitch
       title="Show Read Receipt"
+      help-to="/help/read-receipts#why-a-message-may-stay-delivered"
       description="Allow people to see whether or not you've read the message"
       :value="!!store.settings.readReceipt"
       :handle-toggle-switch="(value) => prefs.set('readReceipt', value)"

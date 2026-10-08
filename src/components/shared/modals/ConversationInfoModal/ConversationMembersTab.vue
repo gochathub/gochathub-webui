@@ -14,6 +14,7 @@ import { EllipsisVerticalIcon, UserPlusIcon } from "@heroicons/vue/24/outline";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
 import ContactItem from "@src/components/shared/blocks/ContactItem.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
 
@@ -149,9 +150,12 @@ const handleAdd = async (c: IContact) => {
   <div>
     <!--header-->
     <div class="flex justify-between items-center mb-6 px-5">
-      <p id="modal-title" class="heading-1 text-fg">
-        {{ adding ? "Add members" : "Members" }}
-      </p>
+      <div class="flex items-center gap-1">
+        <p id="modal-title" class="heading-1 text-fg">
+          {{ adding ? "Add members" : "Members" }}
+        </p>
+        <HelpLink to="/help/rooms#roles" label="group roles" />
+      </div>
 
       <div class="flex items-center">
         <!--add members-->

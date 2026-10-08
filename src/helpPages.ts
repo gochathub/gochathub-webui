@@ -16,8 +16,7 @@ export async function loadHelpPage(
   return load ? parsePage(await load()) : undefined;
 }
 
-// sidebar list: needs every title, so loads every page once
-export async function loadHelpIndex() {
+async function buildIndex() {
   const pages = await Promise.all(
     Object.entries(files).map(async ([path, load]) => ({
       slug: slugOf(path),
@@ -26,3 +25,7 @@ export async function loadHelpIndex() {
   );
   return pages.sort((a, b) => a.weight - b.weight);
 }
+
+// page list needs every title, so loads every page once per session
+let index: ReturnType<typeof buildIndex> | undefined;
+export const loadHelpIndex = () => (index ??= buildIndex());

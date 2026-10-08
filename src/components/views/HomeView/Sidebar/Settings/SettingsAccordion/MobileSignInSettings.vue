@@ -8,6 +8,7 @@ import type { components } from "@src/api/schema";
 import { mobileSignInUrl } from "@src/mobileSignIn";
 
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 const auth = useAuthStore();
 
@@ -60,7 +61,13 @@ onBeforeUnmount(() => (qr.value = ""));
 </script>
 
 <template>
-  <p class="heading-2 text-fg mb-4">Mobile sign-in</p>
+  <div class="flex items-start gap-1 mb-4">
+    <p class="heading-2 text-fg">Mobile sign-in</p>
+    <HelpLink
+      to="/help/account-security#sign-in-on-your-phone-with-a-qr-code"
+      label="mobile sign-in"
+    />
+  </div>
 
   <template v-if="qr">
     <p class="body-3 text-muted mb-4">

@@ -10,6 +10,7 @@ import client, { unwrap } from "@src/api/client";
 
 import AccordionButton from "@src/components/ui/data-display/AccordionButton.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 import Collapse from "@src/components/ui/utils/Collapse.vue";
@@ -123,7 +124,13 @@ const handleChangePassword = async () => {
     </Button>
 
     <!--change password-->
-    <p class="heading-2 text-fg mb-4">Change password</p>
+    <div class="flex items-start gap-1 mb-4">
+      <p class="heading-2 text-fg">Change password</p>
+      <HelpLink
+        to="/help/account-security#change-your-password"
+        label="changing your password"
+      />
+    </div>
     <PasswordInput
       label="Current password"
       class="mb-5"

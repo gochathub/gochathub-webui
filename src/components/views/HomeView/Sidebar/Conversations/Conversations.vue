@@ -18,6 +18,7 @@ import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 import ArchivedButton from "@src/components/views/HomeView/Sidebar/Conversations/ArchivedButton.vue";
 import ConversationsList from "@src/components/views/HomeView/Sidebar/Conversations/ConversationsList.vue";
 import SidebarHeader from "@src/components/views/HomeView/Sidebar/SidebarHeader.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -67,6 +68,10 @@ onMounted(() => {
 
       <!--side actions-->
       <template #actions>
+        <HelpLink
+          to="/help/rooms#start-a-conversation"
+          label="conversations and groups"
+        />
         <IconButton
           class="ic-btn-ghost-primary w-7 h-7"
           aria-label="compose conversation"

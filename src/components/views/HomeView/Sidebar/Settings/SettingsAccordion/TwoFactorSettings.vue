@@ -6,6 +6,7 @@ import useAuthStore from "@src/store/auth";
 import { ApiError } from "@src/api/client";
 
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 
@@ -80,7 +81,13 @@ const reset = () => {
 </script>
 
 <template>
-  <p class="heading-2 text-fg mb-4">Two-factor authentication</p>
+  <div class="flex items-start gap-1 mb-4">
+    <p class="heading-2 text-fg">Two-factor authentication</p>
+    <HelpLink
+      to="/help/account-security#two-factor-authentication"
+      label="two-factor authentication"
+    />
+  </div>
 
   <!--idle-->
   <template v-if="step === 'idle'">

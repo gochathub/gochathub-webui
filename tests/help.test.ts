@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import { readdirSync, readFileSync } from "fs";
-import { parsePage } from "../src/help";
+import { parsePage, slugify } from "../src/help";
 
 const dir = new URL("../docs/help/", import.meta.url).pathname;
 const files = readdirSync(dir).filter((f) => f.endsWith(".md"));
@@ -48,3 +48,46 @@ for (const f of files) {
     for (const re of banned) expect(body).not.toMatch(re);
   });
 }
+
+test("slugify matches Hugo-style heading ids", () => {
+  expect(slugify("Why a message may stay &quot;delivered&quot;")).toBe(
+    "why-a-message-may-stay-delivered",
+  );
+  expect(slugify("Sign in on your phone with a QR code")).toBe(
+    "sign-in-on-your-phone-with-a-qr-code",
+  );
+});
+
+// every HelpLink target must be a real page + heading, so renaming a heading
+// breaks CI instead of a link
+function vueFiles(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory()
+      ? vueFiles(dir + e.name + "/")
+      : e.name.endsWith(".vue")
+        ? [dir + e.name]
+        : [],
+  );
+}
+
+test("every HelpLink points at an existing page and heading", () => {
+  const src = new URL("../src/", import.meta.url).pathname;
+  let found = 0;
+  for (const file of vueFiles(src)) {
+    for (const m of readFileSync(file, "utf8").matchAll(
+      /(?:<HelpLink[^>]*?\s|\bhelp-)to="\/help\/([^"#]+)(?:#([^"]+))?"/g,
+    )) {
+      found++;
+      const [, slug, anchor] = m;
+      expect(slugs.has(slug!)).toBe(true);
+      if (anchor) {
+        const { body } = parsePage(readFileSync(dir + slug + ".md", "utf8"));
+        const ids = [...body.matchAll(/^#{1,3}\s+(.*)$/gm)].map((h) =>
+          slugify(h[1]!),
+        );
+        expect(ids).toContain(anchor);
+      }
+    }
+  }
+  expect(found).toBeGreaterThan(0);
+});

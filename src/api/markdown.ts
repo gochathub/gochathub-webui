@@ -2,6 +2,7 @@
 // inline + fenced code, links, quotes, lists, headings, @mentions.
 // HTML in the source is escaped first — every tag in the output is ours.
 
+import { slugify } from "../help";
 import emojis from "../components/ui/inputs/EmojiPicker/emojis.json";
 
 const ESC: Record<string, string> = {
@@ -135,7 +136,10 @@ export function renderMarkdown(
           doc && n < 3
             ? `${n === 1 ? "text-2xl" : "text-xl"} font-semibold text-fg mt-6 mb-3`
             : "font-semibold mt-2";
-        html.push(`<h${n} class="${cls}">${inline(heading[2]!, doc)}</h${n}>`);
+        const id = doc ? ` id="${slugify(heading[2]!)}"` : "";
+        html.push(
+          `<h${n}${id} class="${cls}">${inline(heading[2]!, doc)}</h${n}>`,
+        );
       } else if (quote) {
         html.push(
           `<blockquote class="border-l-2 border-indigo-300 pl-3">${inline(quote[1]!, doc)}</blockquote>`,

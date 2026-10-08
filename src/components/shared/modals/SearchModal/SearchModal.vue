@@ -7,6 +7,7 @@ import useRoomsStore from "@src/store/rooms";
 
 import NoMessage from "@src/components/states/empty-states/NoMessage.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import Modal from "@src/components/ui/utils/Modal.vue";
 import MessageItem from "@src/components/shared/modals/SearchModal/MessageItem.vue";
@@ -59,9 +60,12 @@ watch(keyword, (v) => {
       <div class="w-full max-w-[26rem] py-6 bg-canvas rounded">
         <!--header-->
         <div class="mb-6 px-5 flex justify-between items-center">
-          <p id="modal-title" class="heading-1 text-fg" tabindex="0">
-            Messages
-          </p>
+          <div class="flex items-center gap-1">
+            <p id="modal-title" class="heading-1 text-fg" tabindex="0">
+              Messages
+            </p>
+            <HelpLink to="/help/messages#search" label="message search" />
+          </div>
 
           <Button
             class="outlined-danger ghost-text py-2 px-4"

@@ -17,6 +17,7 @@ import {
 } from "@heroicons/vue/24/outline";
 import AttachmentsModal from "@src/components/shared/modals/AttachmentsModal/AttachmentsModal.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import ScaleTransition from "@src/components/ui/transitions/ScaleTransition.vue";
 import ReplyMessage from "@src/components/views/HomeView/Chat/ChatBottom/ReplyMessage.vue";
 import EmojiPicker from "@src/components/ui/inputs/EmojiPicker/EmojiPicker.vue";
@@ -168,16 +169,21 @@ onMounted(() => {
       v-if="store.status !== 'loading'"
       class="h-auto min-h-16 p-4 flex items-end"
     >
-      <div class="min-h-[2.75rem]">
+      <div class="min-h-[2.75rem] flex items-center">
         <!--select attachments button-->
         <IconButton
-          class="ic-btn-ghost-primary w-7 h-7 md:mr-5 xs:mr-4"
+          class="ic-btn-ghost-primary w-7 h-7 md:mr-2 xs:mr-1"
           title="open select attachments modal"
           aria-label="open select attachments modal"
           @click="openAttachmentsModal = true"
         >
           <PaperClipIcon class="w-[1.25rem] h-[1.25rem]" />
         </IconButton>
+        <HelpLink
+          to="/help/messages#send"
+          label="writing messages"
+          class="md:mr-3 xs:mr-2"
+        />
       </div>
 
       <!--message textarea-->

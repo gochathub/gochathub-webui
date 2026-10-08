@@ -26,6 +26,7 @@ import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
 import IconAndText from "@src/components/shared/blocks/IconAndText.vue";
 import ImageViewer from "@src/components/shared/modals/ConversationInfoModal/ConversationInfoTab/ImageViewer.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import useStore from "@src/store/store";
 
@@ -58,14 +59,20 @@ const imageUrl = computed(() => {
   <div>
     <div class="mb-6 px-5 flex justify-between items-center">
       <!--title-->
-      <p id="modal-title" class="heading-1 text-fg" tabindex="0">
-        <span v-if="conversation.type === 'couple' || props.contact"
-          >Contact</span
-        >
-        <span v-else-if="conversation.type === 'group'">Group</span>
-        <span v-else-if="conversation.type === 'broadcast'">Broadcast</span>
-        Info
-      </p>
+      <div class="flex items-center gap-1">
+        <p id="modal-title" class="heading-1 text-fg" tabindex="0">
+          <span v-if="conversation.type === 'couple' || props.contact"
+            >Contact</span
+          >
+          <span v-else-if="conversation.type === 'group'">Group</span>
+          <span v-else-if="conversation.type === 'broadcast'">Broadcast</span>
+          Info
+        </p>
+        <HelpLink
+          to="/help/rooms#the-conversation-menu"
+          label="conversation info"
+        />
+      </div>
 
       <!--close button-->
       <Button

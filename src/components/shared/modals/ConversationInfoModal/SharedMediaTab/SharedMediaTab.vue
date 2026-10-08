@@ -11,6 +11,7 @@ import MediaItem from "@src/components/shared/modals/ConversationInfoModal/Share
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import NoMedia from "@src/components/states/empty-states/NoMedia.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 defineEmits(["active-page-change"]);
 
@@ -64,9 +65,12 @@ const handleView = async (a: IAttachment) => {
   <div>
     <!--header-->
     <div class="mb-6 px-5 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-fg" tabindex="0">
-        Shared Media
-      </p>
+      <div class="flex items-center gap-1">
+        <p id="modal-title" class="heading-1 text-fg" tabindex="0">
+          Shared Media
+        </p>
+        <HelpLink to="/help/attachments#shared-media" label="shared media" />
+      </div>
 
       <!--return button-->
       <IconButton

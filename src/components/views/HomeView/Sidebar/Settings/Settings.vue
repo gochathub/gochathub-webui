@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SidebarHeader from "@src/components/views/HomeView/Sidebar/SidebarHeader.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import SettingsAccordion from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/SettingsAccordion.vue";
 </script>
 
@@ -7,6 +8,9 @@ import SettingsAccordion from "@src/components/views/HomeView/Sidebar/Settings/S
   <div>
     <SidebarHeader>
       <template #title>Settings</template>
+      <template #actions>
+        <HelpLink to="/help/account-security" label="account and security" />
+      </template>
     </SidebarHeader>
 
     <div

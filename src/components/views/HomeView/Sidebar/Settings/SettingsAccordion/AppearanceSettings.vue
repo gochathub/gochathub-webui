@@ -40,6 +40,7 @@ prefs.load();
     />
     <SettingsSwitch
       title="Grammar & Spelling"
+      help-to="/help/appearance#grammar-and-spelling"
       description="Check English grammar and spelling while you type"
       :value="prefs.spellcheck"
       :handle-toggle-switch="(value) => prefs.setSpellcheck(value)"

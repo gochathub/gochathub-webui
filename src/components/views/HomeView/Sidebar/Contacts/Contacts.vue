@@ -13,6 +13,7 @@ import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 import SortedContacts from "@src/components/views/HomeView/Sidebar/Contacts/SortedContacts.vue";
 import SidebarHeader from "@src/components/views/HomeView/Sidebar/SidebarHeader.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import { UserPlusIcon } from "@heroicons/vue/24/outline";
 
 const store = useStore();
@@ -63,6 +64,7 @@ contactsStore.loadContacts();
 
       <!--side actions-->
       <template #actions>
+        <HelpLink to="/help/rooms#add-a-contact" label="adding contacts" />
         <IconButton
           class="ic-btn-ghost-primary w-7 h-7"
           title="add contacts"

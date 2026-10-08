@@ -11,6 +11,7 @@ import ws from "@src/ws/client";
 import router from "@src/router";
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 import UpdatePrompt from "@src/components/shared/UpdatePrompt.vue";
+import HelpDrawer from "@src/components/shared/HelpDrawer.vue";
 
 // Refactoring code:
 // todo refactor remove getters from utils file and add them to store folder.
@@ -79,5 +80,6 @@ watch(
       </router-view>
     </div>
     <UpdatePrompt />
+    <HelpDrawer />
   </div>
 </template>

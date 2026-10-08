@@ -1,49 +1,23 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 import useAuthStore from "@src/store/auth";
-import { renderMarkdown } from "@src/api/markdown";
-import { loadHelpIndex, loadHelpPage } from "@src/helpPages";
-import type { HelpPage } from "@src/help";
+import { loadHelpIndex } from "@src/helpPages";
+
+import HelpContent from "@src/components/shared/HelpContent.vue";
 
 const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
 
 const index = ref<Awaited<ReturnType<typeof loadHelpIndex>>>([]);
-const page = ref<HelpPage | undefined>();
-const missing = ref(false);
+void loadHelpIndex().then((i) => (index.value = i));
 
-// no slug = first page by weight
+// no slug = first page by weight (HelpContent resolves the same default)
 const slug = computed(
   () => (route.params.slug as string) || index.value[0]?.slug,
 );
-
-watch(
-  slug,
-  async (s) => {
-    if (!index.value.length) index.value = await loadHelpIndex();
-    const target = s ?? index.value[0]?.slug;
-    page.value = target ? await loadHelpPage(target) : undefined;
-    missing.value = !page.value;
-  },
-  { immediate: true },
-);
-
-const html = computed(() =>
-  page.value ? renderMarkdown(page.value.body, { doc: true }) : "",
-);
-
-// internal links go through the router, not a full reload
-const handleClick = (e: MouseEvent) => {
-  const a = (e.target as HTMLElement).closest("a");
-  const href = a?.getAttribute("href");
-  if (href?.startsWith("/") && !a?.target) {
-    e.preventDefault();
-    router.push(href);
-  }
-};
 
 const back = () =>
   router.push(
@@ -74,11 +48,12 @@ const back = () =>
         </ul>
       </nav>
 
-      <article class="grow min-w-0 body-2" @click="handleClick">
-        <p v-if="missing" class="body-2">Page not found.</p>
-        <!-- eslint-disable-next-line vue/no-v-html -- renderMarkdown escapes HTML first -->
-        <div v-else class="[&_p]:mb-3 [&_ul]:mb-3 [&_ol]:mb-3" v-html="html" />
-      </article>
+      <HelpContent
+        class="grow"
+        :slug="route.params.slug as string"
+        :anchor="route.hash.slice(1)"
+        @navigate="(to) => router.push(to)"
+      />
     </div>
   </div>
 </template>

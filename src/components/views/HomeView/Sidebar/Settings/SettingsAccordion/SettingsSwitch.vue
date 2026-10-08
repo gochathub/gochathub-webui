@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import SwitchInput from "@src/components/ui/inputs/SwitchInput.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 const props = defineProps<{
+  helpTo?: string;
   value: boolean;
   title: string;
   description: string;
@@ -13,7 +15,7 @@ const props = defineProps<{
   <div class="w-full flex flex-col">
     <div class="flex">
       <!--label-->
-      <div class="grow">
+      <div class="grow flex items-start gap-1">
         <label
           for="last-seen"
           class="inline-block outline-none mb-4"
@@ -23,6 +25,11 @@ const props = defineProps<{
             {{ props.title }}
           </p>
         </label>
+        <HelpLink
+          v-if="props.helpTo"
+          :to="props.helpTo"
+          :label="props.title.toLowerCase()"
+        />
       </div>
 
       <!--switch-->

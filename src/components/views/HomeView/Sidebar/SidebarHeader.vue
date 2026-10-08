@@ -6,7 +6,7 @@
       <slot name="title"></slot>
     </p>
 
-    <div>
+    <div class="flex items-center gap-1">
       <slot name="actions"></slot>
     </div>
   </div>

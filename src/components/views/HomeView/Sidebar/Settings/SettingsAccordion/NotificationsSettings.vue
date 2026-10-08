@@ -60,6 +60,7 @@ const handleAllowToggle = async (value: boolean) => {
   <Collapse id="notifications-settings-collapse" :collapsed="props.collapsed">
     <SettingsSwitch
       title="Allow Notifications"
+      help-to="/help/notifications#turn-them-on"
       description="Notifications for new messages, even when the app is closed"
       :value="!!store.settings.allowNotifications"
       :handle-toggle-switch="handleAllowToggle"

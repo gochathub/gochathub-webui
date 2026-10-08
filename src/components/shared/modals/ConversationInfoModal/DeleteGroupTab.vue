@@ -4,6 +4,7 @@ import type { IConversation } from "@src/types";
 import { ArrowUturnLeftIcon } from "@heroicons/vue/24/solid";
 import Button from "@src/components/ui/inputs/Button.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 
 defineProps<{
   conversation?: IConversation;
@@ -16,9 +17,15 @@ defineEmits(["active-page-change", "delete-group"]);
   <div>
     <!--header-->
     <div class="px-5 mb-6 flex justify-between items-center">
-      <p id="modal-title" class="heading-1 text-fg" tabindex="0">
-        Delete Group
-      </p>
+      <div class="flex items-center gap-1">
+        <p id="modal-title" class="heading-1 text-fg" tabindex="0">
+          Delete Group
+        </p>
+        <HelpLink
+          to="/help/rooms#the-conversation-menu"
+          label="deleting a group"
+        />
+      </div>
 
       <!--return button-->
       <IconButton

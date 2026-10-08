@@ -8,6 +8,7 @@ import { ApiError } from "@src/api/client";
 import { mapUser } from "@src/api/mappers";
 
 import Button from "@src/components/ui/inputs/Button.vue";
+import HelpLink from "@src/components/shared/HelpLink.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 import TurnstileWidget from "@src/components/ui/inputs/TurnstileWidget.vue";
@@ -113,6 +114,12 @@ const handleBack = () => {
           />
         </template>
         <template v-else>
+          <div class="mb-2">
+            <HelpLink
+              to="/help/account-security#two-factor-authentication"
+              label="two-factor sign-in"
+            />
+          </div>
           <LabeledTextInput
             :value="code"
             label="Authentication code"
@@ -134,6 +141,7 @@ const handleBack = () => {
 
         <p v-if="error" role="alert" class="body-3 text-error mt-4">
           {{ error }}
+          <HelpLink to="/help/troubleshooting" label="sign-in problems" />
         </p>
 
         <!--local controls-->

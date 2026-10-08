@@ -65,3 +65,9 @@ test("default mode is unchanged by doc mode", () => {
   expect(out).toContain("<h3");
   expect(out).toContain('href="/help/rooms" target="_blank"');
 });
+
+test("doc mode gives headings slug ids for anchor links", () => {
+  const out = renderMarkdown('## Why it stays "delivered"', { doc: true });
+  expect(out).toContain('id="why-it-stays-delivered"');
+  expect(renderMarkdown("## x")).not.toContain("id=");
+});
