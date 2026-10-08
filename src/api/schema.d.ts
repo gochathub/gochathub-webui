@@ -234,6 +234,40 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/users/me/tokens": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description The caller's live (not revoked) tokens. Secrets are never returned. */
+    get: operations["listApiTokens"];
+    put?: never;
+    /** @description Mint a personal API token (never expires; revoke it to end it). The raw `token` is returned once. It works as a bearer on every endpoint and the WebSocket, and skips password, Turnstile and 2FA, so treat it like a password. Sessions only: a token cannot mint tokens (403). */
+    post: operations["createApiToken"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/tokens/{tokenId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations["revokeApiToken"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/users/search": {
     parameters: {
       query?: never;
@@ -776,6 +810,24 @@ export interface components {
     };
     BackupCodes: {
       backup_codes: string[];
+    };
+    CreateApiTokenRequest: {
+      /** @description Label shown in the token list (default `mobile`). */
+      name?: string;
+    };
+    ApiTokenCreated: {
+      id: string;
+      name: string;
+      /** @description The raw token; shown once. */
+      token: string;
+    };
+    ApiToken: {
+      id: string;
+      name: string;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      last_used_at?: string | null;
     };
     /** @description Login response. Browsers: cookie set, `token` omitted. Clients that sent `token_request: true` receive the opaque session token for bearer use (ADR-015). */
     AuthResponse: {
@@ -1503,6 +1555,84 @@ export interface operations {
       };
       400: components["responses"]["BadRequest"];
       401: components["responses"]["Unauthorized"];
+    };
+  };
+  listApiTokens: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Tokens */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApiToken"][];
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+    };
+  };
+  createApiToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["CreateApiTokenRequest"];
+      };
+    };
+    responses: {
+      /** @description Created */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ApiTokenCreated"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+      /** @description The caller authenticated with an API token (`forbidden`). */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  revokeApiToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        tokenId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Revoked */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
     };
   };
   searchUsers: {

@@ -14,6 +14,7 @@ import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 import Collapse from "@src/components/ui/utils/Collapse.vue";
 import TwoFactorSettings from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/TwoFactorSettings.vue";
+import MobileSignInSettings from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/MobileSignInSettings.vue";
 
 // Types
 interface AccountValues {
@@ -147,5 +148,6 @@ const handleChangePassword = async () => {
     </Button>
 
     <TwoFactorSettings />
+    <MobileSignInSettings />
   </Collapse>
 </template>

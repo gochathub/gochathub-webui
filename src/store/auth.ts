@@ -93,6 +93,23 @@ export const useAuthStore = defineStore("auth", () => {
     if (me.value) me.value = { ...me.value, two_factor_enabled: false };
   }
 
+  // Personal API tokens (mobile sign-in QR). The raw token comes back once.
+  async function createApiToken(name: string) {
+    return unwrap(await client.POST("/users/me/tokens", { body: { name } }));
+  }
+
+  async function listApiTokens() {
+    return unwrap(await client.GET("/users/me/tokens"));
+  }
+
+  async function revokeApiToken(tokenId: string): Promise<void> {
+    await unwrap(
+      await client.DELETE("/users/me/tokens/{tokenId}", {
+        params: { path: { tokenId } },
+      }),
+    );
+  }
+
   async function logout(): Promise<void> {
     try {
       await unwrap(await client.POST("/auth/logout", {}));
@@ -114,6 +131,9 @@ export const useAuthStore = defineStore("auth", () => {
     enableTwoFactor,
     regenerateBackupCodes,
     disableTwoFactor,
+    createApiToken,
+    listApiTokens,
+    revokeApiToken,
     logout,
   };
 });
