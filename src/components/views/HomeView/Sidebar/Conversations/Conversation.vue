@@ -111,6 +111,7 @@ const handleArchive = () =>
 // (event) admin deletes the group, other members leave it
 // ponytail: native confirm(); swap for a modal if the UI wants one.
 const handleRemove = () => {
+  showContextMenu.value = false;
   const name = getName(props.conversation);
   const msg = isAdmin.value
     ? `Delete "${name}" for everyone? This cannot be undone.`
