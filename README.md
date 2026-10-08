@@ -73,6 +73,7 @@ The widget is active only when a site key is built in:
 | Where      | Setting                   | Notes                                                                                                             |
 | ---------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | Web build  | `VITE_TURNSTILE_SITE_KEY` | Public key. Read at build time; unset = no widget. Put it in `.env.production` (gitignored) for production builds |
+| Dev server | `VITE_ALLOWED_HOSTS`      | Comma-separated public hostnames the Vite dev/preview server accepts (IPs and localhost are always allowed)       |
 | Server env | `TURNSTILE_SECRET`        | Secret key; unset = server skips the check. Never commit it                                                       |
 | Server env | `TURNSTILE_HOSTNAME`      | Optional: pin tokens to this site's hostname                                                                      |
 

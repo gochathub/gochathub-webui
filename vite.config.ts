@@ -6,6 +6,12 @@ import { resolve } from "path";
 
 const rootDir = resolve(__dirname);
 
+// public hostnames the dev/preview servers answer to (comma-separated);
+// IPs and localhost are always allowed by Vite
+const allowedHosts = (process.env.VITE_ALLOWED_HOSTS ?? "")
+  .split(",")
+  .filter(Boolean);
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
@@ -50,11 +56,13 @@ export default defineConfig({
   },
   // pre-bundling moves harper.js away from its .wasm, so the wasm URL 404s
   optimizeDeps: { exclude: ["harper.js"] },
+  // `vite preview` of the built PWA, e.g. behind an HTTPS vhost (push needs TLS)
+  preview: { host: true, allowedHosts },
   server: {
-    // LAN + public vhost testing: bind all interfaces; Vite's allowHosts
-    // check permits IPs by default, the public hostname gets an entry.
+    // LAN + public vhost testing: bind all interfaces; Vite's allowedHosts
+    // check permits IPs by default, public hostnames come from VITE_ALLOWED_HOSTS.
     host: true,
-    allowedHosts: ["gochat.example.com"],
+    allowedHosts,
     proxy: {
       // Single origin per ADR-016: the browser only ever talks to /api; the
       // dev server forwards to the backend (server listens on :18100 locally).
