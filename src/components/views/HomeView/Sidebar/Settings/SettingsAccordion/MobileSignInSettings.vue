@@ -43,7 +43,8 @@ const handleCreate = () =>
     const t = await auth.createApiToken(`Mobile ${day}`);
     qr.value = await QRCode.toDataURL(
       mobileSignInUrl(window.location.origin, t.token),
-      { margin: 1, width: 240 },
+      // quiet zone of 4 modules (the QR spec): cameras need it against a dark UI
+      { margin: 4, width: 288 },
     );
     await refresh();
   });
@@ -67,7 +68,11 @@ onBeforeUnmount(() => (qr.value = ""));
       without a password or two-factor code, so anyone who scans it can use your
       account. It will not be shown again.
     </p>
-    <img :src="qr" alt="Mobile sign-in QR code" class="mb-4 bg-white" />
+    <img
+      :src="qr"
+      alt="Mobile sign-in QR code"
+      class="mb-4 bg-white w-72 h-72 max-w-full"
+    />
     <Button
       class="contained-primary contained-text w-full py-4 mb-8"
       @click="qr = ''"
