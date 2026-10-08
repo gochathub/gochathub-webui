@@ -24,11 +24,10 @@ const auth = useAuthStore();
 const router = useRouter();
 
 // (event) close dropdown menu when clicking outside
+// The toggle button (either layout's instance) and its children are "inside".
 const handleCloseOnClickOutside = (event: Event) => {
   if (
-    !["user-avatar", "profile-menu-button"].includes(
-      (event.target as HTMLButtonElement).id,
-    )
+    !(event.target as HTMLElement).closest('[aria-controls="profile-menu"]')
   ) {
     props.handleCloseDropdown();
   }
