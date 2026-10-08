@@ -39,3 +39,10 @@ test("javascript: links never become hrefs", () => {
   const out = renderMarkdown("[x](javascript:alert(1))");
   expect(out).not.toContain('href="javascript');
 });
+
+test("renders :shortcode: aliases, leaves unknown names and code alone", () => {
+  expect(renderMarkdown(":poop: and :nope:")).toBe("<p>💩 and :nope:</p>");
+  expect(renderMarkdown("`:poop:` 12:30:45")).toContain("<code");
+  expect(renderMarkdown("`:poop:`")).not.toContain("💩");
+  expect(renderMarkdown("12:30:45")).toBe("<p>12:30:45</p>");
+});

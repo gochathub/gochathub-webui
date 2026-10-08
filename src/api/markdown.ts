@@ -2,6 +2,8 @@
 // inline + fenced code, links, quotes, lists, headings, @mentions.
 // HTML in the source is escaped first — every tag in the output is ours.
 
+import emojis from "../components/ui/inputs/EmojiPicker/emojis.json";
+
 const ESC: Record<string, string> = {
   "&": "&amp;",
   "<": "&lt;",
@@ -12,6 +14,15 @@ const ESC: Record<string, string> = {
 
 function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ESC[c]!);
+}
+
+// :shortcode: -> char, built from the picker's emoji data (n[1..] are aliases)
+const SHORTCODES = new Map<string, string>();
+for (const e of Object.values(emojis).flat()) {
+  const char = String.fromCodePoint(
+    ...e.u.split("-").map((h) => parseInt(h, 16)),
+  );
+  for (const name of e.n.slice(1)) SHORTCODES.set(name, char);
 }
 
 function safeUrl(url: string): string | null {
@@ -48,6 +59,12 @@ function inline(s: string): string {
   out = out.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
   out = out.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
   out = out.replace(/~~([^~\n]+)~~/g, "<del>$1</del>");
+
+  // shortcodes last; skip code spans and tag attributes
+  out = out.replace(
+    /(<code[^>]*>.*?<\/code>|<[^>]*>)|:([a-z0-9_+-]+):/g,
+    (m, skip, name) => skip ?? SHORTCODES.get(name) ?? m,
+  );
 
   return out;
 }

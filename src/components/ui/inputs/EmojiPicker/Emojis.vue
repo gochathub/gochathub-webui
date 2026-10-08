@@ -28,6 +28,8 @@ const props = defineProps<{
   activeTab: string;
 }>();
 
+const emit = defineEmits<{ pick: [string] }>();
+
 const store = useStore();
 
 // emojis filtered by skin tone and keyword
@@ -99,6 +101,7 @@ onMounted(() => {
             class="ic-btn-ghost-gray w-7.5 h-7.5 mr-1"
             :title="emoji.n[0]"
             :aria-label="emoji.n[0]"
+            @click="emit('pick', unicodeToEmoji(emoji.r))"
           >
             {{ unicodeToEmoji(emoji.r) }}
           </IconButton>

@@ -8,6 +8,7 @@ import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
 const props = defineProps<{
   show?: boolean;
 }>();
+const emit = defineEmits<{ pick: [string] }>();
 
 // selected emoji groups
 const activeTab = ref("people");
@@ -37,7 +38,12 @@ const handleActiveTabChange = (tab: string) => {
     <SearchInput v-model="keyword" class="w-full mb-5 rounded-[.75rem]" />
 
     <!--Emojis-->
-    <Emojis :keyword="keyword" :active-tab="activeTab" class="w-full mb-5" />
+    <Emojis
+      :keyword="keyword"
+      :active-tab="activeTab"
+      class="w-full mb-5"
+      @pick="emit('pick', $event)"
+    />
 
     <!--Skin tones-->
     <EmojiSkinTones class="w-full" />

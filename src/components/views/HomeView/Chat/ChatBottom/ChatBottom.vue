@@ -237,7 +237,16 @@ onMounted(() => {
                 class="absolute z-10 bottom-13.75 md:right-0 xs:right-[-5rem] mt-2"
               >
                 <div role="none">
-                  <EmojiPicker :show="showPicker" />
+                  <!-- ponytail: appends at end, not at the caret -->
+                  <EmojiPicker
+                    :show="showPicker"
+                    @pick="
+                      (char) => {
+                        value += char;
+                        handleSetDraft();
+                      }
+                    "
+                  />
                 </div>
               </div>
             </ScaleTransition>
