@@ -20,8 +20,10 @@ import router from "@src/router";
 import {
   ArchiveBoxArrowDownIcon,
   CheckIcon,
+  HashtagIcon,
   InformationCircleIcon,
   TrashIcon,
+  UserIcon,
 } from "@heroicons/vue/24/outline";
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
 import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
@@ -168,6 +170,13 @@ const isActive = computed(
         :src="getAvatar(props.conversation)"
         :name="getName(props.conversation) ?? ''"
         class="w-7 h-7 mr-3 shrink-0"
+      />
+
+      <!--group / user marker-->
+      <component
+        :is="isGroup ? HashtagIcon : UserIcon"
+        class="w-5 h-5 mr-1.5 text-muted shrink-0"
+        :aria-label="isGroup ? 'group' : 'user'"
       />
 
       <!--conversation name-->

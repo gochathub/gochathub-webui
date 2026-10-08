@@ -13,10 +13,12 @@ import { getAvatar, getName } from "@src/utils";
 import {
   ChevronLeftIcon,
   EllipsisVerticalIcon,
+  HashtagIcon,
   InformationCircleIcon,
   MagnifyingGlassIcon,
   NoSymbolIcon,
   ShareIcon,
+  UserIcon,
 } from "@heroicons/vue/24/outline";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
@@ -107,13 +109,22 @@ const handleCloseConversation = () => {
 
       <!--name and last seen-->
       <div class="flex flex-col min-w-0">
-        <p
-          class="heading-2 text-fg mb-2 cursor-pointer truncate"
-          tabindex="0"
-          @click="props.handleOpenInfo"
-        >
-          {{ getName(activeConversation as IConversation) }}
-        </p>
+        <div class="flex items-center min-w-0 mb-2">
+          <component
+            :is="activeConversation?.type === 'group' ? HashtagIcon : UserIcon"
+            class="w-5 h-5 mr-1.5 text-muted shrink-0"
+            :aria-label="
+              activeConversation?.type === 'group' ? 'group' : 'user'
+            "
+          />
+          <p
+            class="heading-2 text-fg cursor-pointer truncate"
+            tabindex="0"
+            @click="props.handleOpenInfo"
+          >
+            {{ getName(activeConversation as IConversation) }}
+          </p>
+        </div>
 
         <p
           class="body-2 text-muted rounded-[.25rem] truncate"
