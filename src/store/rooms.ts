@@ -180,6 +180,31 @@ export const useRoomsStore = defineStore("rooms", () => {
     olderCursor.value[roomId] = page.next_cursor ?? undefined;
   }
 
+  // advance the read cursor to the newest message. Rooms never opened have no
+  // loaded messages, so fetch just the newest one.
+  async function markRead(roomId: string) {
+    const conv = convById(roomId);
+    if (!conv) return;
+    let newest = conv.messages[conv.messages.length - 1]?.id;
+    if (!newest) {
+      const page = await unwrap(
+        await client.GET("/rooms/{roomId}/messages", {
+          params: { query: { limit: 1 }, path: { roomId } },
+        }),
+      );
+      newest = page.items[0]?.id;
+    }
+    if (newest) {
+      await unwrap(
+        await client.POST("/rooms/{roomId}/read", {
+          params: { path: { roomId } },
+          body: { message_id: newest },
+        }),
+      );
+    }
+    conv.unread = 0;
+  }
+
   // message ChatMiddle should scroll to and highlight, then clear
   const focusMessageId = ref<string>();
 
@@ -579,6 +604,7 @@ export const useRoomsStore = defineStore("rooms", () => {
     searchMessages,
     focusMessageId,
     goToMessage,
+    markRead,
     resyncMembers,
     sendMessage,
     setArchived,
