@@ -30,7 +30,7 @@ const handleLogin = async () => {
   try {
     await auth.login(username.value, password.value);
     store.$patch({ user: mapUser(auth.me!), status: "success" });
-    router.push({ name: "Home" });
+    router.push({ name: "No-Chat" });
   } catch (e) {
     error.value =
       e instanceof ApiError && e.code === "unauthorized"

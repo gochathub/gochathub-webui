@@ -52,7 +52,7 @@ router.beforeEach(async (to) => {
     return { name: "Access", params: { method: "sign-in" } };
   }
   if (loggedIn && isAccess) {
-    return { name: "Home" };
+    return { name: "No-Chat" };
   }
   return true;
 });

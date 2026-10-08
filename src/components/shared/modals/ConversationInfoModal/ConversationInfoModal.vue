@@ -74,7 +74,7 @@ const handleLeaveGroup = async () => {
   try {
     await rooms.leaveRoom(props.conversation.id);
     props.closeModal();
-    router.push({ name: "Home" });
+    router.push({ name: "No-Chat" });
   } catch {
     handleError("Could not leave the group. Please try again.");
   }
@@ -85,7 +85,7 @@ const handleDeleteGroup = async () => {
   try {
     await rooms.deleteRoom(props.conversation.id);
     props.closeModal();
-    router.push({ name: "Home" });
+    router.push({ name: "No-Chat" });
   } catch {
     handleError("Could not delete the group. Please try again.");
   }
