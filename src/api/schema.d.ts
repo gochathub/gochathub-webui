@@ -752,10 +752,62 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/hooks/{hookId}/{secret}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        hookId: string;
+        secret: string;
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * @description Inbound webhook (docs/WEBHOOKS.md, ADR-020..022). Posts one message
+     *     into the webhook's fixed room as its bot user. The secret in the path
+     *     is the credential (no bearer, no cookie) and is redacted from logs.
+     *     Body is the Postmark inbound JSON subset; unknown fields (including
+     *     HtmlBody) are ignored. Status codes follow Postmark's retry rules:
+     *     200 is final, 403 stops retries, anything else is retried.
+     */
+    post: operations["ingestWebhook"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** @description Postmark inbound JSON subset (Cloudflare Email Worker posts the same shape). */
+    InboundEmail: {
+      /** @description Dedupe key per webhook; empty disables dedupe. */
+      MessageID?: string;
+      Subject?: string;
+      TextBody?: string;
+      /** @description Preferred over TextBody when present. */
+      StrippedTextReply?: string;
+      FromFull?: {
+        Email?: string;
+        Name?: string;
+      };
+      /** @description Only X-Spam-Score is read. */
+      Headers?: {
+        Name?: string;
+        Value?: string;
+      }[];
+      /** @description Stored as bot-owned attachments (first 10); failures are noted in the message body. */
+      Attachments?: {
+        Name?: string;
+        ContentType?: string;
+        /** @description Standard base64. */
+        Content?: string;
+      }[];
+    };
     Error: {
       error: components["schemas"]["ErrorBody"];
     };
@@ -839,8 +891,11 @@ export interface components {
       id: string;
       username: string;
       display_name: string;
-      /** @enum {string} */
-      role: "user" | "moderator" | "admin";
+      /**
+       * @description bot: authors webhook messages; cannot log in.
+       * @enum {string}
+       */
+      role: "user" | "moderator" | "admin" | "bot";
       /** @description Present only on self payloads (GET/PATCH /users/me, login). */
       email?: string | null;
       /** @description Present only on self payloads (GET/PATCH /users/me, login). */
@@ -870,6 +925,26 @@ export interface components {
       spellcheck_enabled: boolean;
       /** @description Personal dictionary. */
       spellcheck_words: string[];
+      /**
+       * @description Accent color, one of the supported swatches. Clients derive dark-mode shades and derived palette steps from this hex. The default "#4f46e5" is returned when unset/reset.
+       * @enum {string}
+       */
+      primary_color:
+        | "#4f46e5"
+        | "#7c3aed"
+        | "#9333ea"
+        | "#db2777"
+        | "#dc2626"
+        | "#c2410c"
+        | "#b45309"
+        | "#4d7c0f"
+        | "#15803d"
+        | "#0f766e"
+        | "#0e7490"
+        | "#0369a1"
+        | "#2563eb"
+        | "#475569"
+        | "#27313a";
     };
     /** @description Partial update; omitted fields keep current values. */
     UpdatePreferencesRequest: {
@@ -879,6 +954,8 @@ export interface components {
       allow_private_messages?: boolean;
       spellcheck_enabled?: boolean;
       spellcheck_words?: string[];
+      /** @description Empty string resets to the default (#4f46e5); any other value must be one of the supported swatch hexes (rejected with 400 validation). */
+      primary_color?: string;
     };
     AddContactRequest: {
       user_id: string;
@@ -2572,5 +2649,90 @@ export interface operations {
     };
     requestBody?: never;
     responses: never;
+  };
+  ingestWebhook: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        hookId: string;
+        secret: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["InboundEmail"];
+      };
+    };
+    responses: {
+      /**
+       * @description Posted, already posted (duplicate MessageID), or dropped by the
+       *     spam gate.
+       */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            message_id?: string;
+            duplicate?: boolean;
+            /** @enum {string} */
+            dropped?: "spam";
+          };
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      /**
+       * @description Unknown id, wrong secret, disabled webhook or source address
+       *     outside the allowlist (all indistinguishable).
+       */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      404: components["responses"]["NotFound"];
+      /** @description Target room is archived (Postmark retries until unarchived). */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Body exceeds WEBHOOK_MAX_BODY_BYTES. */
+      413: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Per-IP rate limit. */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Ingest concurrency full; retry after Retry-After. */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
   };
 }

@@ -6,6 +6,7 @@ import { ref } from "vue";
 import client, { ApiError, unwrap } from "@src/api/client";
 import { disablePush } from "@src/push";
 import type { components } from "@src/api/schema";
+import usePrefsStore, { ACCENT_DEFAULT, applyAccent } from "@src/store/prefs";
 
 export const useAuthStore = defineStore("auth", () => {
   const me = ref<components["schemas"]["User"] | undefined>(undefined);
@@ -22,6 +23,11 @@ export const useAuthStore = defineStore("auth", () => {
     } finally {
       bootstrapped.value = true;
     }
+    // accent + prefs load once per session (best effort)
+    if (me.value)
+      usePrefsStore()
+        .load()
+        .catch(() => {});
   }
 
   // Set when the password was right but a second factor is still needed.
@@ -118,6 +124,7 @@ export const useAuthStore = defineStore("auth", () => {
     } finally {
       me.value = undefined;
       bootstrapped.value = false;
+      applyAccent(ACCENT_DEFAULT);
     }
   }
 

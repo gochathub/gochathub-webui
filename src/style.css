@@ -81,6 +81,9 @@
   --color-fg: var(--fg);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-text: var(--accent-text);
   --color-error: var(--error);
   --color-hairline: var(--hairline);
 }
@@ -88,12 +91,17 @@
 :root {
   --canvas: #ffffff;
   --surface: #f3f4f6;
-  --select: #e0e7ff;
+  --select: color-mix(in srgb, var(--accent) 13%, white);
   --card: #f9fafb;
-  --mine: #e0e7ff;
+  --mine: color-mix(in srgb, var(--accent) 13%, white);
   --fg: #111827;
   --muted: #4b5563;
   --accent: #4f46e5;
+  /* accent shades derive from --accent; the runtime accent setting only
+     overrides this one variable */
+  --accent-hover: color-mix(in srgb, var(--accent) 85%, white);
+  --accent-soft: color-mix(in srgb, var(--accent) 13%, white);
+  --accent-text: var(--accent);
   --error: #dc2626;
   --hairline: #e5e7eb;
 }
@@ -103,10 +111,13 @@
   --surface: #111827;
   --select: #374151;
   --card: #374151;
-  --mine: #312e81;
+  --mine: color-mix(in srgb, var(--accent) 62%, black);
   --fg: #e5e7eb;
   --muted: #9ca3af;
   --accent: #4f46e5;
+  --accent-hover: color-mix(in srgb, var(--accent) 85%, white);
+  --accent-soft: color-mix(in srgb, var(--accent) 40%, var(--canvas));
+  --accent-text: color-mix(in srgb, var(--accent) 45%, white);
   --error: #f87171;
   --hairline: #374151;
 }
@@ -203,7 +214,7 @@
     transition-all duration-200 ease-out;
 }
 @utility contained-primary {
-  @apply bg-accent dark:bg-accent  focus:ring-3 focus:ring-indigo-100 active:ring-3 active:ring-indigo-200;
+  @apply bg-accent dark:bg-accent  focus:ring-3 focus:ring-accent-soft active:ring-3 active:ring-accent-soft;
 }
 @utility contained-success {
   @apply bg-green-500 dark:bg-green-500 focus:ring-3 focus:ring-green-100 active:ring-3 active:ring-green-200;
@@ -224,7 +235,7 @@
     border border-hairline hover:border-red-600 dark:hover:border-red-400 focus:border-red-600 dark:focus:border-red-400;
 }
 @utility ghost-primary {
-  @apply hover:bg-select hover:text-indigo-600 dark:hover:text-indigo-400 active:bg-select;
+  @apply hover:bg-accent-soft hover:text-accent-text active:bg-accent-soft;
 }
 @utility ghost-success {
   @apply hover:bg-green-50 hover:text-green-400 dark:hover:bg-gray-600 active:bg-green-100;
@@ -238,7 +249,7 @@
      rounded-full text-muted outline-hidden focus:outline-hidden transition-all;
 }
 @utility ic-btn-contained-primary {
-  @apply bg-accent hover:bg-indigo-500 focus:bg-indigo-500 dark:focus:bg-indigo-500 text-white duration-200;
+  @apply bg-accent hover:bg-accent-hover focus:bg-accent-hover text-white duration-200;
 }
 @utility ic-btn-contained-success {
   @apply bg-green-400 hover:bg-green-500 active:bg-green-600 text-white duration-500;
@@ -259,7 +270,7 @@
    hover:text-red-400 dark:hover:text-white focus:text-red-400 duration-200;
 }
 @utility ic-btn-ghost-primary {
-  @apply hover:bg-indigo-50 dark:hover:bg-gray-600 focus:bg-indigo-100 dark:focus:bg-gray-600 hover:text-indigo-400 focus:text-indigo-400 duration-200;
+  @apply hover:bg-accent-soft dark:hover:bg-gray-600 focus:bg-accent-soft dark:focus:bg-gray-600 hover:text-accent-text focus:text-accent-text duration-200;
 }
 @utility ic-btn-ghost-danger {
   @apply hover:bg-red-50 dark:hover:bg-gray-600 focus:bg-red-100 dark:focus:bg-gray-600 hover:text-red-400 focus:text-red-400 duration-200;
@@ -278,7 +289,7 @@
    focus:bg-transparent focus:border-accent;
 }
 @utility ringed-input {
-  @apply bg-card border-0 focus:ring-3 focus:ring-indigo-100 focus:bg-transparent;
+  @apply bg-card border-0 focus:ring-3 focus:ring-accent-soft focus:bg-transparent;
 }
 @utility dropdown-link {
   /* DropdownLink */
