@@ -145,7 +145,7 @@ const handleCloseConversation = () => {
         @click="props.handleOpenSearch"
       >
         <MagnifyingGlassIcon
-          class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+          class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-accent-text"
         />
       </IconButton>
 

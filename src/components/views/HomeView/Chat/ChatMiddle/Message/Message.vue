@@ -130,11 +130,9 @@ const replyMessage = computed(() =>
 
               'rounded-tr-xl bg-card': !props.self && !props.selected,
 
-              'rounded-tl-xl bg-indigo-200 dark:bg-indigo-900':
-                props.self && props.selected,
+              'rounded-tl-xl bg-accent-soft': props.self && props.selected,
 
-              'rounded-tr-xl bg-indigo-200 dark:bg-indigo-900':
-                !props.self && props.selected,
+              'rounded-tr-xl bg-accent-soft': !props.self && props.selected,
             }"
             @click="handleCloseContextMenu"
             @contextmenu.prevent="handleShowContextMenu"

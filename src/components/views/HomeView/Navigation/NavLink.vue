@@ -23,11 +23,9 @@ const props = defineProps<{
       <!--icon-->
       <component
         :is="props.icon"
-        class="w-7 h-6 group-focus:text-indigo-600 hover:text-indigo-600 dark:group-focus:text-indigo-400 dark:hover:text-indigo-400 active:text-indigo-600 dark:active:text-indigo-400 active:scale-110 transition ease-out duration-200"
+        class="w-7 h-6 group-focus:text-accent-text hover:text-accent-text active:text-accent-text active:scale-110 transition ease-out duration-200"
         :class="
-          (props.active as boolean)
-            ? ['text-indigo-600', 'dark:text-indigo-400']
-            : ['text-muted']
+          (props.active as boolean) ? ['text-accent-text'] : ['text-muted']
         "
       />
 

@@ -10,7 +10,7 @@ defineProps<{ to: string; label: string }>();
 <template>
   <button
     type="button"
-    class="inline-flex p-1 rounded-full text-muted hover:text-indigo-600 dark:hover:text-indigo-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 transition-colors"
+    class="inline-flex p-1 rounded-full text-muted hover:text-accent-text focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-text transition-colors"
     :title="`Help: ${label}`"
     :aria-label="`Help: ${label}`"
     @click.stop.prevent="openHelp(to)"

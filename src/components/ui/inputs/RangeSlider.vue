@@ -24,7 +24,7 @@ const handleValueChange = (event: any) => {
     min="0"
     max="100"
     type="range"
-    class="slider accent-indigo-500"
+    class="slider accent-accent"
     :value="props.percentage"
     @input="handleValueChange"
   />

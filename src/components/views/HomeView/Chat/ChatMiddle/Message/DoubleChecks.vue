@@ -30,7 +30,7 @@ const props = defineProps<{
     stroke-width="2.5"
     stroke-linecap="round"
     stroke-linejoin="round"
-    class="w-[.875rem] h-[.875rem] text-accent dark:text-indigo-400 ml-[.4rem]"
+    class="w-[.875rem] h-[.875rem] text-accent-text ml-[.4rem]"
     aria-label="read"
   >
     <path d="M1.5 14L5.8 18.2L14 8.5" />

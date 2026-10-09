@@ -81,7 +81,7 @@ watch(helpDrawer, () => {
         </router-link>
         <button
           type="button"
-          class="p-1 text-muted hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 rounded"
+          class="p-1 text-muted hover:text-fg focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-text rounded"
           aria-label="Close help"
           @click="closeHelp"
         >

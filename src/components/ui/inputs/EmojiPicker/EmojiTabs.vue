@@ -36,9 +36,7 @@ defineEmits(["tab-change"]);
         <FaceSmileIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'people'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'people' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -61,9 +59,7 @@ defineEmits(["tab-change"]);
         <FireIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'nature'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'nature' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -86,9 +82,7 @@ defineEmits(["tab-change"]);
         <CakeIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'food'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'food' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -111,9 +105,7 @@ defineEmits(["tab-change"]);
         <RocketLaunchIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'activity'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'activity' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -132,9 +124,7 @@ defineEmits(["tab-change"]);
         <LightBulbIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'objects'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'objects' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -157,9 +147,7 @@ defineEmits(["tab-change"]);
         <GlobeAsiaAustraliaIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'travel'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'travel' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>
@@ -182,9 +170,7 @@ defineEmits(["tab-change"]);
         <FlagIcon
           class="w-5 h-5 transition-colors duration-200"
           :class="[
-            props.active === 'flags'
-              ? ['text-accent dark:text-indigo-400']
-              : ['text-muted'],
+            props.active === 'flags' ? ['text-accent-text'] : ['text-muted'],
           ]"
         />
       </IconButton>

@@ -173,7 +173,7 @@ const buttons = [
 
 <template>
   <div
-    class="rounded-sm bg-card focus-within:ring-3 focus-within:ring-indigo-100"
+    class="rounded-sm bg-card focus-within:ring-3 focus-within:ring-accent-soft"
   >
     <div
       v-if="editor"
@@ -186,7 +186,7 @@ const buttons = [
         :key="b.label"
         type="button"
         class="ic-btn ic-btn-ghost-primary w-7 h-7"
-        :class="{ 'text-indigo-500': editor.isActive(b.mark) }"
+        :class="{ 'text-accent-text': editor.isActive(b.mark) }"
         :title="b.label"
         :aria-label="b.label"
         :aria-pressed="editor.isActive(b.mark)"

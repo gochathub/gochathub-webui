@@ -263,7 +263,7 @@ onMounted(() => {
               <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
               <FaceSmileIcon
                 v-else
-                class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-indigo-600 dark:group-hover:text-indigo-400"
+                class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-accent-text"
               />
             </IconButton>
 

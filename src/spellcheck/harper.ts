@@ -149,7 +149,7 @@ function harperPlugin(cfg: HarperConfig) {
       b.type = "button";
       b.setAttribute("role", "menuitem");
       b.className =
-        "block w-full rounded-sm px-2 py-1 text-left hover:bg-indigo-100 dark:hover:bg-white/10";
+        "block w-full rounded-sm px-2 py-1 text-left hover:bg-accent-soft dark:hover:bg-white/10";
       b.textContent = label;
       b.onmousedown = (e) => e.preventDefault();
       b.onclick = () => {

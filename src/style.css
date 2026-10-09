@@ -35,7 +35,6 @@
   --radius-lg: 1.25rem;
   --radius-full: 624.9375rem;
 
-
   --shadow-sm: 0rem 0.0625rem 0.1875rem 0rem rgba(5, 5, 5, 0.1);
   --shadow-md:
     0rem 0.1875rem 0.25rem 0rem rgba(3, 3, 3, 0.1),
@@ -84,6 +83,7 @@
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
   --color-accent-text: var(--accent-text);
+  --color-accent-active: var(--accent-active);
   --color-error: var(--error);
   --color-hairline: var(--hairline);
 }
@@ -102,6 +102,7 @@
   --accent-hover: color-mix(in srgb, var(--accent) 85%, white);
   --accent-soft: color-mix(in srgb, var(--accent) 13%, white);
   --accent-text: var(--accent);
+  --accent-active: color-mix(in srgb, var(--accent) 85%, black);
   --error: #dc2626;
   --hairline: #e5e7eb;
 }
@@ -118,6 +119,7 @@
   --accent-hover: color-mix(in srgb, var(--accent) 85%, white);
   --accent-soft: color-mix(in srgb, var(--accent) 40%, var(--canvas));
   --accent-text: color-mix(in srgb, var(--accent) 45%, white);
+  --accent-active: color-mix(in srgb, var(--accent) 60%, white);
   --error: #f87171;
   --hairline: #374151;
 }
@@ -150,7 +152,8 @@
    so it adapts to light/dark without its own token. */
 @utility scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--muted) 35%, transparent) transparent;
+  scrollbar-color: color-mix(in oklab, var(--muted) 35%, transparent)
+    transparent;
   &::-webkit-scrollbar {
     width: 0.5rem;
     height: 0.5rem;

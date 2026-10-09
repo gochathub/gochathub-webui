@@ -143,7 +143,7 @@ export function renderMarkdown(
         );
       } else if (quote) {
         html.push(
-          `<blockquote class="border-l-2 border-indigo-300 pl-3">${inline(quote[1]!, doc)}</blockquote>`,
+          `<blockquote class="border-l-2 border-accent pl-3">${inline(quote[1]!, doc)}</blockquote>`,
         );
       } else if (line.trim() === "") {
         html.push("");

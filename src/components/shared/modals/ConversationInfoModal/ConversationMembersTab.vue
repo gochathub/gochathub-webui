@@ -228,7 +228,7 @@ const handleAdd = async (c: IContact) => {
               >
                 you
               </p>
-              <p v-if="isAdmin(contact.id)" class="body-4 text-indigo-400">
+              <p v-if="isAdmin(contact.id)" class="body-4 text-accent-text">
                 admin
               </p>
             </div>
