@@ -10,6 +10,14 @@ const HOUR = 60 * 60 * 1000;
 const { needRefresh, updateServiceWorker } = useRegisterSW({
   onRegisteredSW(_url, r) {
     if (!r) return;
+    // a new worker taking control means a new deploy: reload once so the
+    // page picks it up (skips the first event = initial control)
+    let firstControl = !navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (firstControl) return;
+      location.reload();
+      firstControl = true;
+    });
     const check = async () => {
       if (!navigator.onLine) return;
       try {
