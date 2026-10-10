@@ -67,9 +67,9 @@
 }
 
 /*
-  Semantic surface/text tokens. Flipped by the .dark class on the app root
-  (App.vue); token utilities pick the value automatically, so components
-  need no dark: variant for these.
+  Semantic surface/text tokens. Flipped by the .dark class on <html>
+  (App.vue syncs it from the store); token utilities pick the value
+  automatically, so components need no dark: variant for these.
 */
 @theme inline {
   --color-canvas: var(--canvas);

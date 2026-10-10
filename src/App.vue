@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, watch } from "vue";
+import { onMounted, watch, watchEffect } from "vue";
 
 import useStore from "@src/store/store";
 import useAuthStore from "@src/store/auth";
@@ -18,6 +18,13 @@ import HelpDrawer from "@src/components/shared/HelpDrawer.vue";
 
 const store = useStore();
 const auth = useAuthStore();
+
+// dark mode = the .dark class on <html> (not the app div): the dark token
+// block re-declares the accent vars, and a class on a child would shadow the
+// runtime accent set on document.documentElement in dark mode.
+watchEffect(() => {
+  document.documentElement.classList.toggle("dark", store.settings.darkMode);
+});
 
 // update localStorage with state changes
 // ponytail: settings/emoji persistence only; the session lives in the
@@ -71,7 +78,7 @@ watch(
 </script>
 
 <template>
-  <div :class="{ dark: store.settings.darkMode }">
+  <div>
     <div class="h-dvh bg-canvas transition-colors duration-500">
       <router-view v-slot="{ Component }">
         <FadeTransition>
