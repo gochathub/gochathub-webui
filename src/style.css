@@ -93,7 +93,8 @@
   --surface: #f3f4f6;
   --select: color-mix(in srgb, var(--accent) 13%, white);
   --card: #f9fafb;
-  --mine: color-mix(in srgb, var(--accent) 13%, white);
+  /* own-message bubble: saturated accent (android parity); white text inside */
+  --mine: var(--accent);
   --fg: #111827;
   --muted: #4b5563;
   --accent: #4f46e5;

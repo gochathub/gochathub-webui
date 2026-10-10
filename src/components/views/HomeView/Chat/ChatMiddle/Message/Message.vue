@@ -149,7 +149,12 @@ const replyMessage = computed(() =>
             <!-- eslint-disable vue/no-v-html -- renderMarkdown escapes the source first; every tag in the output is ours -->
             <p
               v-if="props.message.content && props.message.type !== 'recording'"
-              class="body-2 outline-none text-fg/90 dark:text-fg/85 [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
+              class="body-2 outline-none [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
+              :class="
+                props.self && !props.selected
+                  ? 'text-white'
+                  : 'text-fg/90 dark:text-fg/85'
+              "
               tabindex="0"
               v-html="renderMarkdown(props.message.content as string)"
             ></p>

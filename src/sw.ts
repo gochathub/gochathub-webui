@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { clientsClaim } from "workbox-core";
 import {
   cleanupOutdatedCaches,
   createHandlerBoundToURL,
@@ -18,7 +19,12 @@ registerRoute(
   }),
 );
 
-// prompt-for-update: the page posts this when the user clicks Upgrade
+// silent updates: each new deploy activates (skipWaiting + clientsClaim),
+// so a closed-and-reopened client always gets the current bundle
+self.addEventListener("install", () => void self.skipWaiting());
+clientsClaim();
+
+// the deployed UpdatePrompt still posts SKIP_WAITING; harmless once auto
 self.addEventListener("message", (e) => {
   if (e.data?.type === "SKIP_WAITING") void self.skipWaiting();
 });

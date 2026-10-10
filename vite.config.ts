@@ -17,12 +17,13 @@ export default defineConfig({
   plugins: [
     vue(),
     alias(),
-    // custom sw.ts: push + notificationclick handlers; prompt-for-update
+    // custom sw.ts: push + notificationclick handlers; silent auto-update
+    // (sw.ts skips waiting + calls clientsClaim on every new deploy)
     VitePWA({
       strategies: "injectManifest",
       srcDir: "src",
       filename: "sw.ts",
-      registerType: "prompt",
+      registerType: "autoUpdate",
       manifest: {
         name: "goChatHub",
         short_name: "goChatHub",
