@@ -8,7 +8,7 @@ import MailSettings from "@src/components/views/AdminView/MailSettings.vue";
 // Add admin sections here; the route param picks one.
 const sections = [
   { slug: "signup-invites", title: "Signup invites", component: SignupInvites },
-  { slug: "email", title: "Email (SMTP)", component: MailSettings },
+  { slug: "email", title: "Email provider", component: MailSettings },
 ];
 
 const route = useRoute();

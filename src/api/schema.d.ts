@@ -680,12 +680,39 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** @description Admin only (ADR-026). Outbound SMTP configuration used for signup invites. The password is never returned (`has_password`). */
+    /** @description Admin only (ADR-026). Every supported mail provider with its form fields, saved non-secret values and `has_secret` flags (secrets are write-only), plus which one is active. */
     get: operations["getMailSettings"];
-    /** @description Save the SMTP configuration. Omit `password` to keep the stored one; an empty `host` clears the configuration (signup invites switch off). 400 when the server has no `SECRETS_KEY` (it seals the password). */
-    put: operations["putMailSettings"];
+    /** @description Switch the active provider, or turn mail off with an empty `active`. The provider must already be fully configured (400 otherwise). Saved configurations of other providers are kept. */
+    put: operations["setActiveMailProvider"];
     post?: never;
     delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/admin/mail-settings/{provider}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        provider:
+          | "postmark"
+          | "ses"
+          | "mailgun"
+          | "sendgrid"
+          | "resend"
+          | "brevo"
+          | "smtp";
+      };
+      cookie?: never;
+    };
+    get?: never;
+    /** @description Save one provider's configuration. Secret fields left empty keep the stored value; `activate` also makes it the active provider. 400 when the server has no `SECRETS_KEY` (it seals the credentials). */
+    put: operations["saveMailProvider"];
+    post?: never;
+    /** @description Wipe the provider's stored credentials; deactivates it if active. */
+    delete: operations["clearMailProvider"];
     options?: never;
     head?: never;
     patch?: never;
@@ -1501,30 +1528,44 @@ export interface components {
     AddMemberRequest: {
       user_id: string;
     };
-    MailSettings: {
-      host: string;
-      port: string;
-      user: string;
-      /** @enum {string} */
-      tls: "starttls" | "implicit" | "none" | "";
-      from: string;
-      has_password: boolean;
-      /** @description Invites can be sent (host saved and SECRETS_KEY set). */
+    MailField: {
+      name: string;
+      label: string;
+      help?: string;
+      /** @description Write-only; never returned, only `has_secret`. */
+      secret: boolean;
+      required: boolean;
+      default?: string;
+      /** @description Non-empty means a select. */
+      options?: string[];
+    };
+    MailProvider: {
+      id: string;
+      label: string;
+      fields: components["schemas"]["MailField"][];
+      /** @description Saved non-secret values (field defaults filled in). */
+      values: {
+        [key: string]: string;
+      };
+      has_secret: {
+        [key: string]: boolean;
+      };
+      /** @description Every required field is saved. */
       configured: boolean;
-      /** @description False when the server has no SECRETS_KEY; settings cannot be saved. */
+    };
+    MailSettings: {
+      /** @description Provider id; empty means mail (and signup invites) are off. */
+      active: string;
+      providers: components["schemas"]["MailProvider"][];
+      /** @description False when the server has no SECRETS_KEY; nothing can be saved. */
       encryption_available: boolean;
     };
-    PutMailSettingsRequest: {
-      /** @description Bare hostname or IP; empty clears the configuration. */
-      host: string;
-      /** @description Defaults to 587. */
-      port?: string;
-      user?: string;
-      /** @description Omit to keep the stored password. */
-      password?: string;
-      /** @enum {string} */
-      tls: "starttls" | "implicit" | "none";
-      from: string;
+    SaveMailProviderRequest: {
+      /** @description Field name to value; an empty secret keeps the stored one. */
+      values: {
+        [key: string]: string;
+      };
+      activate?: boolean;
     };
     CreateSignupInviteRequest: {
       email: string;
@@ -2947,7 +2988,7 @@ export interface operations {
       403: components["responses"]["Forbidden"];
     };
   };
-  putMailSettings: {
+  setActiveMailProvider: {
     parameters: {
       query?: never;
       header?: never;
@@ -2956,11 +2997,13 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["PutMailSettingsRequest"];
+        "application/json": {
+          active: string;
+        };
       };
     };
     responses: {
-      /** @description Saved */
+      /** @description Updated settings */
       200: {
         headers: {
           [name: string]: unknown;
@@ -2971,6 +3014,74 @@ export interface operations {
       };
       400: components["responses"]["BadRequest"];
       403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  saveMailProvider: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        provider:
+          | "postmark"
+          | "ses"
+          | "mailgun"
+          | "sendgrid"
+          | "resend"
+          | "brevo"
+          | "smtp";
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SaveMailProviderRequest"];
+      };
+    };
+    responses: {
+      /** @description Updated settings */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MailSettings"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  clearMailProvider: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        provider:
+          | "postmark"
+          | "ses"
+          | "mailgun"
+          | "sendgrid"
+          | "resend"
+          | "brevo"
+          | "smtp";
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Updated settings */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MailSettings"];
+        };
+      };
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
     };
   };
   testMailSettings: {

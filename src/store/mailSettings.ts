@@ -1,5 +1,5 @@
-// Admin SMTP settings (ADR-026). The password is write-only: the server only
-// reports has_password.
+// Admin mail provider settings (ADR-026). The server returns every provider
+// with its form fields; secrets are write-only (has_secret flags only).
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -7,7 +7,7 @@ import client, { unwrap } from "@src/api/client";
 import type { components } from "@src/api/schema";
 
 export type MailSettings = components["schemas"]["MailSettings"];
-export type MailSettingsInput = components["schemas"]["PutMailSettingsRequest"];
+export type MailProvider = components["schemas"]["MailProvider"];
 
 export const useMailSettingsStore = defineStore("mailSettings", () => {
   const settings = ref<MailSettings | undefined>(undefined);
@@ -16,9 +16,32 @@ export const useMailSettingsStore = defineStore("mailSettings", () => {
     settings.value = await unwrap(await client.GET("/admin/mail-settings"));
   }
 
-  async function save(body: MailSettingsInput) {
+  // blank secrets keep the stored value
+  async function save(
+    provider: MailProvider["id"],
+    values: Record<string, string>,
+    activate: boolean,
+  ) {
     settings.value = await unwrap(
-      await client.PUT("/admin/mail-settings", { body }),
+      await client.PUT("/admin/mail-settings/{provider}", {
+        params: { path: { provider: provider as never } },
+        body: { values, activate },
+      }),
+    );
+  }
+
+  // "" turns mail off
+  async function setActive(active: string) {
+    settings.value = await unwrap(
+      await client.PUT("/admin/mail-settings", { body: { active } }),
+    );
+  }
+
+  async function clear(provider: MailProvider["id"]) {
+    settings.value = await unwrap(
+      await client.DELETE("/admin/mail-settings/{provider}", {
+        params: { path: { provider: provider as never } },
+      }),
     );
   }
 
@@ -28,7 +51,7 @@ export const useMailSettingsStore = defineStore("mailSettings", () => {
     );
   }
 
-  return { settings, load, save, sendTest };
+  return { settings, load, save, setActive, clear, sendTest };
 });
 
 export default useMailSettingsStore;
