@@ -127,7 +127,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
       class="grow flex items-center justify-center gap-2 min-w-0 xs:hidden md:flex"
     >
       <label
-        class="w-full max-w-[48rem] h-9 px-3 flex items-center rounded border border-hairline bg-canvas text-muted focus-within:border-accent"
+        class="w-full max-w-[48rem] h-[2.25rem] px-3 flex items-center rounded border border-hairline bg-canvas text-muted focus-within:border-accent"
       >
         <input
           ref="searchEl"

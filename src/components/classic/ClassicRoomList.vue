@@ -65,7 +65,7 @@ const sections = computed(() => [
   <div role="list" aria-label="conversations" class="py-1">
     <!--the top-bar search is hidden on small screens-->
     <label
-      class="md:hidden mx-5 mt-3 mb-2 h-9 px-3 flex items-center rounded border border-hairline bg-canvas text-muted focus-within:border-accent"
+      class="md:hidden mx-5 mt-3 mb-2 h-[2.25rem] px-3 flex items-center rounded border border-hairline bg-canvas text-muted focus-within:border-accent"
     >
       <input
         v-model="filter"
