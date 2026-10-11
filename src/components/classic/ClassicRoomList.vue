@@ -63,6 +63,20 @@ const sections = computed(() => [
 
 <template>
   <div role="list" aria-label="conversations" class="py-1">
+    <!--the top-bar search is hidden on small screens-->
+    <label
+      class="md:hidden mx-5 mt-3 mb-2 h-9 px-3 flex items-center rounded border border-hairline bg-canvas text-muted focus-within:border-accent"
+    >
+      <input
+        v-model="filter"
+        type="search"
+        name="room-filter-mobile"
+        autocomplete="off"
+        placeholder="Search rooms"
+        aria-label="Search rooms"
+        class="grow min-w-0 bg-transparent outline-none body-2 text-fg"
+      />
+    </label>
     <template v-if="store.status === 'loading' || store.delayLoading">
       <Circle2Lines v-for="_idx in 6" :key="_idx" />
     </template>

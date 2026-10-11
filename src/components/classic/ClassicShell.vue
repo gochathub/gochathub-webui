@@ -20,17 +20,17 @@ const composeOpen = ref(false);
 
 <template>
   <div class="h-full flex flex-col overflow-hidden">
-    <ClassicTopBar @create="composeOpen = true" />
-    <div class="grow min-h-0 xs:relative md:static flex">
-      <ClassicSidebar />
+    <!--small screens: room list, or the open room (no top bar), never both-->
+    <ClassicTopBar
+      :class="{ 'xs:hidden md:flex': activeConversationId }"
+      @create="composeOpen = true"
+    />
+    <div class="grow min-h-0 flex">
+      <ClassicSidebar :class="{ 'xs:hidden md:flex': activeConversationId }" />
       <div
         id="mainContent"
-        class="xs:absolute xs:z-10 md:static grow min-w-0 h-full xs:w-full bg-canvas transition-all duration-500"
-        :class="
-          activeConversationId
-            ? ['xs:-left-[0rem]', 'xs:static']
-            : ['xs:left-250']
-        "
+        class="grow min-w-0 h-full xs:w-full bg-canvas"
+        :class="{ 'xs:hidden md:block': !activeConversationId }"
         role="region"
       >
         <router-view v-slot="{ Component }">
