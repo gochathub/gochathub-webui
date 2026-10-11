@@ -169,6 +169,10 @@ docs/help/        in-app help pages (markdown)
 - Group admin actions (invite/remove members from the info modal) wired but
   not exhaustively tested.
 
+## Contributing and security
+
+See the [contributing guide](https://github.com/gochathub/.github/blob/main/CONTRIBUTING.md) and [code of conduct](https://github.com/gochathub/.github/blob/main/CODE_OF_CONDUCT.md). Report vulnerabilities privately through the Security tab, not in issues: [security policy](https://github.com/gochathub/.github/blob/main/SECURITY.md).
+
 ## License
 
 [MIT](LICENCE). The UI is a fork of
