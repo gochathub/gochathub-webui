@@ -673,6 +673,130 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/admin/mail-settings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Admin only (ADR-026). Outbound SMTP configuration used for signup invites. The password is never returned (`has_password`). */
+    get: operations["getMailSettings"];
+    /** @description Save the SMTP configuration. Omit `password` to keep the stored one; an empty `host` clears the configuration (signup invites switch off). 400 when the server has no `SECRETS_KEY` (it seals the password). */
+    put: operations["putMailSettings"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/admin/mail-settings/test": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Send a test message through the saved settings. A delivery failure is a 400 whose message carries the SMTP error (admin only). */
+    post: operations["testMailSettings"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/admin/signup-invites": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Admin only (ADR-026). 404 until an admin has saved mail settings. Newest first, at most 200. */
+    get: operations["listSignupInvites"];
+    put?: never;
+    /** @description Email an invite link (valid 7 days). Inviting an email that already has an open invite re-keys it (resend). 409 when the email already belongs to an account; 502 `mail_failed` when the invite was saved but the email could not be sent (use resend). */
+    post: operations["createSignupInvite"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/admin/signup-invites/{inviteId}/resend": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inviteId: string;
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Rotate the token (the old link dies), reset expiry, email again. */
+    post: operations["resendSignupInvite"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/admin/signup-invites/{inviteId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inviteId: string;
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations["revokeSignupInvite"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/signup/lookup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Validate an invite token (from the emailed link's `#token=` fragment) and return the invited email. Unknown, expired, used and revoked tokens are indistinguishable (404). Shares the login rate limit. */
+    post: operations["signupLookup"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/signup": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Consume an invite token and create the account (role `user`, email taken from the invite), then sign in like `/auth/login` (cookie set). Any validation failure leaves the token usable. Password: 12-128 characters. */
+    post: operations["signup"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/attachments": {
     parameters: {
       query?: never;
@@ -1376,6 +1500,65 @@ export interface components {
     };
     AddMemberRequest: {
       user_id: string;
+    };
+    MailSettings: {
+      host: string;
+      port: string;
+      user: string;
+      /** @enum {string} */
+      tls: "starttls" | "implicit" | "none" | "";
+      from: string;
+      has_password: boolean;
+      /** @description Invites can be sent (host saved and SECRETS_KEY set). */
+      configured: boolean;
+      /** @description False when the server has no SECRETS_KEY; settings cannot be saved. */
+      encryption_available: boolean;
+    };
+    PutMailSettingsRequest: {
+      /** @description Bare hostname or IP; empty clears the configuration. */
+      host: string;
+      /** @description Defaults to 587. */
+      port?: string;
+      user?: string;
+      /** @description Omit to keep the stored password. */
+      password?: string;
+      /** @enum {string} */
+      tls: "starttls" | "implicit" | "none";
+      from: string;
+    };
+    CreateSignupInviteRequest: {
+      email: string;
+    };
+    /** @description Admin view; the token is never returned. */
+    SignupInvite: {
+      id: string;
+      email: string;
+      /** @enum {string} */
+      status: "open" | "used" | "revoked" | "expired";
+      invited_by: string | null;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      last_sent_at: string;
+      /** Format: date-time */
+      expires_at: string;
+      /** Format: date-time */
+      used_at: string | null;
+    };
+    SignupLookupRequest: {
+      token: string;
+    };
+    SignupRequest: {
+      token: string;
+      username: string;
+      display_name: string;
+      password: string;
+      /** @description IANA zone name; optional. */
+      timezone?: string;
+      /** @description One of the accent swatches (see Preferences); optional. */
+      primary_color?: string;
+      /** @description Required when the server has Turnstile enabled. */
+      turnstile_token?: string;
     };
     CreateInviteRequest: {
       room_id: string;
@@ -2740,6 +2923,290 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  getMailSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current settings */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MailSettings"];
+        };
+      };
+      403: components["responses"]["Forbidden"];
+    };
+  };
+  putMailSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PutMailSettingsRequest"];
+      };
+    };
+    responses: {
+      /** @description Saved */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MailSettings"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      403: components["responses"]["Forbidden"];
+    };
+  };
+  testMailSettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": {
+          to: string;
+        };
+      };
+    };
+    responses: {
+      /** @description Sent */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      400: components["responses"]["BadRequest"];
+      403: components["responses"]["Forbidden"];
+    };
+  };
+  listSignupInvites: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Signup invites */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SignupInvite"][];
+        };
+      };
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  createSignupInvite: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["CreateSignupInviteRequest"];
+      };
+    };
+    responses: {
+      /** @description Invite created and emailed */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SignupInvite"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      /** @description The email already belongs to an account */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Invite saved, email delivery failed (`mail_failed`) */
+      502: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  resendSignupInvite: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inviteId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Resent */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SignupInvite"];
+        };
+      };
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+      /** @description Email delivery failed (`mail_failed`) */
+      502: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  revokeSignupInvite: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        inviteId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Revoked */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  signupLookup: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SignupLookupRequest"];
+      };
+    };
+    responses: {
+      /** @description Live invite */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            email: string;
+          };
+        };
+      };
+      404: components["responses"]["NotFound"];
+      /** @description Rate limited */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  signup: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SignupRequest"];
+      };
+    };
+    responses: {
+      /** @description Account created and signed in */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AuthResponse"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      /** @description Turnstile token missing or rejected (`captcha_failed`). */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      404: components["responses"]["NotFound"];
+      /** @description Username unavailable */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+      /** @description Rate limited */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
       };
     };
   };

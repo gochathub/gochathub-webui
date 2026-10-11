@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 
 import useStore from "@src/store/store";
+import useAuthStore from "@src/store/auth";
 
 import {
   BellIcon,
@@ -10,6 +11,7 @@ import {
   Cog6ToothIcon,
   MoonIcon,
   QuestionMarkCircleIcon,
+  ShieldCheckIcon,
   SunIcon,
   UserIcon,
 } from "@heroicons/vue/24/solid";
@@ -18,6 +20,7 @@ import Logo from "@src/components/views/HomeView/Navigation/Logo.vue";
 import NavLink from "@src/components/views/HomeView/Navigation/NavLink.vue";
 
 const store = useStore();
+const auth = useAuthStore();
 const router = useRouter();
 
 const showDropdown = ref(false);
@@ -56,6 +59,15 @@ const handleActiveSidebarComponentChange = (value: string) => {
               title="Contacts"
               :active="store.activeSidebarComponent === 'contacts'"
               @click="() => handleActiveSidebarComponentChange('contacts')"
+            />
+          </li>
+
+          <!--admin page (server enforces the role)-->
+          <li v-if="auth.me?.role === 'admin'">
+            <NavLink
+              :icon="ShieldCheckIcon"
+              title="Admin"
+              @click="router.push('/admin')"
             />
           </li>
 

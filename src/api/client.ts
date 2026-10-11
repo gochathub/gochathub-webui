@@ -14,6 +14,7 @@ export type ApiErrorCode =
   | "rate_limited"
   | "two_factor_required"
   | "captcha_failed"
+  | "mail_failed"
   | "passkeys_disabled"
   | "internal";
 

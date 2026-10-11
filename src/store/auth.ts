@@ -180,6 +180,23 @@ export const useAuthStore = defineStore("auth", () => {
     );
   }
 
+  // Invite signup (ADR-026): the token comes from the emailed link's fragment.
+  async function lookupInvite(token: string): Promise<string> {
+    return (
+      await unwrap(await client.POST("/signup/lookup", { body: { token } }))
+    ).email;
+  }
+
+  async function signup(
+    body: components["schemas"]["SignupRequest"],
+  ): Promise<void> {
+    me.value = (await unwrap(await client.POST("/signup", { body }))).user;
+    challenge.value = undefined;
+    usePrefsStore()
+      .load()
+      .catch(() => {});
+  }
+
   // Android handoff: mint a one-time code for the app's PKCE challenge and
   // deep-link it back. Works for any signed-in session.
   async function handoffToApp(
@@ -221,6 +238,8 @@ export const useAuthStore = defineStore("auth", () => {
     enableTwoFactor,
     regenerateBackupCodes,
     disableTwoFactor,
+    lookupInvite,
+    signup,
     loginWithPasskey,
     listPasskeys,
     addPasskey,
