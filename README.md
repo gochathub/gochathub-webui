@@ -29,11 +29,53 @@ bun install
 bun run dev   # http://localhost:5174
 ```
 
-Accounts are CLI-managed (no signup): `chat-server user create <name>
---display-name "Name" --role admin --password-stdin -` (type password, Enter).
+There is no open signup. Accounts are created by an admin: the CLI
+(`chat-server user create <name> --display-name "Name" --role admin
+--password-stdin -`, type password, Enter) or an emailed signup invite (below).
 
 Attachment uploads need object storage (S3) — `ALLOW_UPLOADS` without
 storage configured returns an error the UI surfaces.
+
+## Features beyond the template
+
+- **Layouts:** modern (template) and classic (compact sidebar and room list,
+  desktop and mobile). Per-user preference with `instance` meaning the admin default;
+  resolved by `resolveLayout` in `store/prefs.ts`.
+- **Installable PWA + Web Push:** `vite-plugin-pwa` (injectManifest), service
+  worker in `src/sw.ts`, push registration in `src/push.ts`. An update toast
+  offers upgrade/later; the WebSocket notification path stands down while push
+  is registered.
+- **Passkeys:** passkey sign-in, passkey management in Settings → Account, and
+  an Android browser handoff page (`/access/:method/`).
+- **Mobile sign-in QR:** Settings → Account creates a personal API token and
+  shows it once as a `gochathub://login?...` QR; tokens can be listed and revoked.
+- **Signup invites + admin area:** `/signup` consumes an invite token from the
+  URL fragment; `/admin` (admins only) manages invites and email delivery
+  (Postmark, SES, Mailgun, SendGrid, Resend, Brevo, SMTP; provider fields come
+  from the server).
+- **Composer:** Tiptap editor, `:shortcode:` emoji autocomplete and picker,
+  optional Harper grammar/spelling check (wasm lazy-loaded, toggle and
+  dictionary sync via server preferences).
+- **In-app help:** `/help/:slug?`, pages from `docs/help/*.md`, contextual links.
+
+## Rocket.Chat link
+
+Optional — only relevant if you have a Rocket.Chat account you want to see in
+goChatHub; everyone else can skip this section. This is an independent
+integration, not affiliated with or endorsed by Rocket.Chat Technologies Corp.
+
+Settings → Integrations links your own Rocket.Chat workspace: workspace URL,
+RC user id (or username) and a Personal Access Token. The token goes to the
+server once and is never read back. The server mirrors your direct messages,
+private groups and channels as rooms in your list (channels appear as
+owner-only private rooms), backfills history, and posts your replies through to
+Rocket.Chat. Thread replies are not supported in mirrored rooms. Unlinking
+hides the mirrored rooms; re-linking restores them.
+
+The section is hidden when the server has no `RC_PAT_KEY` (the link endpoint
+404s). Server settings: `RC_PAT_KEY` (encrypts stored tokens), optional
+`RC_BASE_URL` default, `RC_ALLOW_HOSTS`, `RC_SYNC_INTERVAL` (see the server's
+`docs/ROCKETCHAT-INTEGRATION.md`). State lives in `store/integrations.ts`.
 
 ## Two-factor authentication (TOTP)
 
@@ -52,9 +94,6 @@ authentication.
   (needs the password and a code).
 - **Lost device:** an admin runs `chat-server user 2fa-reset <username>` on
   the server; it removes the factor and revokes the user's sessions.
-- Rocket.Chat TOTP enrollments are imported by server migration `003_totp.sql`
-  (email-2FA is not carried over). Imported backup codes are unverified — if
-  one fails, regenerate.
 
 Flow lives in `store/auth.ts` (`login`, `login2fa`, `setupTwoFactor`,
 `enableTwoFactor`, `regenerateBackupCodes`, `disableTwoFactor`); UI in
@@ -92,7 +131,7 @@ bun run dev         # dev server
 bun run build       # vue-tsc + vite build
 bun run typecheck   # strict TS against the generated schema
 bun run lint        # eslint (TS-aware)
-bun test tests/markdown.test.ts
+bun test tests/       # unit tests (smoke suite below needs a server)
 GOCHATHUB_SMOKE=http://localhost:18100 GOCHATHUB_SMOKE_PASS=… bun test tests/smoke/
 bun run generate-schema  # openapi-typescript from api/openapi.yaml
 ```
@@ -103,8 +142,11 @@ bun run generate-schema  # openapi-typescript from api/openapi.yaml
 src/api/          openapi-fetch client, generated schema.d.ts, mappers, markdown renderer
 src/turnstile.ts  Turnstile script loader + site key (VITE_TURNSTILE_SITE_KEY)
 src/ws/           WebSocket client (frames per docs/WEBSOCKETS.md) + session lifecycle
-src/store/        Pinia stores: chat (UI state), rooms, contacts, invites, prefs, auth
-src/components/   template UI adapted to the server model
+src/push.ts       Web Push subscribe/teardown; src/sw.ts is the service worker
+src/store/        Pinia stores: chat (UI state), rooms, contacts, invites, prefs, auth,
+                  integrations (Rocket.Chat), signupInvites, mailSettings, uiSettings
+src/components/   template UI adapted to the server model (classic/ = classic layout)
+docs/help/        in-app help pages (markdown)
 ```
 
 ## Conventions worth knowing
@@ -126,3 +168,23 @@ src/components/   template UI adapted to the server model
 - Reactions: WS events are received/deduped; reaction chips don't render yet.
 - Group admin actions (invite/remove members from the info modal) wired but
   not exhaustively tested.
+
+## License
+
+[MIT](LICENCE). The UI is a fork of
+[Avian-Template](https://github.com/daemon-bixia/Avian-Template) © 2021
+Muhammad Salah (MIT).
+
+## Acknowledgements and trademarks
+
+- [Avian-Template](https://github.com/daemon-bixia/Avian-Template) provides the
+  UI base.
+- The classic layout is inspired by the interface of
+  [Rocket.Chat](https://github.com/RocketChat/Rocket.Chat) (MIT, outside its
+  `ee/` directories). No Rocket.Chat code or assets are used, and the optional
+  link feature talks only to Rocket.Chat's public REST API via the server.
+
+goChatHub is an independent project, not affiliated with, endorsed by, or
+sponsored by Rocket.Chat Technologies Corp. Rocket.Chat is a trademark of
+Rocket.Chat Technologies Corp.; Cloudflare and Turnstile are trademarks of
+Cloudflare, Inc. Third-party names are used only to identify compatibility.
