@@ -12,6 +12,8 @@ const props = defineProps<{
   class?: string;
   placeholder?: string;
   bordered?: boolean;
+  // extra attributes for the <input> itself (autocomplete hints, inputmode, ...)
+  inputAttrs?: Record<string, string>;
 }>();
 </script>
 
@@ -42,6 +44,7 @@ const props = defineProps<{
           props.class,
         ]"
         :placeholder="props.placeholder"
+        :input-attrs="props.inputAttrs"
         @value-changed="(value) => $emit('valueChanged', value)"
       />
 

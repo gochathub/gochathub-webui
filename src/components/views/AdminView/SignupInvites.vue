@@ -56,20 +56,32 @@ const fmt = (iso: string) => new Date(iso).toLocaleString();
       Could not load invites.
     </p>
     <p v-else-if="!invites.enabled" class="body-3 text-muted">
-      Email is not configured yet. Set it up under Email (SMTP) in the Admin
-      menu.
+      Email is not configured yet. Choose a provider under Email provider in the
+      Admin menu.
     </p>
     <template v-else>
       <form class="flex items-end gap-3 mb-4" @submit.prevent="send">
-        <LabeledTextInput
-          :value="email"
-          label="Invite by email"
-          type="email"
-          name="email"
-          placeholder="person@example.com"
-          class="grow"
-          @value-changed="(v) => (email = v)"
-        />
+        <div class="grow">
+          <!-- type=text + ignore hints: password managers (Bitwarden, LastPass, 1Password) must not fill an invitee's address with the admin's own -->
+          <LabeledTextInput
+            :value="email"
+            label="Invite by email"
+            name="invitee-address"
+            placeholder="person@example.com"
+            class="h-16! text-xl!"
+            :input-attrs="{
+              inputmode: 'email',
+              autocomplete: 'off',
+              autocapitalize: 'off',
+              spellcheck: 'false',
+              'data-bwignore': 'true',
+              'data-lpignore': 'true',
+              'data-1p-ignore': 'true',
+              'data-form-type': 'other',
+            }"
+            @value-changed="(v) => (email = v)"
+          />
+        </div>
         <Button
           class="contained-primary contained-text disabled:opacity-50"
           type="submit"
