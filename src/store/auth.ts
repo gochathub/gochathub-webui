@@ -5,6 +5,8 @@ import { ref } from "vue";
 
 import client, { ApiError, unwrap } from "@src/api/client";
 import { disablePush } from "@src/push";
+import { mobileHandoffUrl } from "@src/mobileSignIn";
+import { createPasskey, getPasskey } from "@src/passkey";
 import type { components } from "@src/api/schema";
 import usePrefsStore, { ACCENT_DEFAULT, applyAccent } from "@src/store/prefs";
 
@@ -117,6 +119,85 @@ export const useAuthStore = defineStore("auth", () => {
     );
   }
 
+  // Passkeys. login/add resolve false when the user dismissed the prompt.
+  async function loginWithPasskey(): Promise<boolean> {
+    const begin = await unwrap(await client.POST("/auth/passkey/login/begin"));
+    const credential = await getPasskey(begin.options);
+    if (!credential) return false;
+    const r = await unwrap(
+      await client.POST("/auth/passkey/login/finish", {
+        body: {
+          ceremony_id: begin.ceremony_id,
+          credential,
+          token_request: false,
+        },
+      }),
+    );
+    me.value = r.user;
+    challenge.value = undefined;
+    return true;
+  }
+
+  async function listPasskeys() {
+    return unwrap(await client.GET("/users/me/passkeys"));
+  }
+
+  // Re-auth (password, + code when 2FA is on) happens in begin.
+  async function addPasskey(
+    password: string,
+    code: string,
+    name: string,
+  ): Promise<boolean> {
+    const begin = await unwrap(
+      await client.POST("/users/me/passkeys/begin", {
+        body: { password, code: code || undefined },
+      }),
+    );
+    const credential = await createPasskey(begin.options);
+    if (!credential) return false;
+    await unwrap(
+      await client.POST("/users/me/passkeys/finish", {
+        body: { ceremony_id: begin.ceremony_id, name, credential },
+      }),
+    );
+    return true;
+  }
+
+  async function renamePasskey(passkeyId: string, name: string) {
+    await unwrap(
+      await client.PATCH("/users/me/passkeys/{passkeyId}", {
+        params: { path: { passkeyId } },
+        body: { name },
+      }),
+    );
+  }
+
+  async function deletePasskey(passkeyId: string): Promise<void> {
+    await unwrap(
+      await client.DELETE("/users/me/passkeys/{passkeyId}", {
+        params: { path: { passkeyId } },
+      }),
+    );
+  }
+
+  // Android handoff: mint a one-time code for the app's PKCE challenge and
+  // deep-link it back. Works for any signed-in session.
+  async function handoffToApp(
+    codeChallenge: string,
+    state: string,
+  ): Promise<void> {
+    const r = await unwrap(
+      await client.POST("/auth/mobile/code", {
+        body: { code_challenge: codeChallenge },
+      }),
+    );
+    window.location.href = mobileHandoffUrl(
+      window.location.origin,
+      r.code,
+      state,
+    );
+  }
+
   async function logout(): Promise<void> {
     try {
       await disablePush(); // needs the session; the device dies with it
@@ -140,6 +221,12 @@ export const useAuthStore = defineStore("auth", () => {
     enableTwoFactor,
     regenerateBackupCodes,
     disableTwoFactor,
+    loginWithPasskey,
+    listPasskeys,
+    addPasskey,
+    renamePasskey,
+    deletePasskey,
+    handoffToApp,
     createApiToken,
     listApiTokens,
     revokeApiToken,

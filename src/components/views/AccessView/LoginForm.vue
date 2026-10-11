@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 import useStore from "@src/store/store";
 import useAuthStore from "@src/store/auth";
@@ -14,7 +14,9 @@ import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 import TurnstileWidget from "@src/components/ui/inputs/TurnstileWidget.vue";
 import Wordmark from "@src/components/ui/brand/Wordmark.vue";
 import { turnstileSiteKey } from "@src/turnstile";
+import { passkeysSupported } from "@src/passkey";
 
+const route = useRoute();
 const router = useRouter();
 const store = useStore();
 const auth = useAuthStore();
@@ -31,6 +33,43 @@ const needsToken = computed(
 const submitting = ref(false);
 const error = ref("");
 
+// Android Custom Tab handoff (?mobile=1&challenge=…&state=…): after any
+// successful sign-in, deep-link a one-time code back to the app instead of
+// entering the web app.
+const mobile = route.query.mobile === "1";
+const handoff = () =>
+  auth.handoffToApp(String(route.query.challenge), String(route.query.state));
+
+const enter = async () => {
+  if (mobile) return handoff();
+  store.$patch({ user: mapUser(auth.me!), status: "success" });
+  router.push({ name: "No-Chat" });
+};
+
+// the router lets a signed-in user reach this page only in mobile mode
+onMounted(() => {
+  if (mobile && auth.me)
+    handoff().catch(() => (error.value = "Hand-off failed."));
+});
+
+// (event) sign in with a passkey; dismissing the browser prompt is not an error
+const handlePasskey = async () => {
+  error.value = "";
+  submitting.value = true;
+  try {
+    if (await auth.loginWithPasskey()) await enter();
+  } catch (e) {
+    error.value =
+      e instanceof ApiError && e.code === "passkeys_disabled"
+        ? "Passkeys are not enabled on this server."
+        : e instanceof ApiError && e.code === "unauthorized"
+          ? "Passkey sign-in failed."
+          : "Something went wrong. Please try again.";
+  } finally {
+    submitting.value = false;
+  }
+};
+
 // (event) log in with the httpOnly session cookie; a 2FA account stops after
 // the password (auth.challenge set) and finishes with a code.
 const handleLogin = async () => {
@@ -42,8 +81,7 @@ const handleLogin = async () => {
     if (secondStep) await auth.login2fa(code.value.trim());
     else await auth.login(username.value, password.value, turnstileToken.value);
     if (auth.challenge) return; // now waiting for the code
-    store.$patch({ user: mapUser(auth.me!), status: "success" });
-    router.push({ name: "No-Chat" });
+    await enter();
   } catch (e) {
     error.value =
       e instanceof ApiError && e.code === "unauthorized"
@@ -153,6 +191,15 @@ const handleBack = () => {
             :disabled="needsToken"
           >
             {{ auth.challenge ? "Verify" : "Sign in" }}
+          </Button>
+          <Button
+            v-if="passkeysSupported && !auth.challenge"
+            class="contained-primary contained-text w-full mb-4"
+            type="button"
+            :loading="submitting"
+            @click="handlePasskey"
+          >
+            Sign in with a passkey
           </Button>
         </div>
       </form>

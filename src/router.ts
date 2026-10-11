@@ -60,7 +60,8 @@ router.beforeEach(async (to) => {
   if (!loggedIn && !isAccess) {
     return { name: "Access", params: { method: "sign-in" } };
   }
-  if (loggedIn && isAccess) {
+  // ?mobile=1: the Android Custom Tab hand-off runs from the sign-in page
+  if (loggedIn && isAccess && to.query.mobile !== "1") {
     return { name: "No-Chat" };
   }
   return true;

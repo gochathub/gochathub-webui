@@ -85,6 +85,74 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/auth/passkey/login/begin": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Start a usernameless passkey login. `options` is the WebAuthn `PublicKeyCredentialRequestOptionsJSON` (under `publicKey`); pass it to `navigator.credentials.get`. The ceremony lives 5 minutes and is single-use. `404 passkeys_disabled` when the server has no `ORIGIN`. */
+    post: operations["passkeyLoginBegin"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/auth/passkey/login/finish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Complete a passkey login with the `AuthenticationResponseJSON`. A passkey is full MFA: no `two_factor_required` step. Every failure is a plain `401 unauthorized`. */
+    post: operations["passkeyLoginFinish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/auth/mobile/code": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Browser-to-app handoff (Android Custom Tab). Mint a one-time code (60 s) bound to the app's PKCE challenge, then deep-link it to the app. Sessions only (403 for API tokens). */
+    post: operations["createMobileCode"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/auth/mobile/token": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Redeem a handoff code with its PKCE verifier for a normal personal API token (named `mobile`). A code is single-use: a wrong verifier burns it. */
+    post: operations["exchangeMobileCode"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/auth/logout": {
     parameters: {
       query?: never;
@@ -266,6 +334,76 @@ export interface paths {
     options?: never;
     head?: never;
     patch?: never;
+    trace?: never;
+  };
+  "/users/me/passkeys/begin": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Start registering a passkey. Re-authenticates with the password, plus a TOTP/backup `code` when two-factor is on (401 otherwise). Sessions only (403 for API tokens and Rocket.Chat shadow accounts). `options` is `PublicKeyCredentialCreationOptionsJSON` (under `publicKey`). */
+    post: operations["passkeyRegisterBegin"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/passkeys/finish": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** @description Complete registration with the `RegistrationResponseJSON`. */
+    post: operations["passkeyRegisterFinish"];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/passkeys": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description The caller's passkeys (metadata only). */
+    get: operations["listPasskeys"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/users/me/passkeys/{passkeyId}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        passkeyId: string;
+      };
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** @description Delete a passkey. `409 conflict` when it is the last one of an account without a usable password (would lock the user out). */
+    delete: operations["deletePasskey"];
+    options?: never;
+    head?: never;
+    patch: operations["renamePasskey"];
     trace?: never;
   };
   "/users/search": {
@@ -933,6 +1071,67 @@ export interface components {
       /** Format: date-time */
       last_used_at?: string | null;
     };
+    PasskeyCeremony: {
+      /** @description Opaque, single-use, 5 minutes. Echo it in the finish call. */
+      ceremony_id: string;
+      /** @description WebAuthn JSON options ({"publicKey": ...}); feed `PublicKeyCredential.parse*OptionsJSON`. */
+      options: {
+        [key: string]: unknown;
+      };
+    };
+    PasskeyLoginFinishRequest: {
+      ceremony_id: string;
+      /** @description `AuthenticationResponseJSON` (`credential.toJSON()`). */
+      credential: {
+        [key: string]: unknown;
+      };
+      /** @description Same as on `LoginRequest` (ADR-015). */
+      token_request?: boolean;
+    };
+    PasskeyRegisterBeginRequest: {
+      password: string;
+      /** @description TOTP or backup code; required when two-factor is on. */
+      code?: string;
+    };
+    PasskeyRegisterFinishRequest: {
+      ceremony_id: string;
+      /** @description Label shown in the list; defaults to `passkey`. */
+      name?: string;
+      /** @description `RegistrationResponseJSON` (`credential.toJSON()`). */
+      credential: {
+        [key: string]: unknown;
+      };
+    };
+    RenamePasskeyRequest: {
+      name: string;
+    };
+    Passkey: {
+      id: string;
+      name: string;
+      /** Format: date-time */
+      created_at: string;
+      /** Format: date-time */
+      last_used_at: string | null;
+      /** @description Synced passkey (true) vs device-bound key (false). */
+      backup_eligible: boolean;
+      transports: string[];
+    };
+    MobileCodeRequest: {
+      /** @description base64url (unpadded) SHA-256 of the app's `code_verifier`. */
+      code_challenge: string;
+    };
+    MobileCode: {
+      code: string;
+      /** @description Seconds. */
+      expires_in: number;
+    };
+    MobileTokenRequest: {
+      code: string;
+      code_verifier: string;
+    };
+    MobileToken: {
+      token: string;
+    };
     /** @description Login response. Browsers: cookie set, `token` omitted. Clients that sent `token_request: true` receive the opaque session token for bearer use (ADR-015). */
     AuthResponse: {
       /** @description The same opaque session token carried by the cookie; present only when the request set token_request. */
@@ -1395,6 +1594,123 @@ export interface operations {
       401: components["responses"]["Unauthorized"];
     };
   };
+  passkeyLoginBegin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Ceremony */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PasskeyCeremony"];
+        };
+      };
+      404: components["responses"]["NotFound"];
+    };
+  };
+  passkeyLoginFinish: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasskeyLoginFinishRequest"];
+      };
+    };
+    responses: {
+      /** @description Authenticated */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["AuthResponse"];
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
+      /** @description Too many attempts (`rate_limited`). */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  createMobileCode: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MobileCodeRequest"];
+      };
+    };
+    responses: {
+      /** @description Code */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MobileCode"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+    };
+  };
+  exchangeMobileCode: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["MobileTokenRequest"];
+      };
+    };
+    responses: {
+      /** @description Token */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["MobileToken"];
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      /** @description Too many attempts (`rate_limited`). */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
   logout: {
     parameters: {
       query?: never;
@@ -1762,6 +2078,142 @@ export interface operations {
         };
         content?: never;
       };
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  passkeyRegisterBegin: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasskeyRegisterBeginRequest"];
+      };
+    };
+    responses: {
+      /** @description Ceremony */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["PasskeyCeremony"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+      403: components["responses"]["Forbidden"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  passkeyRegisterFinish: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["PasskeyRegisterFinishRequest"];
+      };
+    };
+    responses: {
+      /** @description Registered */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Passkey"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  listPasskeys: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Passkeys */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Passkey"][];
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+    };
+  };
+  deletePasskey: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        passkeyId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Deleted */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
+      /** @description Last passkey of a passwordless account (`conflict`). */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Error"];
+        };
+      };
+    };
+  };
+  renamePasskey: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        passkeyId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RenamePasskeyRequest"];
+      };
+    };
+    responses: {
+      /** @description Renamed */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["Passkey"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
       401: components["responses"]["Unauthorized"];
       404: components["responses"]["NotFound"];
     };
