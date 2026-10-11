@@ -37,6 +37,13 @@ const searchEl = ref<HTMLInputElement>();
 
 const go = (section: string) => (store.activeSidebarComponent = section);
 
+// Home: room list, no room open, search cleared
+const goHome = () => {
+  go("messages");
+  filter.value = "";
+  router.push({ name: "No-Chat" });
+};
+
 const sortOptions: { value: RoomSort; label: string }[] = [
   { value: "activity", label: "Recent activity" },
   { value: "name", label: "Name" },
@@ -66,7 +73,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
         :class="{
           'text-accent-text': store.activeSidebarComponent === 'messages',
         }"
-        @click="go('messages')"
+        @click="goHome"
       >
         <HomeIcon class="w-[1.25rem] h-[1.25rem]" />
       </IconButton>
