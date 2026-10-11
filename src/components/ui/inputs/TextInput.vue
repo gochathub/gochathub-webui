@@ -8,8 +8,6 @@ const props = defineProps<{
   name?: string;
   placeholder?: string;
   bordered?: boolean;
-  // extra attributes for the <input> itself (autocomplete hints, inputmode, ...)
-  inputAttrs?: Record<string, string>;
 }>();
 
 const handleInput = (event: any) => {
@@ -26,7 +24,6 @@ const handleInput = (event: any) => {
     :class="[props.bordered ? 'bordered-input' : 'ringed-input']"
     :value="props.value"
     :placeholder="props.placeholder"
-    v-bind="props.inputAttrs"
     @input="handleInput"
   />
 </template>

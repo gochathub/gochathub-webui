@@ -6,6 +6,7 @@ import useMailSettingsStore from "@src/store/mailSettings";
 
 import Button from "@src/components/ui/inputs/Button.vue";
 import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
+import RecipientInput from "@src/components/ui/inputs/RecipientInput.vue";
 import PasswordInput from "@src/components/ui/inputs/PasswordInput.vue";
 
 const mail = useMailSettingsStore();
@@ -228,23 +229,12 @@ const label = (id: string) =>
         @submit.prevent="test"
       >
         <div class="grow">
-          <!-- type=text + ignore hints: password managers must not fill the admin's own address -->
-          <LabeledTextInput
+          <!-- <textarea>, not <input>: password managers only attach to inputs -->
+          <RecipientInput
             :value="testTo"
             :label="`Send a test message via ${label(mail.settings.active)} to`"
             name="test-target"
             placeholder="Recipient"
-            class="h-16! text-xl!"
-            :input-attrs="{
-              inputmode: 'email',
-              autocomplete: 'off',
-              autocapitalize: 'off',
-              spellcheck: 'false',
-              'data-bwignore': 'true',
-              'data-lpignore': 'true',
-              'data-1p-ignore': 'true',
-              'data-form-type': 'other',
-            }"
             @value-changed="(v) => (testTo = v)"
           />
         </div>

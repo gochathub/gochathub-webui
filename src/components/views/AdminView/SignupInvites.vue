@@ -5,7 +5,7 @@ import { ApiError } from "@src/api/client";
 import useSignupInvitesStore from "@src/store/signupInvites";
 
 import Button from "@src/components/ui/inputs/Button.vue";
-import LabeledTextInput from "@src/components/ui/inputs/LabeledTextInput.vue";
+import RecipientInput from "@src/components/ui/inputs/RecipientInput.vue";
 
 const invites = useSignupInvitesStore();
 const email = ref("");
@@ -62,23 +62,12 @@ const fmt = (iso: string) => new Date(iso).toLocaleString();
     <template v-else>
       <form class="flex items-end gap-3 mb-4" @submit.prevent="send">
         <div class="grow">
-          <!-- type=text + ignore hints: password managers (Bitwarden, LastPass, 1Password) must not fill an invitee's address with the admin's own -->
-          <LabeledTextInput
+          <!-- <textarea>, not <input>: password managers only attach to inputs -->
+          <RecipientInput
             :value="email"
             label="Invite someone"
             name="invite-target"
             placeholder="Recipient"
-            class="h-16! text-xl!"
-            :input-attrs="{
-              inputmode: 'email',
-              autocomplete: 'off',
-              autocapitalize: 'off',
-              spellcheck: 'false',
-              'data-bwignore': 'true',
-              'data-lpignore': 'true',
-              'data-1p-ignore': 'true',
-              'data-form-type': 'other',
-            }"
             @value-changed="(v) => (email = v)"
           />
         </div>
