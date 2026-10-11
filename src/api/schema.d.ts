@@ -673,6 +673,24 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/admin/ui-settings": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** @description Admin only (ADR-027). The instance-wide default layout; `modern` until set. */
+    get: operations["getUISettings"];
+    /** @description Admin only (ADR-027). Takes effect for users whose `layout` is `instance`, on their next preferences load. */
+    put: operations["putUISettings"];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/admin/mail-settings": {
     parameters: {
       query?: never;
@@ -1347,6 +1365,20 @@ export interface components {
         | "#2563eb"
         | "#475569"
         | "#27313a";
+      /**
+       * @description Interface layout. `instance` (default) follows the admin default (`instance_layout`); `modern` / `classic` override it.
+       * @enum {string}
+       */
+      layout: "instance" | "modern" | "classic";
+      /**
+       * @description Admin default layout (`/admin/ui-settings`); read-only, `modern` until set.
+       * @enum {string}
+       */
+      readonly instance_layout?: "modern" | "classic";
+    };
+    UISettings: {
+      /** @enum {string} */
+      default_layout: "modern" | "classic";
     };
     /** @description Partial update; omitted fields keep current values. */
     UpdatePreferencesRequest: {
@@ -1358,6 +1390,8 @@ export interface components {
       spellcheck_words?: string[];
       /** @description Empty string resets to the default (#4f46e5); any other value must be one of the supported swatch hexes (rejected with 400 validation). */
       primary_color?: string;
+      /** @enum {string} */
+      layout?: "instance" | "modern" | "classic";
     };
     AddContactRequest: {
       user_id: string;
@@ -1408,6 +1442,21 @@ export interface components {
       my_role?: "member" | "admin";
       /** @description Unread (un-read receipts) for the caller; present on room lists. */
       unread_count?: number;
+      /** @description Room lists only. Newest non-deleted message, for the sidebar row; absent in empty rooms. */
+      last_message?: {
+        id: string;
+        author_id: string;
+        author_name: string;
+        /** @description Truncated to 200 characters. */
+        body: string;
+        has_attachment: boolean;
+        /** Format: date-time */
+        created_at: string;
+      };
+      /** @description Room lists only. Oldest message the caller has not read; absent when none (position for an "unread messages" divider). */
+      first_unread_message_id?: string;
+      /** @description Room lists, direct rooms only. True when the peer is connected and has `last_seen_visible` on; absent otherwise (offline, unknown or hidden are indistinguishable). Live changes arrive as `presence.changed`. */
+      peer_online?: boolean;
       /** @description Cross-server origin; present ("rocket_chat") only on rooms mirrored from a live Rocket.Chat workspace (docs/ROCKETCHAT-INTEGRATION.md). Absent or "" for native rooms. Messages/posting behave normally; edits, deletes, reactions and attachments across the bridge are out of scope. */
       source?: string;
     };
@@ -2965,6 +3014,53 @@ export interface operations {
         };
         content?: never;
       };
+    };
+  };
+  getUISettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Current settings */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UISettings"];
+        };
+      };
+      403: components["responses"]["Forbidden"];
+    };
+  };
+  putUISettings: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UISettings"];
+      };
+    };
+    responses: {
+      /** @description Saved settings */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["UISettings"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      403: components["responses"]["Forbidden"];
     };
   };
   getMailSettings: {
