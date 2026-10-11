@@ -181,7 +181,7 @@ const buttons = [
   >
     <div
       v-if="editor"
-      class="flex gap-1 px-2 pt-2"
+      class="flex flex-wrap items-center gap-1 px-2 pt-2"
       :class="{ 'order-last pb-2': props.toolbarBelow }"
       role="toolbar"
       aria-label="formatting"
@@ -200,10 +200,12 @@ const buttons = [
       >
         <component :is="b.icon" class="w-4 h-4" />
       </button>
+      <!-- extra toolbar items (emoji picker) share the row -->
+      <slot name="toolbar-end" />
     </div>
     <EditorContent
       :editor="editor"
-      class="max-h-32 overflow-y-auto scrollbar-thin px-4 py-2 pr-12.5 text-sm text-fg dark:text-fg/80"
+      class="max-h-32 overflow-y-auto scrollbar-thin px-4 py-2 text-sm text-fg dark:text-fg/80"
     />
   </div>
 </template>

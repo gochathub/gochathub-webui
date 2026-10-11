@@ -7,17 +7,11 @@ import { inject, ref } from "vue";
 import useStore from "@src/store/store";
 import { useComposer } from "@src/composables/useComposer";
 
-import {
-  FaceSmileIcon,
-  PaperAirplaneIcon,
-  PaperClipIcon,
-  XCircleIcon,
-} from "@heroicons/vue/24/outline";
+import { PaperAirplaneIcon, PaperClipIcon } from "@heroicons/vue/24/outline";
 import AttachmentsModal from "@src/components/shared/modals/AttachmentsModal/AttachmentsModal.vue";
-import EmojiPicker from "@src/components/ui/inputs/EmojiPicker/EmojiPicker.vue";
+import EmojiPickerButton from "@src/components/ui/inputs/EmojiPicker/EmojiPickerButton.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import RichEditor from "@src/components/ui/inputs/RichEditor.vue";
-import ScaleTransition from "@src/components/ui/transitions/ScaleTransition.vue";
 import PendingAttachments from "@src/components/views/HomeView/Chat/ChatBottom/PendingAttachments.vue";
 import ReplyMessage from "@src/components/views/HomeView/Chat/ChatBottom/ReplyMessage.vue";
 
@@ -39,15 +33,8 @@ const {
   handleRemovePending,
 } = useComposer(activeConversation);
 
-const showPicker = ref(false);
 const editorRef = ref<InstanceType<typeof RichEditor>>();
 const openAttachmentsModal = ref(false);
-
-// close the picker when you click outside it
-const handleClickOutside = (event: Event) => {
-  const target = event.target as HTMLElement;
-  if (!target.closest(".toggle-picker-button")) showPicker.value = false;
-};
 </script>
 
 <template>
@@ -83,7 +70,11 @@ const handleClickOutside = (event: Event) => {
           }
         "
         @send="handleSend"
-      />
+      >
+        <template #toolbar-end>
+          <EmojiPickerButton @pick="(char) => editorRef?.insert(char)" />
+        </template>
+      </RichEditor>
 
       <!--mention autocomplete-->
       <div
@@ -125,15 +116,6 @@ const handleClickOutside = (event: Event) => {
       <!--actions-->
       <div class="relative flex items-center gap-1 px-2 pb-2">
         <IconButton
-          title="toggle emoji picker"
-          aria-label="toggle emoji picker"
-          class="ic-btn-ghost-primary toggle-picker-button w-7 h-7"
-          @click="showPicker = !showPicker"
-        >
-          <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
-          <FaceSmileIcon v-else class="w-[1.25rem] h-[1.25rem] text-muted" />
-        </IconButton>
-        <IconButton
           v-if="!activeConversation?.source"
           class="ic-btn-ghost-primary w-7 h-7"
           title="open select attachments modal"
@@ -150,21 +132,6 @@ const handleClickOutside = (event: Event) => {
         >
           <PaperAirplaneIcon class="w-4.25 h-4.25" />
         </IconButton>
-
-        <ScaleTransition>
-          <div
-            v-show="showPicker"
-            v-click-outside="handleClickOutside"
-            class="absolute z-10 bottom-full mb-2 left-0"
-          >
-            <div role="none">
-              <EmojiPicker
-                :show="showPicker"
-                @pick="(char) => editorRef?.insert(char)"
-              />
-            </div>
-          </div>
-        </ScaleTransition>
       </div>
     </div>
 

@@ -7,18 +7,12 @@ import { useComposer } from "@src/composables/useComposer";
 import PendingAttachments from "@src/components/views/HomeView/Chat/ChatBottom/PendingAttachments.vue";
 import { ref, inject } from "vue";
 
-import {
-  FaceSmileIcon,
-  PaperAirplaneIcon,
-  PaperClipIcon,
-  XCircleIcon,
-} from "@heroicons/vue/24/outline";
+import { PaperAirplaneIcon, PaperClipIcon } from "@heroicons/vue/24/outline";
 import AttachmentsModal from "@src/components/shared/modals/AttachmentsModal/AttachmentsModal.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import HelpLink from "@src/components/shared/HelpLink.vue";
-import ScaleTransition from "@src/components/ui/transitions/ScaleTransition.vue";
 import ReplyMessage from "@src/components/views/HomeView/Chat/ChatBottom/ReplyMessage.vue";
-import EmojiPicker from "@src/components/ui/inputs/EmojiPicker/EmojiPicker.vue";
+import EmojiPickerButton from "@src/components/ui/inputs/EmojiPicker/EmojiPickerButton.vue";
 import RichEditor from "@src/components/ui/inputs/RichEditor.vue";
 
 const store = useStore();
@@ -27,8 +21,6 @@ const activeConversation = inject("activeConversation") as Ref<
   IConversation | undefined
 >;
 
-// open emoji picker.
-const showPicker = ref(false);
 const editorRef = ref<InstanceType<typeof RichEditor>>();
 
 const {
@@ -46,21 +38,6 @@ const {
 
 // open modal used to send attachments.
 const openAttachmentsModal = ref(false);
-
-// close picker when you click outside.
-const handleClickOutside = (event: Event) => {
-  const target = event.target as HTMLElement;
-  const parent = target.parentElement as HTMLElement;
-
-  if (
-    target &&
-    !target.classList.contains("toggle-picker-button") &&
-    parent &&
-    !parent.classList.contains("toggle-picker-button")
-  ) {
-    showPicker.value = false;
-  }
-};
 </script>
 
 <template>
@@ -125,7 +102,11 @@ const handleClickOutside = (event: Event) => {
               }
             "
             @send="handleSend"
-          />
+          >
+            <template #toolbar-end>
+              <EmojiPickerButton @pick="(char) => editorRef?.insert(char)" />
+            </template>
+          </RichEditor>
 
           <!--mention autocomplete-->
           <div
@@ -162,39 +143,6 @@ const handleClickOutside = (event: Event) => {
             >
               {{ m.char }} :{{ m.name }}:
             </button>
-          </div>
-
-          <!--emojis-->
-          <div class="absolute bottom-[.8125rem] right-0">
-            <!--emoji button-->
-            <IconButton
-              title="toggle emoji picker"
-              aria-label="toggle emoji picker"
-              class="ic-btn-ghost-primary toggle-picker-button w-7 h-7 md:mr-5 xs:mr-4"
-              @click="showPicker = !showPicker"
-            >
-              <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
-              <FaceSmileIcon
-                v-else
-                class="w-[1.25rem] h-[1.25rem] text-muted group-hover:text-accent-text"
-              />
-            </IconButton>
-
-            <!--emoji picker-->
-            <ScaleTransition>
-              <div
-                v-show="showPicker"
-                v-click-outside="handleClickOutside"
-                class="absolute z-10 bottom-13.75 md:right-0 xs:right-[-5rem] mt-2"
-              >
-                <div role="none">
-                  <EmojiPicker
-                    :show="showPicker"
-                    @pick="(char) => editorRef?.insert(char)"
-                  />
-                </div>
-              </div>
-            </ScaleTransition>
           </div>
         </div>
       </div>
