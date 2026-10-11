@@ -227,15 +227,27 @@ const label = (id: string) =>
         class="flex items-end gap-3"
         @submit.prevent="test"
       >
-        <LabeledTextInput
-          :value="testTo"
-          :label="`Send a test message via ${label(mail.settings.active)} to`"
-          type="email"
-          name="test-to"
-          placeholder="you@example.com"
-          class="grow"
-          @value-changed="(v) => (testTo = v)"
-        />
+        <div class="grow">
+          <!-- type=text + ignore hints: password managers must not fill the admin's own address -->
+          <LabeledTextInput
+            :value="testTo"
+            :label="`Send a test message via ${label(mail.settings.active)} to`"
+            name="test-recipient"
+            placeholder="you@example.com"
+            class="h-16! text-xl!"
+            :input-attrs="{
+              inputmode: 'email',
+              autocomplete: 'off',
+              autocapitalize: 'off',
+              spellcheck: 'false',
+              'data-bwignore': 'true',
+              'data-lpignore': 'true',
+              'data-1p-ignore': 'true',
+              'data-form-type': 'other',
+            }"
+            @value-changed="(v) => (testTo = v)"
+          />
+        </div>
         <Button
           class="contained-primary contained-text disabled:opacity-50"
           type="submit"
