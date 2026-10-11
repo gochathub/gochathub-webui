@@ -24,6 +24,28 @@ const code = ref("");
 const password = ref("");
 const backupCodes = ref<string[]>([]);
 
+// attributes for one-time-code autofill; backup codes are 10 letters/digits and
+// need an unrestricted field (only turning 2FA off accepts one)
+const otpAttrs = {
+  autocomplete: "one-time-code",
+  inputmode: "numeric",
+  pattern: "[0-9]*",
+  maxlength: "6",
+};
+const backupAttrs = {
+  autocomplete: "off",
+  autocapitalize: "none",
+  autocorrect: "off",
+  spellcheck: "false",
+  maxlength: "16",
+};
+const useBackup = ref(false);
+const toggleBackup = () => {
+  useBackup.value = !useBackup.value;
+  code.value = "";
+  error.value = "";
+};
+
 const run = async (fn: () => Promise<void>) => {
   error.value = "";
   busy.value = true;
@@ -73,6 +95,7 @@ const handleDisable = () =>
   });
 
 const reset = () => {
+  useBackup.value = false;
   step.value = "idle";
   code.value = "";
   password.value = "";
@@ -132,7 +155,10 @@ const reset = () => {
       Or enter manually: {{ secret }}
     </p>
     <LabeledTextInput
+      id="tfa-setup-code"
+      name="otp"
       label="Code"
+      :input-attrs="otpAttrs"
       class="mb-5"
       :value="code"
       @value-changed="(value) => (code = value)"
@@ -179,7 +205,10 @@ const reset = () => {
         Enter a current code to replace your backup codes.
       </p>
       <LabeledTextInput
+        id="tfa-regenerate-code"
+        name="otp"
         label="Code"
+        :input-attrs="otpAttrs"
         class="mb-5"
         :value="code"
         @value-changed="(value) => (code = value)"
@@ -207,17 +236,41 @@ const reset = () => {
   <!--disable-->
   <template v-else>
     <PasswordInput
+      id="tfa-disable-password"
+      name="password"
       label="Current password"
       class="mb-5"
       :value="password"
+      :input-attrs="{ autocomplete: 'current-password' }"
       @value-changed="(value) => (password = value)"
     />
     <LabeledTextInput
-      label="Code or backup code"
+      v-if="!useBackup"
+      id="tfa-disable-code"
+      name="otp"
+      label="Authentication code"
       class="mb-5"
       :value="code"
+      :input-attrs="otpAttrs"
       @value-changed="(value) => (code = value)"
     />
+    <LabeledTextInput
+      v-else
+      id="tfa-disable-backup-code"
+      name="backup-code"
+      label="Backup code"
+      class="mb-5"
+      :value="code"
+      :input-attrs="backupAttrs"
+      @value-changed="(value) => (code = value)"
+    />
+    <button
+      type="button"
+      class="body-3 text-muted mb-5 underline"
+      @click="toggleBackup"
+    >
+      {{ useBackup ? "Use an authenticator code" : "Use a backup code" }}
+    </button>
     <p v-if="error" role="alert" class="body-3 text-error mb-4">{{ error }}</p>
     <Button
       class="contained-primary contained-text w-full py-4 mb-4"
