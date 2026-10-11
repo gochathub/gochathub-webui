@@ -67,6 +67,19 @@ export interface IConversation {
   draftMessage: string;
   // cross-server origin ("rocket_chat"); absent on native rooms
   source?: string;
+  // room-list extras for the classic sidebar/header/unread divider
+  description?: string;
+  lastMessage?: ILastMessage;
+  firstUnreadId?: string;
+  peerOnline?: boolean;
+}
+
+export interface ILastMessage {
+  authorId: string;
+  authorName: string;
+  body: string;
+  hasAttachment: boolean;
+  date: string;
 }
 
 export interface IContactGroup {

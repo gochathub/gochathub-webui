@@ -14,6 +14,7 @@ import {
   mapContact,
   mapMessage,
   mapRoom,
+  roomExtras,
   receiptState,
 } from "@src/api/mappers";
 import type { IContact, IConversation, IMessage } from "@src/types";
@@ -49,6 +50,21 @@ export const useRoomsStore = defineStore("rooms", () => {
       const conv = list.find((c) => c.id === id);
       if (conv) Object.assign(conv, patch);
     }
+  }
+
+  // sidebar preview for a message that just arrived (matches the server's
+  // room-list last_message: body cut to 200 chars)
+  function lastMessageOf(m: ServerMessage, conv: IConversation) {
+    const peer = conv.contacts.find((c) => c.id === m.author_id);
+    return {
+      authorId: m.author_id,
+      authorName:
+        m.author?.display_name ??
+        (peer ? `${peer.firstName} ${peer.lastName}`.trim() : ""),
+      body: m.body.slice(0, 200),
+      hasAttachment: (m.attachments?.length ?? 0) > 0,
+      date: m.created_at,
+    };
   }
 
   function serverMessage(m: ServerMessage): IMessage {
@@ -107,6 +123,7 @@ export const useRoomsStore = defineStore("rooms", () => {
       const conv = convById(r.id);
       const view = conv ?? mapRoom(r, [], [], auth.me.id);
       view.unread = r.unread_count ?? 0;
+      Object.assign(view, roomExtras(r));
       view.type = mapRoom(r, [], [], auth.me.id).type;
       view.name = r.name ?? undefined;
       if (r.archived) archived.push(view);
@@ -416,6 +433,14 @@ export const useRoomsStore = defineStore("rooms", () => {
           if (!conv.messages.some((m) => m.id === msg.id)) {
             conv.messages.push(serverMessage(msg));
           }
+          conv.lastMessage = lastMessageOf(msg, conv);
+          if (
+            msg.author_id !== auth.me?.id &&
+            !conv.firstUnreadId &&
+            chat.conversationOpen !== roomId
+          ) {
+            conv.firstUnreadId = msg.id;
+          }
         } else {
           pushNotification(
             "message",
@@ -546,7 +571,10 @@ export const useRoomsStore = defineStore("rooms", () => {
         for (const list of [chat.conversations, chat.archivedConversations]) {
           for (const conv of list) {
             const peer = conv.contacts.find((c) => c.id === userId);
-            if (peer) peer.lastSeen = stamp;
+            if (peer) {
+              peer.lastSeen = stamp;
+              if (conv.type === "direct") conv.peerOnline = state === "online";
+            }
           }
         }
         break;

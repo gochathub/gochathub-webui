@@ -20,7 +20,11 @@ import {
 
 // Markdown in, markdown out. Extensions are limited to the server-validated
 // subset (bold/italic/strike, code, links, quotes, lists, headings).
-const props = defineProps<{ modelValue: string; placeholder?: string }>();
+const props = defineProps<{
+  modelValue: string;
+  placeholder?: string;
+  toolbarBelow?: boolean;
+}>();
 const emit = defineEmits<{
   "update:modelValue": [string];
   send: [];
@@ -173,11 +177,12 @@ const buttons = [
 
 <template>
   <div
-    class="rounded-sm bg-card focus-within:ring-3 focus-within:ring-accent-soft"
+    class="flex flex-col rounded-sm bg-card focus-within:ring-3 focus-within:ring-accent-soft"
   >
     <div
       v-if="editor"
       class="flex gap-1 px-2 pt-2"
+      :class="{ 'order-last pb-2': props.toolbarBelow }"
       role="toolbar"
       aria-label="formatting"
     >

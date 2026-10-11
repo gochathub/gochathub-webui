@@ -6,7 +6,7 @@ import type { Ref } from "vue";
 import { inject, ref, computed } from "vue";
 
 import { getFullName, getMessageById } from "@src/utils";
-import { formatDateTime } from "@src/api/mappers";
+import { formatClock, formatDateTime } from "@src/api/mappers";
 import { renderMarkdown } from "@src/api/markdown";
 
 import Attachments from "@src/components/views/HomeView/Chat/ChatMiddle/Message/Attachments.vue";
@@ -20,6 +20,9 @@ const props = defineProps<{
   followUp: boolean;
   self: boolean;
   divider?: boolean;
+  // flat Rocket.Chat-style row (classic layout); stacked = no avatar/header
+  classic?: boolean;
+  stacked?: boolean;
   selected?: boolean;
   handleSelectMessage: (messageId: string) => void;
   handleDeselectMessage: (messageId: string) => void;
@@ -86,7 +89,74 @@ const replyMessage = computed(() =>
 
 <template>
   <div>
-    <div class="mb-3 flex" :class="{ 'justify-end': props.self }">
+    <!--classic: flat row-->
+    <div
+      v-if="props.classic"
+      v-click-outside="contextConfig"
+      class="group flex gap-3 px-1 transition-colors"
+      :class="[
+        props.stacked ? 'py-px' : 'pt-2 pb-px',
+        props.selected ? 'bg-accent-soft' : 'hover:bg-select/40',
+      ]"
+      @click="handleCloseContextMenu"
+      @contextmenu.prevent="handleShowContextMenu"
+    >
+      <div class="w-9 shrink-0 text-center">
+        <Avatar
+          v-if="!props.stacked"
+          :src="props.message.sender.avatar"
+          :name="getFullName(props.message.sender)"
+          class="w-9 h-9"
+        />
+        <span
+          v-else
+          class="invisible group-hover:visible block text-[0.65rem] leading-5 whitespace-nowrap text-muted"
+          :title="formatDateTime(props.message.date)"
+        >
+          {{ formatClock(props.message.date) }}
+        </span>
+      </div>
+      <div class="min-w-0 grow">
+        <p v-if="!props.stacked" class="mb-px">
+          <span class="heading-2 text-fg mr-2">
+            {{ getFullName(props.message.sender) }}
+          </span>
+          <span class="body-1 text-muted">
+            {{ formatDateTime(props.message.date) }}
+          </span>
+        </p>
+        <MessagePreview
+          v-if="replyMessage"
+          :message="replyMessage"
+          :self="false"
+          class="mb-3 px-3"
+        />
+        <!-- eslint-disable vue/no-v-html -- renderMarkdown escapes the source first; every tag in the output is ours -->
+        <p
+          v-if="props.message.content && props.message.type !== 'recording'"
+          class="body-2 text-fg/90 [overflow-wrap:anywhere] [&_pre]:overflow-x-auto"
+          v-html="renderMarkdown(props.message.content as string)"
+        ></p>
+        <!-- eslint-enable vue/no-v-html -->
+        <Recording
+          v-else-if="props.message.content"
+          :recording="props.message.content as IRecording"
+          :self="false"
+        />
+        <Attachments
+          v-if="(props.message.attachments as [])?.length > 0"
+          :message="props.message"
+          :self="false"
+        />
+      </div>
+      <Receipt
+        v-if="props.self"
+        :state="props.message.state"
+        class="self-end"
+      />
+    </div>
+
+    <div v-else class="mb-3 flex" :class="{ 'justify-end': props.self }">
       <!--avatar-->
       <div
         class="mr-4"

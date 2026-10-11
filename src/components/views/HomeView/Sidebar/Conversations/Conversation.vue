@@ -3,6 +3,7 @@ import Avatar from "@src/components/ui/data-display/Avatar.vue";
 import type { IConversation } from "@src/types";
 import type { Ref } from "vue";
 import { computed, ref } from "vue";
+import { formatDay } from "@src/api/mappers";
 
 import useStore from "@src/store/store";
 import useRoomsStore from "@src/store/rooms";
@@ -30,6 +31,8 @@ import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vu
 
 const props = defineProps<{
   conversation: IConversation;
+  // two-line Rocket.Chat-style row (classic layout)
+  classic?: boolean;
 }>();
 
 const store = useStore();
@@ -151,7 +154,70 @@ const isActive = computed(
 
 <template>
   <div>
+    <!--classic: two lines, name + last activity, then the last message-->
     <button
+      v-if="props.classic"
+      :aria-label="'conversation with ' + getName(props.conversation)"
+      class="w-full px-5 py-3 text-start hover:bg-select/50 focus:bg-select focus:outline-none"
+      :class="{ 'bg-select': isActive }"
+      @contextmenu.prevent="handleShowContextMenu"
+      @click="
+        () => {
+          handleRemoveUnread();
+          handleSelectConversation();
+        }
+      "
+    >
+      <span class="flex items-center">
+        <span
+          v-if="!isGroup"
+          class="w-3.5 h-3.5 mr-2 rounded-full border-2 shrink-0"
+          :class="
+            props.conversation.peerOnline
+              ? 'bg-emerald-400 border-emerald-400'
+              : 'border-muted'
+          "
+          :title="props.conversation.peerOnline ? 'online' : undefined"
+        />
+        <HashtagIcon v-else class="w-5 h-5 mr-1.5 text-muted shrink-0" />
+        <span
+          class="grow min-w-0 truncate text-fg"
+          :class="props.conversation.unread ? 'font-bold' : 'heading-2'"
+        >
+          {{ getName(props.conversation) }}
+        </span>
+        <span
+          v-if="props.conversation.unread"
+          class="ml-2 min-w-4.5 h-4.5 px-1 flex justify-center items-center rounded-full bg-accent shrink-0 body-1 text-white"
+        >
+          {{ props.conversation.unread }}
+        </span>
+        <span
+          v-if="props.conversation.lastMessage"
+          class="ml-2 body-1 font-bold text-muted shrink-0"
+        >
+          {{ formatDay(props.conversation.lastMessage.date) }}
+        </span>
+      </span>
+      <span
+        v-if="props.conversation.lastMessage"
+        class="block body-2 truncate"
+        :class="props.conversation.unread ? 'text-fg font-bold' : 'text-muted'"
+      >
+        {{
+          props.conversation.lastMessage.authorId === store.user?.id
+            ? "You"
+            : props.conversation.lastMessage.authorName
+        }}:
+        {{
+          props.conversation.lastMessage.body ||
+          (props.conversation.lastMessage.hasAttachment ? "Attachment" : "")
+        }}
+      </span>
+    </button>
+
+    <button
+      v-else
       :aria-label="'conversation with' + getName(props.conversation)"
       tabindex="0"
       class="w-full px-4 py-2 mb-1 flex items-center rounded focus:bg-select active:bg-select dark:hover:bg-select/50 hover:bg-select/50 focus:outline-none transition duration-200 ease-out"

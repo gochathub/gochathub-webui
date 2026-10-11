@@ -74,6 +74,31 @@ export function mapRoom(
     unread: r.unread_count ?? 0,
     draftMessage: "",
     source: r.source || undefined,
+    ...roomExtras(r),
+  };
+}
+
+// room-list fields that change after load (kept in sync by the store)
+export function roomExtras(
+  r: ServerRoom,
+): Pick<
+  IConversation,
+  "description" | "lastMessage" | "firstUnreadId" | "peerOnline"
+> {
+  const lm = r.last_message;
+  return {
+    description: r.description || undefined,
+    lastMessage: lm
+      ? {
+          authorId: lm.author_id,
+          authorName: lm.author_name,
+          body: lm.body,
+          hasAttachment: lm.has_attachment,
+          date: lm.created_at,
+        }
+      : undefined,
+    firstUnreadId: r.first_unread_message_id,
+    peerOnline: r.peer_online ?? false,
   };
 }
 
@@ -176,6 +201,16 @@ export function formatDateTime(value: string | Date): string {
     dateTimeFmt.formatToParts(d).map((x) => [x.type, x.value]),
   );
   return `${p.weekday}, ${p.month} ${p.day}, ${p.year} ${p.hour}:${p.minute}:${p.second} ${p.dayPeriod} ${p.timeZoneName}`;
+}
+
+// "1:12 PM" — gutter time of a stacked classic message
+const clockFmt = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+});
+export function formatClock(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? iso : clockFmt.format(d);
 }
 
 export function formatDay(iso: string): string {

@@ -2,20 +2,24 @@
 import { computed } from "vue";
 
 import useStore from "@src/store/store";
+import usePrefsStore from "@src/store/prefs";
 import { useRoute } from "vue-router";
 
+import ClassicShell from "@src/components/classic/ClassicShell.vue";
 import FadeTransition from "@src/components/ui/transitions/FadeTransition.vue";
 import Navigation from "@src/components/views/HomeView/Navigation/Navigation.vue";
 import Sidebar from "@src/components/views/HomeView/Sidebar/Sidebar.vue";
 import { getActiveConversationId } from "@src/utils";
 
 const store = useStore();
+const prefs = usePrefsStore();
 const route = useRoute();
 const activeConversationId = computed(() => getActiveConversationId(route));
 </script>
 
 <template>
-  <KeepAlive>
+  <ClassicShell v-if="prefs.layout === 'classic'" />
+  <KeepAlive v-else>
     <div
       class="xs:relative md:static h-full flex xs:flex-col md:flex-row overflow-hidden"
     >

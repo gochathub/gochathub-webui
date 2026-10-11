@@ -3,6 +3,7 @@ import type { Ref } from "vue";
 
 import useStore from "@src/store/store";
 import useRoomsStore from "@src/store/rooms";
+import usePrefsStore from "@src/store/prefs";
 import { computed, provide, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 
@@ -10,11 +11,15 @@ import { getActiveConversationId } from "@src/utils";
 
 import NoChatSelected from "@src/components/states/empty-states/NoChatSelected.vue";
 import Spinner from "@src/components/states/loading-states/Spinner.vue";
+import ClassicChatMiddle from "@src/components/classic/ClassicChatMiddle.vue";
+import ClassicChatTop from "@src/components/classic/ClassicChatTop.vue";
+import ClassicComposer from "@src/components/classic/ClassicComposer.vue";
 import ChatBottom from "@src/components/views/HomeView/Chat/ChatBottom/ChatBottom.vue";
 import ChatMiddle from "@src/components/views/HomeView/Chat/ChatMiddle/ChatMiddle.vue";
 import ChatTop from "@src/components/views/HomeView/Chat/ChatTop/ChatTop.vue";
 
 const store = useStore();
+const classic = computed(() => usePrefsStore().layout === "classic");
 const rooms = useRoomsStore();
 const route = useRoute();
 
@@ -117,19 +122,21 @@ const handleCloseSelect = () => {
     v-else-if="getActiveConversationId(route) && activeConversation"
     class="h-full flex flex-col scrollbar-thin"
   >
-    <ChatTop
+    <component
+      :is="classic ? ClassicChatTop : ChatTop"
       :select-all="selectAll"
       :select-mode="selectMode"
       :handle-select-all="handleSelectAll"
       :handle-deselect-all="handleDeselectAll"
       :handle-close-select="handleCloseSelect"
     />
-    <ChatMiddle
+    <component
+      :is="classic ? ClassicChatMiddle : ChatMiddle"
       :selected-messages="selectedMessages"
       :handle-select-message="handleSelectMessage"
       :handle-deselect-message="handleDeselectMessage"
     />
-    <ChatBottom />
+    <component :is="classic ? ClassicComposer : ChatBottom" />
   </div>
 
   <NoChatSelected v-else />

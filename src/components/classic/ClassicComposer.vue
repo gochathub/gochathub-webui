@@ -1,0 +1,179 @@
+<script setup lang="ts">
+import type { IConversation } from "@src/types";
+import type { Ref } from "vue";
+
+import { inject, ref } from "vue";
+
+import useStore from "@src/store/store";
+import { useComposer } from "@src/composables/useComposer";
+
+import {
+  FaceSmileIcon,
+  PaperAirplaneIcon,
+  PaperClipIcon,
+  XCircleIcon,
+} from "@heroicons/vue/24/outline";
+import AttachmentsModal from "@src/components/shared/modals/AttachmentsModal/AttachmentsModal.vue";
+import EmojiPicker from "@src/components/ui/inputs/EmojiPicker/EmojiPicker.vue";
+import IconButton from "@src/components/ui/inputs/IconButton.vue";
+import RichEditor from "@src/components/ui/inputs/RichEditor.vue";
+import ScaleTransition from "@src/components/ui/transitions/ScaleTransition.vue";
+import PendingAttachments from "@src/components/views/HomeView/Chat/ChatBottom/PendingAttachments.vue";
+import ReplyMessage from "@src/components/views/HomeView/Chat/ChatBottom/ReplyMessage.vue";
+
+const store = useStore();
+const activeConversation = inject("activeConversation") as Ref<
+  IConversation | undefined
+>;
+
+const {
+  value,
+  pendingAttachments,
+  typingNames,
+  mentionMatches,
+  shortcodeMatches,
+  handlePickMention,
+  handlePickShortcode,
+  handleSetDraft,
+  handleSend,
+  handleRemovePending,
+} = useComposer(activeConversation);
+
+const showPicker = ref(false);
+const editorRef = ref<InstanceType<typeof RichEditor>>();
+const openAttachmentsModal = ref(false);
+
+// close the picker when you click outside it
+const handleClickOutside = (event: Event) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest(".toggle-picker-button")) showPicker.value = false;
+};
+</script>
+
+<template>
+  <div v-if="store.status !== 'loading'" class="w-full px-5 pb-4">
+    <div class="relative transition-all duration-200">
+      <ReplyMessage />
+    </div>
+
+    <p
+      v-if="typingNames.length > 0"
+      class="body-3 text-muted mb-1"
+      aria-live="polite"
+    >
+      {{ typingNames.join(", ") }} {{ typingNames.length > 1 ? "are" : "is" }}
+      typing…
+    </p>
+
+    <PendingAttachments
+      :attachments="pendingAttachments"
+      @remove="handleRemovePending"
+    />
+
+    <div class="relative rounded border border-hairline bg-card">
+      <RichEditor
+        ref="editorRef"
+        toolbar-below
+        :model-value="value"
+        :placeholder="`Message ${activeConversation?.type === 'group' ? '#' : ''}${activeConversation?.name ?? ''}`"
+        @update:model-value="
+          (newValue) => {
+            value = newValue;
+            handleSetDraft();
+          }
+        "
+        @send="handleSend"
+      />
+
+      <!--mention autocomplete-->
+      <div
+        v-if="mentionMatches.length > 0"
+        class="absolute bottom-full mb-2 left-0 z-10 w-56 py-1 rounded-xl bg-canvas shadow-lg border border-hairline"
+        role="listbox"
+        aria-label="mention suggestions"
+      >
+        <button
+          v-for="contact in mentionMatches"
+          :key="contact.id"
+          role="option"
+          class="w-full text-left px-4 py-2 body-3 text-fg hover:bg-select/60"
+          @click="handlePickMention(contact.username)"
+        >
+          <span class="font-semibold">@{{ contact.username }}</span>
+          {{ contact.firstName }}
+        </button>
+      </div>
+
+      <!--shortcode autocomplete-->
+      <div
+        v-if="shortcodeMatches.length > 0"
+        class="absolute bottom-full mb-2 left-0 z-10 w-56 py-1 rounded-xl bg-canvas shadow-lg border border-hairline"
+        role="listbox"
+        aria-label="emoji suggestions"
+      >
+        <button
+          v-for="m in shortcodeMatches"
+          :key="m.name"
+          role="option"
+          class="w-full text-left px-4 py-2 body-3 text-fg hover:bg-select/60"
+          @click="handlePickShortcode(m.char)"
+        >
+          {{ m.char }} :{{ m.name }}:
+        </button>
+      </div>
+
+      <!--actions-->
+      <div class="relative flex items-center gap-1 px-2 pb-2">
+        <IconButton
+          title="toggle emoji picker"
+          aria-label="toggle emoji picker"
+          class="ic-btn-ghost-primary toggle-picker-button w-7 h-7"
+          @click="showPicker = !showPicker"
+        >
+          <XCircleIcon v-if="showPicker" class="w-[1.25rem] h-[1.25rem]" />
+          <FaceSmileIcon v-else class="w-[1.25rem] h-[1.25rem] text-muted" />
+        </IconButton>
+        <IconButton
+          v-if="!activeConversation?.source"
+          class="ic-btn-ghost-primary w-7 h-7"
+          title="open select attachments modal"
+          aria-label="open select attachments modal"
+          @click="openAttachmentsModal = true"
+        >
+          <PaperClipIcon class="w-[1.25rem] h-[1.25rem]" />
+        </IconButton>
+        <IconButton
+          class="ic-btn-contained-primary w-7 h-7 ml-auto"
+          title="send message"
+          aria-label="send message"
+          @click="handleSend"
+        >
+          <PaperAirplaneIcon class="w-4.25 h-4.25" />
+        </IconButton>
+
+        <ScaleTransition>
+          <div
+            v-show="showPicker"
+            v-click-outside="handleClickOutside"
+            class="absolute z-10 bottom-full mb-2 left-0"
+          >
+            <div role="none">
+              <EmojiPicker
+                :show="showPicker"
+                @pick="(char) => editorRef?.insert(char)"
+              />
+            </div>
+          </div>
+        </ScaleTransition>
+      </div>
+    </div>
+
+    <AttachmentsModal
+      :open="openAttachmentsModal"
+      :close-modal="() => (openAttachmentsModal = false)"
+      :close-with-attachments="
+        (attachments) => pendingAttachments.push(...attachments)
+      "
+    />
+  </div>
+</template>
