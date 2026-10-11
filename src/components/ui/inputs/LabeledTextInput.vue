@@ -12,17 +12,14 @@ const props = defineProps<{
   class?: string;
   placeholder?: string;
   bordered?: boolean;
+  // extra attributes for the <input> itself (autocomplete, inputmode, maxlength, ...)
+  inputAttrs?: Record<string, string>;
 }>();
 </script>
 
 <template>
   <div class="flex flex-col">
-    <label
-      v-if="props.label"
-      :id="props.id"
-      :for="props.id"
-      class="body-2 text-muted mb-3"
-    >
+    <label v-if="props.label" :for="props.id" class="body-2 text-muted mb-3">
       {{ props.label }}
     </label>
 
@@ -42,6 +39,7 @@ const props = defineProps<{
           props.class,
         ]"
         :placeholder="props.placeholder"
+        :input-attrs="props.inputAttrs"
         @value-changed="(value) => $emit('valueChanged', value)"
       />
 

@@ -98,7 +98,16 @@ const handleLogin = async () => {
   }
 };
 
+// backup codes (10 letters/digits) do not fit the 6-digit field
+const useBackup = ref(false);
+const toggleBackup = () => {
+  useBackup.value = !useBackup.value;
+  code.value = "";
+  error.value = "";
+};
+
 const handleBack = () => {
+  useBackup.value = false;
   auth.cancel2fa();
   code.value = "";
   error.value = "";
@@ -123,10 +132,18 @@ const handleBack = () => {
       <form class="mb-6" @submit.prevent="handleLogin">
         <template v-if="!auth.challenge">
           <LabeledTextInput
+            id="username"
+            name="username"
             :value="username"
             label="Username"
             placeholder="Enter your username"
             class="mb-5"
+            :input-attrs="{
+              autocomplete: 'username',
+              autocapitalize: 'none',
+              autocorrect: 'off',
+              spellcheck: 'false',
+            }"
             @value-changed="
               (value) => {
                 username = value;
@@ -134,9 +151,12 @@ const handleBack = () => {
             "
           />
           <PasswordInput
+            id="password"
+            name="password"
             :value="password"
             label="Password"
             placeholder="Enter your password"
+            :input-attrs="{ autocomplete: 'current-password' }"
             @value-changed="
               (value) => {
                 password = value;
@@ -158,16 +178,53 @@ const handleBack = () => {
               label="two-factor sign-in"
             />
           </div>
+          <!-- TOTP: OS/password-manager one-time-code fill; backup codes are 10 letters/digits, so they get an unrestricted field -->
           <LabeledTextInput
+            v-if="!useBackup"
+            id="otp"
+            name="otp"
             :value="code"
             label="Authentication code"
-            placeholder="6-digit code or backup code"
+            placeholder="6-digit code"
+            :input-attrs="{
+              autocomplete: 'one-time-code',
+              inputmode: 'numeric',
+              pattern: '[0-9]*',
+              maxlength: '6',
+            }"
             @value-changed="
               (value) => {
                 code = value;
               }
             "
           />
+          <LabeledTextInput
+            v-else
+            id="backup-code"
+            name="backup-code"
+            :value="code"
+            label="Backup code"
+            placeholder="10-character backup code"
+            :input-attrs="{
+              autocomplete: 'off',
+              autocapitalize: 'none',
+              autocorrect: 'off',
+              spellcheck: 'false',
+              maxlength: '16',
+            }"
+            @value-changed="
+              (value) => {
+                code = value;
+              }
+            "
+          />
+          <button
+            type="button"
+            class="body-3 text-muted mt-3 mr-4 underline"
+            @click="toggleBackup"
+          >
+            {{ useBackup ? "Use an authenticator code" : "Use a backup code" }}
+          </button>
           <button
             type="button"
             class="body-3 text-muted mt-3 underline"

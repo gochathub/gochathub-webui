@@ -9,12 +9,14 @@ defineEmits(["valueChanged"]);
 
 const props = defineProps<{
   id?: string;
+  name?: string;
   type?: string;
   label?: string;
   value?: string;
   placeholder?: string;
   description?: string;
   bordered?: boolean;
+  inputAttrs?: Record<string, string>;
   class?: string;
 }>();
 
@@ -24,12 +26,14 @@ const showPassword = ref(false);
 <template>
   <LabeledTextInput
     :id="props.id"
+    :name="props.name"
     :type="showPassword ? 'text' : 'password'"
     :label="props.label"
     :value="props.value"
     :placeholder="props.placeholder"
     :class="props.class"
     :bordered="props.bordered"
+    :input-attrs="props.inputAttrs"
     @value-changed="(value) => $emit('valueChanged', value)"
   >
     <template #endAdornment>
