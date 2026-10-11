@@ -185,6 +185,15 @@ const isActive = computed(
         {{ getName(props.conversation) }}
       </p>
 
+      <!--mirrored from the user's Rocket.Chat workspace-->
+      <span
+        v-if="props.conversation.source === 'rocket_chat'"
+        class="ml-2 px-1.5 rounded body-1 text-muted border border-current shrink-0"
+        title="Mirrored from Rocket.Chat"
+      >
+        RC
+      </span>
+
       <!--unsent draft in a conversation that isn't open-->
       <span
         v-if="

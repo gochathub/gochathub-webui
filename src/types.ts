@@ -65,6 +65,8 @@ export interface IConversation {
   replyMessage?: IMessage;
   unread?: number;
   draftMessage: string;
+  // cross-server origin ("rocket_chat"); absent on native rooms
+  source?: string;
 }
 
 export interface IContactGroup {

@@ -142,6 +142,7 @@ const handleReplyToMessage = () => {
     :position="['top-0']"
   >
     <button
+      v-if="!activeConversation?.source"
       class="dropdown-link dropdown-link-primary"
       role="menuitem"
       aria-label="reply to this message"

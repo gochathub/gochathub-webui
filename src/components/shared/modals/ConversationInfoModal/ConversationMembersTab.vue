@@ -36,7 +36,11 @@ const keyword = ref("");
 const adding = ref(false);
 
 // room admins and server admins manage members (the server enforces it too)
-const canManage = computed(() => canDeleteRoom(props.conversation, store.user));
+// mirrored (cross-server) rooms belong to their owner alone: no member changes
+const canManage = computed(
+  () =>
+    !props.conversation.source && canDeleteRoom(props.conversation, store.user),
+);
 
 // me first, then everyone else (the members endpoint list excludes me here)
 const members = computed<IContact[]>(() => {

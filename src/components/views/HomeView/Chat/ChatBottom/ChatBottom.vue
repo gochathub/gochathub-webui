@@ -182,8 +182,9 @@ onMounted(() => {
       class="h-auto min-h-16 p-4 flex items-end"
     >
       <div class="min-h-[2.75rem] flex items-center">
-        <!--select attachments button-->
+        <!--select attachments button (not across the Rocket.Chat bridge)-->
         <IconButton
+          v-if="!activeConversation?.source"
           class="ic-btn-ghost-primary w-7 h-7 md:mr-2 xs:mr-1"
           title="open select attachments modal"
           aria-label="open select attachments modal"

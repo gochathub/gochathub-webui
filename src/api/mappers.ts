@@ -73,6 +73,7 @@ export function mapRoom(
     messages,
     unread: r.unread_count ?? 0,
     draftMessage: "",
+    source: r.source || undefined,
   };
 }
 

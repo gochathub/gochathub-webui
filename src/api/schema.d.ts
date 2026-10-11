@@ -730,6 +730,34 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/integrations/rocket-chat/link": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get: operations["getRocketChatLink"];
+    put?: never;
+    /**
+     * @description Link the caller's Rocket.Chat account (docs/ROCKETCHAT-INTEGRATION.md).
+     *     Requires a Personal Access Token created in the RC workspace
+     *     (permission create-personal-access-tokens; bypassTwoFactor if 2FA).
+     *     Credentials are validated against the workspace before the link row is
+     *     stored; the PAT is stored encrypted and never returned. First sync of
+     *     the account's DMs/private groups starts in the background.
+     */
+    post: operations["linkRocketChat"];
+    /**
+     * @description Unlink: the stored PAT is destroyed and the caller's mirrored rooms are
+     *     hidden (archived; history is kept, and re-linking restores them).
+     */
+    delete: operations["unlinkRocketChat"];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/ws": {
     parameters: {
       query?: never;
@@ -783,6 +811,30 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    LinkRocketChatRequest: {
+      /**
+       * @description The user's own Rocket.Chat workspace origin (https://chat.example.com).
+       *     Optional when the deployment configures a default. Private/internal
+       *     addresses are rejected unless the host is allow-listed server-side.
+       */
+      base_url?: string;
+      /**
+       * @description The RC account's userId (preferred; shown when creating the PAT) or
+       *     its username.
+       */
+      rc_user_id: string;
+      /** @description Personal Access Token created in the RC workspace. */
+      token: string;
+    };
+    RocketChatLink: {
+      linked: boolean;
+      /** @description The workspace this account is linked to; set when linked. */
+      base_url?: string;
+      /** @description The resolved RC userId; set when linked. */
+      rc_user_id?: string;
+      /** @description The resolved RC username; set when linked. */
+      rc_username?: string;
+    };
     /** @description Postmark inbound JSON subset (Cloudflare Email Worker posts the same shape). */
     InboundEmail: {
       /** @description Dedupe key per webhook; empty disables dedupe. */
@@ -1006,6 +1058,8 @@ export interface components {
       my_role?: "member" | "admin";
       /** @description Unread (un-read receipts) for the caller; present on room lists. */
       unread_count?: number;
+      /** @description Cross-server origin; present ("rocket_chat") only on rooms mirrored from a live Rocket.Chat workspace (docs/ROCKETCHAT-INTEGRATION.md). Absent or "" for native rooms. Messages/posting behave normally; edits, deletes, reactions and attachments across the bridge are out of scope. */
+      source?: string;
     };
     CreateRoomRequest: {
       /**
@@ -2638,6 +2692,75 @@ export interface operations {
           };
         };
       };
+    };
+  };
+  getRocketChatLink: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Link state (linked=false when none) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RocketChatLink"];
+        };
+      };
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  linkRocketChat: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["LinkRocketChatRequest"];
+      };
+    };
+    responses: {
+      /** @description Linked */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["RocketChatLink"];
+        };
+      };
+      400: components["responses"]["BadRequest"];
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
+    };
+  };
+  unlinkRocketChat: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Unlinked */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      401: components["responses"]["Unauthorized"];
+      404: components["responses"]["NotFound"];
     };
   };
   wsEndpoint: {

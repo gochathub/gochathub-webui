@@ -5,6 +5,7 @@ import AccountSettings from "@src/components/views/HomeView/Sidebar/Settings/Set
 import PrivacySettings from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/PrivacySettings.vue";
 import AppearanceSettings from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/AppearanceSettings.vue";
 import NotificationsSettings from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/NotificationsSettings.vue";
+import IntegrationsSettings from "@src/components/views/HomeView/Sidebar/Settings/SettingsAccordion/IntegrationsSettings.vue";
 
 // Types
 enum accordionItems {
@@ -12,6 +13,7 @@ enum accordionItems {
   privacySettings = "privacy-settings",
   appearanceSettings = "appearance-settings",
   notificationsSettings = "notifications-settings",
+  integrationsSettings = "integrations-settings",
 }
 
 const accordionState = ref({
@@ -19,6 +21,7 @@ const accordionState = ref({
   "privacy-settings": true,
   "appearance-settings": true,
   "notifications-settings": true,
+  "integrations-settings": true,
 });
 
 const handleToggle = (name: accordionItems) => {
@@ -55,6 +58,10 @@ const handleToggle = (name: accordionItems) => {
     <NotificationsSettings
       :collapsed="accordionState['notifications-settings']"
       :handle-toggle="() => handleToggle(accordionItems.notificationsSettings)"
+    />
+    <IntegrationsSettings
+      :collapsed="accordionState['integrations-settings']"
+      :handle-toggle="() => handleToggle(accordionItems.integrationsSettings)"
     />
   </div>
 </template>
