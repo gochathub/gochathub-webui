@@ -4,11 +4,13 @@ import { useRoute } from "vue-router";
 
 import SignupInvites from "@src/components/views/AdminView/SignupInvites.vue";
 import MailSettings from "@src/components/views/AdminView/MailSettings.vue";
+import InterfaceSettings from "@src/components/views/AdminView/InterfaceSettings.vue";
 
 // Add admin sections here; the route param picks one.
 const sections = [
   { slug: "signup-invites", title: "Signup invites", component: SignupInvites },
   { slug: "email", title: "Email provider", component: MailSettings },
+  { slug: "interface", title: "Interface", component: InterfaceSettings },
 ];
 
 const route = useRoute();

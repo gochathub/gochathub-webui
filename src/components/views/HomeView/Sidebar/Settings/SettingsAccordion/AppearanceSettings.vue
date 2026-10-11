@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import useStore from "@src/store/store";
 import usePrefsStore, { ACCENT_SWATCHES } from "@src/store/prefs";
+import type { LayoutPref } from "@src/store/prefs";
 
 import AccordionButton from "@src/components/ui/data-display/AccordionButton.vue";
 import Collapse from "@src/components/ui/utils/Collapse.vue";
@@ -38,6 +39,34 @@ prefs.load();
       :handle-toggle-switch="(value) => (store.settings.darkMode = value)"
       class="mb-7"
     />
+
+    <!--layout-->
+    <div class="mb-7">
+      <label for="layout-pref" class="heading-2 text-fg mb-1 block">
+        Layout
+      </label>
+      <p class="body-2 text-muted mb-3">Follows your account to every device</p>
+      <select
+        id="layout-pref"
+        :value="prefs.layoutPref"
+        class="w-full px-2 py-2 rounded border border-hairline bg-surface text-fg body-2"
+        @change="
+          prefs.setLayout(
+            ($event.target as HTMLSelectElement).value as LayoutPref,
+          )
+        "
+      >
+        <option value="instance">
+          Default ({{
+            prefs.instanceLayout === "classic"
+              ? "Classic (Rocket.Chat style)"
+              : "Modern"
+          }})
+        </option>
+        <option value="modern">Modern</option>
+        <option value="classic">Classic (Rocket.Chat style)</option>
+      </select>
+    </div>
 
     <!--accent color-->
     <div class="mb-7">

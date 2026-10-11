@@ -5,6 +5,7 @@ import useStore from "@src/store/store";
 import useAuthStore from "@src/store/auth";
 import { mapUser } from "@src/api/mappers";
 import useRoomsStore from "@src/store/rooms";
+import usePrefsStore from "@src/store/prefs";
 import { startWS, stopWS } from "@src/ws/connection";
 import ws from "@src/ws/client";
 
@@ -54,6 +55,11 @@ watch(
     if (id) {
       startWS();
       rooms.loadRooms();
+      // login/passkey/2FA paths don't load prefs; reload bootstrap does too
+      // (ponytail: one duplicate GET on reload, dedupe if it ever matters)
+      usePrefsStore()
+        .load()
+        .catch(() => {});
     } else {
       stopWS();
     }

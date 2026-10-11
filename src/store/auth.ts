@@ -26,8 +26,9 @@ export const useAuthStore = defineStore("auth", () => {
       bootstrapped.value = true;
     }
     // accent + prefs load once per session (best effort)
+    // awaited: the layout must be known before the first route renders
     if (me.value)
-      usePrefsStore()
+      await usePrefsStore()
         .load()
         .catch(() => {});
   }

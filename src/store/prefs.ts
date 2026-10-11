@@ -1,11 +1,20 @@
 // Preferences (ADR-013): server booleans mirror the template's ISettings
 // privacy keys; toggling saves to the server immediately.
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 import client, { unwrap } from "@src/api/client";
+import type { components } from "@src/api/schema";
 import useStore from "@src/store/store";
 import type { ISettings } from "@src/types";
+
+export type Layout = "modern" | "classic";
+export type LayoutPref = components["schemas"]["Preferences"]["layout"];
+
+/** "instance" follows the admin default; anything else is the user's choice. */
+export function resolveLayout(pref: LayoutPref, instance: Layout): Layout {
+  return pref === "instance" ? instance : pref;
+}
 
 // ISettings key → server preference field
 const TO_SERVER: Record<string, string> = {
@@ -48,6 +57,11 @@ export const usePrefsStore = defineStore("prefs", () => {
   const spellcheck = ref(false);
   const words = ref<string[]>([]);
   const primaryColor = ref(ACCENT_DEFAULT);
+  const layoutPref = ref<LayoutPref>("instance");
+  const instanceLayout = ref<Layout>("modern");
+  const layout = computed(() =>
+    resolveLayout(layoutPref.value, instanceLayout.value),
+  );
 
   async function load() {
     const prefs = await unwrap(await client.GET("/users/me/preferences"));
@@ -55,6 +69,8 @@ export const usePrefsStore = defineStore("prefs", () => {
     words.value = prefs.spellcheck_words;
     primaryColor.value = prefs.primary_color;
     applyAccent(prefs.primary_color);
+    layoutPref.value = prefs.layout;
+    instanceLayout.value = prefs.instance_layout ?? "modern";
     chat.$patch({
       settings: {
         ...chat.settings,
@@ -116,8 +132,29 @@ export const usePrefsStore = defineStore("prefs", () => {
     }
   }
 
+  async function setLayout(value: LayoutPref) {
+    const previous = layoutPref.value;
+    layoutPref.value = value;
+    try {
+      const prefs = await unwrap(
+        await client.PATCH("/users/me/preferences", {
+          body: { layout: value },
+        }),
+      );
+      layoutPref.value = prefs.layout;
+      instanceLayout.value = prefs.instance_layout ?? "modern";
+    } catch (e) {
+      layoutPref.value = previous;
+      throw e;
+    }
+  }
+
   return {
     load,
+    layout,
+    layoutPref,
+    instanceLayout,
+    setLayout,
     set,
     spellcheck,
     words,
