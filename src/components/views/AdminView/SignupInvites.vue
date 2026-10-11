@@ -65,9 +65,9 @@ const fmt = (iso: string) => new Date(iso).toLocaleString();
           <!-- type=text + ignore hints: password managers (Bitwarden, LastPass, 1Password) must not fill an invitee's address with the admin's own -->
           <LabeledTextInput
             :value="email"
-            label="Invite by email"
-            name="invitee-address"
-            placeholder="person@example.com"
+            label="Invite someone"
+            name="invite-target"
+            placeholder="Recipient"
             class="h-16! text-xl!"
             :input-attrs="{
               inputmode: 'email',

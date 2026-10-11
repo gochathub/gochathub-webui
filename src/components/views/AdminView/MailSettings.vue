@@ -232,8 +232,8 @@ const label = (id: string) =>
           <LabeledTextInput
             :value="testTo"
             :label="`Send a test message via ${label(mail.settings.active)} to`"
-            name="test-recipient"
-            placeholder="you@example.com"
+            name="test-target"
+            placeholder="Recipient"
             class="h-16! text-xl!"
             :input-attrs="{
               inputmode: 'email',
