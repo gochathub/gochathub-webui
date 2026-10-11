@@ -21,6 +21,28 @@ const code = ref("");
 const busy = ref(false);
 const error = ref("");
 
+// one-time-code autofill attributes; re-auth also accepts a 10-character
+// backup code, which needs an unrestricted field
+const otpAttrs = {
+  autocomplete: "one-time-code",
+  inputmode: "numeric",
+  pattern: "[0-9]*",
+  maxlength: "6",
+};
+const backupAttrs = {
+  autocomplete: "off",
+  autocapitalize: "none",
+  autocorrect: "off",
+  spellcheck: "false",
+  maxlength: "16",
+};
+const useBackup = ref(false);
+const toggleBackup = () => {
+  useBackup.value = !useBackup.value;
+  code.value = "";
+  error.value = "";
+};
+
 const run = async (fn: () => Promise<void>) => {
   error.value = "";
   busy.value = true;
@@ -56,6 +78,7 @@ const handleAdd = () =>
     password.value = "";
     code.value = "";
     name.value = "";
+    useBackup.value = false;
     adding.value = false;
     await refresh();
   });
@@ -88,24 +111,52 @@ onMounted(() => passkeysSupported && run(refresh));
 
     <template v-if="adding">
       <LabeledTextInput
+        id="passkey-name"
+        name="passkey-name"
         label="Name (e.g. MacBook)"
         class="mb-5"
         :value="name"
+        :input-attrs="{ autocomplete: 'off' }"
         @value-changed="(value) => (name = value)"
       />
       <PasswordInput
+        id="passkey-password"
+        name="password"
         label="Current password"
         class="mb-5"
         :value="password"
+        :input-attrs="{ autocomplete: 'current-password' }"
         @value-changed="(value) => (password = value)"
       />
-      <LabeledTextInput
-        v-if="twoFactor"
-        label="Authentication code"
-        class="mb-5"
-        :value="code"
-        @value-changed="(value) => (code = value)"
-      />
+      <template v-if="twoFactor">
+        <LabeledTextInput
+          v-if="!useBackup"
+          id="passkey-code"
+          name="otp"
+          label="Authentication code"
+          class="mb-5"
+          :value="code"
+          :input-attrs="otpAttrs"
+          @value-changed="(value) => (code = value)"
+        />
+        <LabeledTextInput
+          v-else
+          id="passkey-backup-code"
+          name="backup-code"
+          label="Backup code"
+          class="mb-5"
+          :value="code"
+          :input-attrs="backupAttrs"
+          @value-changed="(value) => (code = value)"
+        />
+        <button
+          type="button"
+          class="body-3 text-muted mb-5 underline"
+          @click="toggleBackup"
+        >
+          {{ useBackup ? "Use an authenticator code" : "Use a backup code" }}
+        </button>
+      </template>
       <p v-if="error" role="alert" class="body-3 text-error mb-4">
         {{ error }}
       </p>
@@ -119,7 +170,10 @@ onMounted(() => passkeysSupported && run(refresh));
       <button
         type="button"
         class="body-3 text-muted mb-8 underline"
-        @click="adding = false"
+        @click="
+          adding = false;
+          useBackup = false;
+        "
       >
         Cancel
       </button>
