@@ -563,17 +563,18 @@ export const useRoomsStore = defineStore("rooms", () => {
       }
 
       case "presence.changed": {
-        // peer went online/offline: refresh the contact's last-seen stamp
+        // online stamps the contact (and the dot); offline keeps the existing
+        // last-seen stamp — erasing it would blank the line entirely
         const userId = (data.user_id as string) ?? "";
         const state = (data.state as string) ?? "";
         if (!userId) return;
-        const stamp = state === "online" ? new Date() : new Date(0);
+        const online = state === "online";
         for (const list of [chat.conversations, chat.archivedConversations]) {
           for (const conv of list) {
             const peer = conv.contacts.find((c) => c.id === userId);
             if (peer) {
-              peer.lastSeen = stamp;
-              if (conv.type === "direct") conv.peerOnline = state === "online";
+              if (online) peer.lastSeen = new Date();
+              if (conv.type === "direct") conv.peerOnline = online;
             }
           }
         }
