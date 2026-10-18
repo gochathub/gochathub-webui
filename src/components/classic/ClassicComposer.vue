@@ -61,6 +61,7 @@ const openAttachmentsModal = ref(false);
       <RichEditor
         ref="editorRef"
         toolbar-below
+        tall
         :model-value="value"
         :placeholder="`Message ${activeConversation?.type === 'group' ? '#' : ''}${activeConversation?.name ?? ''}`"
         @update:model-value="
@@ -73,6 +74,27 @@ const openAttachmentsModal = ref(false);
       >
         <template #toolbar-end>
           <EmojiPickerButton @pick="(char) => editorRef?.insert(char)" />
+          <IconButton
+            v-if="!activeConversation?.source"
+            type="button"
+            class="ic-btn-ghost-primary w-7 h-7"
+            title="open select attachments modal"
+            aria-label="open select attachments modal"
+            @mousedown.prevent
+            @click="openAttachmentsModal = true"
+          >
+            <PaperClipIcon class="w-4 h-4" />
+          </IconButton>
+          <IconButton
+            type="button"
+            class="ic-btn-contained-primary w-7 h-7 ml-auto"
+            title="send message"
+            aria-label="send message"
+            @mousedown.prevent
+            @click="handleSend"
+          >
+            <PaperAirplaneIcon class="w-4.25 h-4.25" />
+          </IconButton>
         </template>
       </RichEditor>
 
@@ -111,27 +133,6 @@ const openAttachmentsModal = ref(false);
         >
           {{ m.char }} :{{ m.name }}:
         </button>
-      </div>
-
-      <!--actions-->
-      <div class="relative flex items-center gap-1 px-2 pb-2">
-        <IconButton
-          v-if="!activeConversation?.source"
-          class="ic-btn-ghost-primary w-7 h-7"
-          title="open select attachments modal"
-          aria-label="open select attachments modal"
-          @click="openAttachmentsModal = true"
-        >
-          <PaperClipIcon class="w-[1.25rem] h-[1.25rem]" />
-        </IconButton>
-        <IconButton
-          class="ic-btn-contained-primary w-7 h-7 ml-auto"
-          title="send message"
-          aria-label="send message"
-          @click="handleSend"
-        >
-          <PaperAirplaneIcon class="w-4.25 h-4.25" />
-        </IconButton>
       </div>
     </div>
 

@@ -24,6 +24,8 @@ const props = defineProps<{
   modelValue: string;
   placeholder?: string;
   toolbarBelow?: boolean;
+  // resting height of about three lines (grows with the text up to max-h-32)
+  tall?: boolean;
 }>();
 const emit = defineEmits<{
   "update:modelValue": [string];
@@ -206,6 +208,7 @@ const buttons = [
     <EditorContent
       :editor="editor"
       class="max-h-32 overflow-y-auto scrollbar-thin px-4 py-2 text-sm text-fg dark:text-fg/80"
+      :class="{ '[&_.rich-editor]:min-h-15': props.tall }"
     />
   </div>
 </template>
