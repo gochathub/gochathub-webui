@@ -87,7 +87,7 @@ const openAttachmentsModal = ref(false);
           </IconButton>
           <IconButton
             type="button"
-            class="ic-btn-contained-primary w-7 h-7 ml-auto"
+            class="ic-btn-contained-primary w-7 h-7 ml-auto mr-2 mb-2"
             title="send message"
             aria-label="send message"
             @mousedown.prevent
