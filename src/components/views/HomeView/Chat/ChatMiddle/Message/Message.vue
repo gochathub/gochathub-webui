@@ -39,8 +39,16 @@ const contextMenuCoordinations: Ref<{ x: number; y: number }> = ref({
   y: 0,
 });
 
-// open context menu.
+// open context menu; a text selection inside the row or a link keeps the
+// native menu (copy selection, open/copy link)
 const handleShowContextMenu = (event: any) => {
+  const sel = window.getSelection();
+  if (
+    event.target.closest?.("a") ||
+    (sel?.toString() && event.currentTarget.contains(sel.anchorNode))
+  )
+    return;
+  event.preventDefault();
   showContextMenu.value = true;
   contextMenuCoordinations.value = {
     x:
@@ -99,7 +107,7 @@ const replyMessage = computed(() =>
         props.selected ? 'bg-accent-soft' : 'hover:bg-select/40',
       ]"
       @click="handleCloseContextMenu"
-      @contextmenu.prevent="handleShowContextMenu"
+      @contextmenu="handleShowContextMenu"
     >
       <div class="w-9 shrink-0 text-center">
         <Avatar
@@ -205,7 +213,7 @@ const replyMessage = computed(() =>
               'rounded-tr-xl bg-accent-soft': !props.self && props.selected,
             }"
             @click="handleCloseContextMenu"
-            @contextmenu.prevent="handleShowContextMenu"
+            @contextmenu="handleShowContextMenu"
           >
             <!--reply to-->
             <MessagePreview

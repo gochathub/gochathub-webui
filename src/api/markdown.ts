@@ -52,6 +52,16 @@ function inline(s: string, doc = false): string {
         : `<a class="underline" href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`,
   );
 
+  // bare http(s) URLs; skip existing anchors, code spans and tags
+  out = out.replace(
+    /(<a\b.*?<\/a>|<code[^>]*>.*?<\/code>|<[^>]*>)|https?:\/\/[^\s<]+/g,
+    (m, skip) => {
+      if (skip) return skip;
+      const url = m.replace(/(?:[.,;:!?)]|&#39;|&quot;|&gt;)+$/, "");
+      return `<a class="underline" href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>${m.slice(url.length)}`;
+    },
+  );
+
   // mentions @username
   out = out.replace(
     /(^|[\s(])@([a-zA-Z0-9_-]+)/g,
