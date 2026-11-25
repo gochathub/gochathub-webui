@@ -11,8 +11,7 @@ import Wordmark from "@src/components/ui/brand/Wordmark.vue";
     >
       <Wordmark size="lg" class="text-white! mb-5" />
       <p class="display mb-5 text-white text-center">
-        Blazingly fast messaging platform for the
-        <span class="text-gradient">web.</span>
+        Team chat that stays on your server
       </p>
       <p class="body-3 text-white/70 max-w-[26rem] text-center">
         goChatHub keeps your conversations on your server, syncing messages,
@@ -21,12 +20,3 @@ import Wordmark from "@src/components/ui/brand/Wordmark.vue";
     </div>
   </div>
 </template>
-
-<style scoped>
-.text-gradient {
-  background: -webkit-linear-gradient(left top, #aab4bc, #eef1f3);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-</style>

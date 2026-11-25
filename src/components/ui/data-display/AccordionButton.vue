@@ -17,7 +17,7 @@ const props = defineProps<{
     <!--dropdown button icon-->
     <ChevronRightIcon
       v-if="props.chevron"
-      class="w-5 h-5 stoke-1 text-muted transition-all duration-300"
+      class="w-5 h-5 stoke-1 text-muted transition-transform duration-300"
       :class="{ 'rotate-90': !props.collapsed }"
     />
   </button>

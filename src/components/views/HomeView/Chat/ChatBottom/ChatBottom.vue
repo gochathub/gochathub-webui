@@ -44,7 +44,7 @@ const openAttachmentsModal = ref(false);
   <div class="w-full">
     <!--selected reply display-->
     <div
-      class="relative transition-all duration-200"
+      class="relative"
       :class="{ 'pt-15': activeConversation?.replyMessage }"
     >
       <ReplyMessage />
@@ -94,7 +94,7 @@ const openAttachmentsModal = ref(false);
           <RichEditor
             ref="editorRef"
             :model-value="value"
-            placeholder="Write your message here"
+            placeholder="Message"
             @update:model-value="
               (newValue) => {
                 value = newValue;

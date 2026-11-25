@@ -73,7 +73,7 @@ onUnmounted(() => {
   >
     <div
       v-if="loading"
-      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 active:bg-accent-active"
+      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-colors duration-200 active:bg-accent-active"
       :class="props.self ? 'bg-white' : 'bg-accent'"
     >
       <Spinner />
@@ -82,7 +82,7 @@ onUnmounted(() => {
     <!--play/pause button-->
     <button
       v-else
-      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-all duration-200 active:bg-accent-active"
+      class="p-4 mr-4 flex justify-center items-center rounded-[.75rem] outline-none transition-colors duration-200 active:bg-accent-active"
       :class="props.self ? 'bg-white' : 'bg-accent'"
       :aria-label="playing ? 'pause' : 'play'"
       @click="handleTogglePlay"

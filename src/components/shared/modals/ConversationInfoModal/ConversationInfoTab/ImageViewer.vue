@@ -29,7 +29,7 @@ const props = defineProps<{
           <!--close viewer button-->
           <div class="w-full flex justify-end">
             <button
-              class="rounded-full p-2 hover:bg-white/10 active:bg-white/20 transition-all duration-200"
+              class="rounded-full p-2 hover:bg-white/10 active:bg-white/20 transition-colors duration-200"
               aria-label="previous item"
               @click="closeImage"
             >

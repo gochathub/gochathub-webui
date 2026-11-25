@@ -22,7 +22,7 @@ const store = useStore();
       <!--archived icon-->
       <div class="mr-4" :class="{ hidden: props.open }">
         <div
-          class="w-7 h-7 flex justify-center items-center rounded-full bg-card dark:bg-gray-500 transition duration-200"
+          class="w-7 h-7 flex justify-center items-center rounded-full bg-card transition-colors duration-200"
         >
           <ArchiveBoxIcon
             class="w-5 h-5 stroke-1 text-muted dark:text-white transition duration-200"

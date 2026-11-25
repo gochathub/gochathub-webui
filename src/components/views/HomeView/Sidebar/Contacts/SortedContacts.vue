@@ -84,7 +84,7 @@ const handleClickOutside = (event: Event) => {
     <div v-for="contact in group.contacts" :key="contact.id">
       <div class="w-full p-5 flex justify-between items-center">
         <button
-          class="flex items-center min-w-0 transition-all duration-200 ease-out"
+          class="flex items-center min-w-0 transition-colors duration-200 ease-out"
           :aria-label="getFullName(contact)"
         >
           <Avatar

@@ -32,7 +32,7 @@ const activeConversationId = computed(() => getActiveConversationId(route));
       <!--chat-->
       <div
         id="mainContent"
-        class="xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-thin bg-canvas transition-all duration-500"
+        class="xs:absolute xs:z-10 md:static grow h-full xs:w-full md:w-fit scrollbar-thin bg-canvas transition-colors duration-500"
         :class="
           activeConversationId
             ? ['xs:-left-[0rem]', 'xs:static']

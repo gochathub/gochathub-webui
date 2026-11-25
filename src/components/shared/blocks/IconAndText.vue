@@ -40,12 +40,12 @@ const colorClasses = computed(() => {
   >
     <component
       :is="props.icon"
-      class="w-[1.25rem] h-[1.25rem] mr-6 transition-all duration-200"
+      class="w-[1.25rem] h-[1.25rem] mr-6 transition-colors duration-200"
       :class="colorClasses"
     />
 
     <div class="grow flex justify-start items-start">
-      <p class="body-2 transition-all duration-200" :class="colorClasses">
+      <p class="body-2 transition-colors duration-200" :class="colorClasses">
         {{ props.title }}
       </p>
     </div>
@@ -61,7 +61,7 @@ const colorClasses = computed(() => {
   <div v-else class="w-full flex items-center">
     <component
       :is="props.icon"
-      class="w-[1.25rem] h-[1.25rem] mr-6 transition-all duration-200"
+      class="w-[1.25rem] h-[1.25rem] mr-6 transition-colors duration-200"
       :class="colorClasses"
     />
 

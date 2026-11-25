@@ -122,10 +122,8 @@ const handleBack = () => {
       <!--header-->
       <div class="mb-6 flex flex-col">
         <Wordmark size="lg" class="mb-4" />
-        <p class="heading-2 text-fg mb-4">Welcome back</p>
-        <p class="body-3 text-muted font-light">
-          Sign in to your account to start messaging.
-        </p>
+        <p class="heading-2 text-fg mb-4">Sign in</p>
+        <p class="body-3 text-muted">Use your username and password.</p>
       </div>
 
       <!--form-->

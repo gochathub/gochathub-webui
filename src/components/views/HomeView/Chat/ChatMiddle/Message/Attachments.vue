@@ -161,7 +161,7 @@ const isNumber = (
               class="w-full h-full flex justify-center items-center rounded bg-black/20 hover:bg-black/10 transition duration-200"
             >
               <span
-                class="p-3 rounded-full bg-white/40 transition-all duration-200"
+                class="p-3 rounded-full bg-white/40 transition-colors duration-200"
               >
                 <PlayIcon class="w-5 h-5 text-white" />
               </span>
@@ -173,7 +173,7 @@ const isNumber = (
               class="w-full h-full flex justify-center items-center rounded bg-black/20 hover:bg-black/10 transition duration-200"
             >
               <span
-                class="p-3 rounded-full bg-white/40 transition-all duration-200"
+                class="p-3 rounded-full bg-white/40 transition-colors duration-200"
               >
                 <PlayIcon class="w-5 h-5 text-white" />
               </span>

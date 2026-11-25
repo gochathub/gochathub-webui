@@ -19,7 +19,7 @@ defineEmits<{ view: [IAttachment] }>();
 
 <template>
   <button
-    class="w-full p-5 flex hover:bg-select/50 active:bg-select dark:hover:bg-select/50 dark:active:bg-select outline-none transition-all duration-300"
+    class="w-full p-5 flex hover:bg-select/50 active:bg-select dark:hover:bg-select/50 dark:active:bg-select outline-none transition-colors duration-300"
     @click="$emit('view', props.attachment)"
   >
     <!--icon-->

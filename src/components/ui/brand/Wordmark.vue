@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <span
-    class="inline-flex items-center gap-2 font-display font-bold tracking-tight select-none whitespace-nowrap text-indigo-600 dark:text-indigo-400"
+    class="inline-flex items-center gap-2 font-display font-bold tracking-tight select-none whitespace-nowrap text-accent-text"
     :class="{
       'text-sm': size === 'sm',
       'text-lg': size === 'md',

@@ -22,7 +22,7 @@ const handleToggleSwitchOnEnter = (event: KeyboardEvent) => {
     role="switch"
     :aria-checked="!!props.value"
     :aria-label="'Switch ' + (props.value ? 'checked' : 'not checked')"
-    class="relative flex select-none outline-none transition-all duration-200 ease-in"
+    class="relative flex select-none outline-none transition-colors duration-200 ease-in"
     tabindex="0"
   >
     <input
@@ -30,7 +30,7 @@ const handleToggleSwitchOnEnter = (event: KeyboardEvent) => {
       :checked="props.value"
       type="checkbox"
       :name="label"
-      class="absolute block w-5 h-5 rounded-full bg-white scale-[0.6] appearance-none cursor-pointer foucs:outline-none transition-all duration-300"
+      class="absolute block w-5 h-5 rounded-full bg-white scale-[0.6] appearance-none cursor-pointer foucs:outline-none transition-transform duration-300"
       :class="{ 'right-0': value }"
       tabindex="-1"
     />
@@ -40,7 +40,7 @@ const handleToggleSwitchOnEnter = (event: KeyboardEvent) => {
       class="block w-7 h-5 rounded-full outline-none cursor-pointer"
       :class="{
         'bg-accent': value,
-        'bg-gray-400 dark:bg-gray-600': !value,
+        'bg-muted/40': !value,
       }"
       tabindex="-1"
       @click.capture="$emit('switchClicked', !props.value)"

@@ -39,7 +39,7 @@ const openAttachmentsModal = ref(false);
 
 <template>
   <div v-if="store.status !== 'loading'" class="w-full px-5 pb-4">
-    <div class="relative transition-all duration-200">
+    <div class="relative">
       <ReplyMessage />
     </div>
 

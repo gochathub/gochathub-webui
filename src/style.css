@@ -45,25 +45,6 @@
   --shadow-xl:
     0rem 0.9375rem 1.5625rem 0rem rgba(3, 3, 3, 0.1),
     0rem 0.3125rem 0.625rem 0rem rgba(3, 3, 3, 0.1);
-  --shadow-cxl:
-    0 0.125rem 0.3125rem rgba(193, 202, 255, 0.5),
-    0.125rem 0 0.3125rem rgba(193, 202, 255, 0.5),
-    -0.125rem 0 0.3125rem rgba(193, 202, 255, 0.5),
-    0 -0.125rem 0.3125rem rgba(193, 202, 255, 0.5);
-
-  --animate-gradient: gradient 15s ease infinite;
-
-  @keyframes gradient {
-    0% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 0% 100%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
 }
 
 /*
@@ -94,7 +75,7 @@
   --select: color-mix(in srgb, var(--accent) 13%, white);
   --card: #f9fafb;
   /* own-message bubble: saturated accent (android parity); white text inside */
-  --mine: var(--accent);
+  --mine: color-mix(in srgb, var(--accent) 70%, #1f2937);
   --fg: #111827;
   --muted: #4b5563;
   --accent: #4f46e5;
@@ -143,7 +124,7 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--hairline);
   }
 }
 
@@ -177,10 +158,10 @@
   @apply text-sm font-normal leading-5 tracking-[.01rem];
 }
 @utility body-3 {
-  @apply text-sm font-light leading-5 tracking-[.01rem];
+  @apply text-sm font-normal leading-5 tracking-[.01rem];
 }
 @utility body-4 {
-  @apply text-xs font-light leading-5 tracking-[.01rem];
+  @apply text-xs font-normal leading-5 tracking-[.01rem];
 }
 @utility body-5 {
   @apply text-[1rem]  leading-5 tracking-[.01rem];
@@ -210,7 +191,7 @@
   @apply text-sm font-semibold leading-5 tracking-[.01rem] text-fg dark:text-white hover:text-white focus:text-white;
 }
 @utility ghost-text {
-  @apply text-sm font-light leading-5 tracking-[.01rem] text-fg dark:text-white dark:hover:text-white;
+  @apply text-sm font-normal leading-5 tracking-[.01rem] text-fg dark:text-white dark:hover:text-white;
 }
 @utility btn {
   /***  Button  ***/
