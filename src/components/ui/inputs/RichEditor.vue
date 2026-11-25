@@ -175,6 +175,12 @@ const buttons = [
   },
   { label: "link", icon: LinkIcon, mark: "link", run: setLink },
 ];
+const mobileHidden = new Set([
+  "strikethrough",
+  "code block",
+  "numbered list",
+  "quote",
+]);
 </script>
 
 <template>
@@ -193,7 +199,11 @@ const buttons = [
         :key="b.label"
         type="button"
         class="ic-btn ic-btn-ghost-primary w-7 h-7"
-        :class="{ 'text-accent-text': editor.isActive(b.mark) }"
+        :class="{
+          'text-accent-text': editor.isActive(b.mark),
+          // ponytail: phone width fits one toolbar row; rarer marks hide there
+          'max-md:hidden': mobileHidden.has(b.label),
+        }"
         :title="b.label"
         :aria-label="b.label"
         :aria-pressed="editor.isActive(b.mark)"

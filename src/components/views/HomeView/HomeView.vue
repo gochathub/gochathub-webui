@@ -28,6 +28,7 @@ const activeConversationId = computed(() => getActiveConversationId(route));
       <!--sidebar-->
       <Sidebar
         class="xs:grow-1 md:grow-0 xs:overflow-y-scroll md:overflow-visible scrollbar-thin"
+        :class="{ 'xs:hidden md:flex': activeConversationId }"
       />
       <!--chat-->
       <div
